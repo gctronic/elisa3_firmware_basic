@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o spi.o mirf.o 
+OBJECTS = main.o spi.o mirf.o e_agenda.o e_remote_control.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -53,6 +53,12 @@ spi.o: ../spi.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 mirf.o: ../mirf.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+e_agenda.o: ../e_agenda.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+e_remote_control.o: ../e_remote_control.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link

@@ -7,6 +7,7 @@
 #include "mirf.h"
 #include "nRF24L01.h"
 #include "e_agenda.h"
+#include "e_remote_control.h"
 
 volatile unsigned char currentAdChannel = 0;
 // channel 0..6:  prox0..6
@@ -74,6 +75,17 @@ unsigned char sendAdcValues = 0;
 
 unsigned char blinkState = 0;
 
+//--IR Remote control--//
+unsigned char ir_move = 0;
+extern unsigned char data_ir;
+extern unsigned char command_received;
+
+unsigned char colorState = 0;
+
+#define STEP_MOTORS 100
+#define MAX_MOTORS_PWM 1023
+#define MAX_LEDS_PWM 255
+
 FUSES = {
 	.low = (FUSE_CKSEL0 & FUSE_CKSEL2 & FUSE_CKSEL3 & FUSE_SUT0),	// internal 8MHz clock, no divisor
 	.high = (FUSE_BOOTSZ0 & FUSE_BOOTSZ1 & FUSE_SPIEN),				// jtag disabled
@@ -104,6 +116,8 @@ void initPorts(void) {
 	
 	DDRB = 0xF7;	// pwm for led r/g/b as output; CE, MOSI, SCK, SS as output (master) 
 	PORTB |= (1 << 5) | (1 << 6) | (1 << 7); // leds off	
+	//PORTB &= ~(1 << 5) & ~(1 << 6) & ~(1 << 7); // leds off
+	//PORTB &= ~(1 << 7);
 
 	DDRC = 0xF0;	// selector as input; IR leds as output; sens-enable, sleep as output
 
@@ -393,6 +407,8 @@ ISR(TIMER4_OVF_vect) {
 		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
 		PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
 		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
+		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+										// the pwm is turned off...is it correct??
 	} else if(pwm_left > 0) {   		// move forward
 		// select channel 15 to sample left current
 		currentMotLeftChannel = 15;
@@ -453,6 +469,8 @@ ISR(TIMER3_OVF_vect) {
 		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
 		PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
 		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
+		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+										// the pwm is turned off...is it correct??
 	}else if(pwm_right > 0) {   		// move forward
 		// select channel 13 to sample left current
 		currentMotRightChannel = 13;
@@ -657,9 +675,9 @@ ISR(USART0_RX_vect) {
 				break;
 			case 3: // right motor
 				if(receivedByte == '+') {
-					pwm_right += 100;
-					if(pwm_right > 1023) {
-						pwm_right = 1023;
+					pwm_right += STEP_MOTORS;
+					if(pwm_right > MAX_MOTORS_PWM) {
+						pwm_right = MAX_MOTORS_PWM;
 					}
 					if(pwm_right >= 0) {
 						OCR3A = (int)pwm_right;
@@ -667,9 +685,9 @@ ISR(USART0_RX_vect) {
 						OCR3B = (int)(-pwm_right);
 					}
 				} else if(receivedByte == '-') {
-					pwm_right -= 100;
-					if(pwm_right < -1023) {
-						pwm_right = -1023;
+					pwm_right -= STEP_MOTORS;
+					if(pwm_right < -MAX_MOTORS_PWM) {
+						pwm_right = -MAX_MOTORS_PWM;
 					}
 					if(pwm_right >= 0) {
 						OCR3A = (int)pwm_right;		// I set the new value for the output compares here
@@ -686,9 +704,9 @@ ISR(USART0_RX_vect) {
 				break;
 			case 4: // left motor
 				if(receivedByte == '+') {
-					pwm_left += 100;
-					if(pwm_left > 1023) {
-						pwm_left = 1023;
+					pwm_left += STEP_MOTORS;
+					if(pwm_left > MAX_MOTORS_PWM) {
+						pwm_left = MAX_MOTORS_PWM;
 					}
 					if(pwm_left >= 0) {
 						OCR4A = pwm_left;
@@ -696,9 +714,9 @@ ISR(USART0_RX_vect) {
 						OCR4B = -pwm_left;
 					}
 				} else if(receivedByte == '-') {
-					pwm_left -= 100;
-					if(pwm_left < -1023) {
-						pwm_left = -1023;
+					pwm_left -= STEP_MOTORS;
+					if(pwm_left < -MAX_MOTORS_PWM) {
+						pwm_left = -MAX_MOTORS_PWM;
 					}
 					if(pwm_left >= 0) {
 						OCR4A = pwm_left;
@@ -733,9 +751,6 @@ void initExternalInterrupt() {
 	
 }
 
-ISR(PCINT1_vect) {
-	
-}	
 
 void initPeripherals(void) {
 
@@ -769,6 +784,42 @@ void toggleBlueLed() {
 
 }
 
+void updateRedLed(unsigned char value) {
+
+	if(value == 0) {
+		TCCR1A &= ~(1 << COM1A1);
+		PORTB &= ~(1 << 5);
+	} else {
+		TCCR1A |= (1 << COM1A1);
+		OCR1A = value;
+	}
+
+}
+
+void updateGreenLed(unsigned char value) {
+
+	if(value == 0) {
+		TCCR1A &= ~(1 << COM1B1);
+		PORTB &= ~(1 << 6);
+	} else {
+		TCCR1A |= (1 << COM1B1);
+		OCR1B = value;
+	}
+
+}
+
+void updateBlueLed(unsigned char value) {
+
+	if(value == 0) {
+		TCCR1A &= ~(1 << COM1C1);
+		PORTB &= ~(1 << 7);
+	} else {
+		TCCR1A |= (1 << COM1C1);
+		OCR1C = value;
+	}
+
+}
+
 int main(void) {
 
 	unsigned char debugData = 0xAA;
@@ -778,9 +829,10 @@ int main(void) {
 	initPeripherals();
 	currentAdChannel = 12;
 
+
 	e_start_agendas_processing();
-	e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
-	//PORTB |= (1 << 7);
+	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
+	e_init_remote_control();
 
 	// channel selection: continuously change the channel sampled in sequence
 	if(currentAdChannel < 8) {
@@ -791,7 +843,7 @@ int main(void) {
 		ADMUX |= currentAdChannel-8;
 	}
 
-	usartTransmit(debugData);				
+	//usartTransmit(debugData);				
 
 	while(1) {
 
@@ -810,6 +862,133 @@ int main(void) {
 		//} else {
 		//	PORTB &= 0x7F;	
 		//}
+
+
+		ir_move = e_get_data();
+
+		if(command_received) {
+
+			command_received = 0;
+
+			//usartTransmit(ir_move);
+
+
+			switch(ir_move) {
+
+				case 5:	// stop motors
+					pwm_right = 0;
+					pwm_left = 0;
+					break;
+
+				case 2:	// both motors forward
+					if(pwm_right > pwm_left) {
+						pwm_left = pwm_right;
+					} else {
+						pwm_right = pwm_left;
+					}
+					pwm_right += STEP_MOTORS;
+					pwm_left += STEP_MOTORS;
+	                if (pwm_right > MAX_MOTORS_PWM) pwm_right = MAX_MOTORS_PWM;
+    	            if (pwm_left > MAX_MOTORS_PWM) pwm_left = MAX_MOTORS_PWM;
+               		break;
+
+				case 8:	// both motors backward
+					if(pwm_right < pwm_left) {
+						pwm_left  = pwm_right;
+					} else {
+						pwm_right = pwm_left;
+					}
+					pwm_right -= STEP_MOTORS;
+					pwm_left -= STEP_MOTORS;
+	                if (pwm_right < -MAX_MOTORS_PWM) pwm_right = -MAX_MOTORS_PWM;
+    	            if (pwm_left < -MAX_MOTORS_PWM) pwm_left = -MAX_MOTORS_PWM;
+                  	break;
+
+				case 6:	// both motors right
+					pwm_right -= STEP_MOTORS;
+					pwm_left += STEP_MOTORS;
+                	if (pwm_right<-MAX_MOTORS_PWM) pwm_right=-MAX_MOTORS_PWM;
+                	if (pwm_left>MAX_MOTORS_PWM) pwm_left=MAX_MOTORS_PWM;
+					break;
+
+				case 4:	// both motors left
+					pwm_right += STEP_MOTORS;
+					pwm_left -= STEP_MOTORS;
+	                if (pwm_right>MAX_MOTORS_PWM) pwm_right=MAX_MOTORS_PWM;
+    	            if (pwm_left<-MAX_MOTORS_PWM) pwm_left=-MAX_MOTORS_PWM;
+					break;
+
+				case 3:	// left motor forward
+					pwm_left += STEP_MOTORS;
+                	if (pwm_left>MAX_MOTORS_PWM) pwm_left=MAX_MOTORS_PWM;
+					break;
+
+				case 1:	// right motor forward
+					pwm_right += STEP_MOTORS;
+	                if (pwm_right>MAX_MOTORS_PWM) pwm_right=MAX_MOTORS_PWM;
+					break;
+
+				case 9:	// left motor backward
+					pwm_left -= STEP_MOTORS;
+            	    if (pwm_left<-MAX_MOTORS_PWM) pwm_left=-MAX_MOTORS_PWM;
+					break;
+
+				case 7:	// right motor backward
+					pwm_right -= STEP_MOTORS;
+                	if (pwm_right<-MAX_MOTORS_PWM) pwm_right=-MAX_MOTORS_PWM;
+					break;
+
+               	case 0:	// colors
+					colorState = (colorState+1)%5;
+
+					if(colorState==0) {		// turn on blue
+						pwm_blue = 0;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = MAX_LEDS_PWM;					
+					} else if(colorState==1) {	// turn on green
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = 0;
+						pwm_red = MAX_LEDS_PWM;
+					} else if(colorState==2) {	// turn on red
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = 0;
+					} else if(colorState==3) {	// turn on white
+						pwm_blue = 0;
+						pwm_green = 0;
+						pwm_red = 0;
+					} else if(colorState==4) {	// turn off
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = MAX_LEDS_PWM;
+					}					
+
+					updateRedLed(pwm_red);	
+					updateGreenLed(pwm_green);
+					updateBlueLed(pwm_blue);
+
+					//LED_IR1 = !LED_IR1;
+					//LED_IR2 = !LED_IR2;
+
+                  	break;
+
+               	default:
+                 	break;
+
+            }	// switch
+
+			if(pwm_right >= 0) {
+				OCR3A = (int)pwm_right;
+			} else {
+				OCR3B = (int)(-pwm_right);
+			}
+			if(pwm_left >= 0) {
+				OCR4A = pwm_left;
+			} else {
+				OCR4B = -pwm_left;
+			}
+
+		}	// ir command received
 
 
 		if(sendAdcValues) {
@@ -832,6 +1011,8 @@ int main(void) {
 			usartTransmit((unsigned char)(last_num_rvel_samples_avg>>8));
 
 		}
+
+
 
 		if(!rx_fifo_is_empty()) {
 
