@@ -18,6 +18,7 @@ Common symbol       size              file
 
 PTX                 0x1               mirf.o
 __brkval            0x2               c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+dataLED             0x6               main.o
 rfData              0x6               main.o
 __flp               0x2               c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
@@ -135,7 +136,7 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x19cc
+.text           0x00000000     0x1cb0
  *(.vectors)
  .vectors       0x00000000       0xe4 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6/crtm2560.o
                 0x00000000                __vector_default
@@ -238,87 +239,89 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
                 0x00000122                __vector_16
                 0x00000122                __vector_18
                 0x00000122                __vector_20
- .text          0x00000126      0xf0c main.o
+ .text          0x00000126     0x1192 main.o
                 0x00000126                initPorts
-                0x0000015c                initAdc
-                0x0000018a                __vector_29
-                0x000001f2                initPwm
-                0x000002c0                __vector_45
-                0x000003b6                __vector_42
-                0x000003da                __vector_43
-                0x000003fe                __vector_35
-                0x00000516                __vector_32
-                0x0000053a                __vector_33
-                0x0000055e                initUsart
-                0x00000588                usartTransmit
-                0x00000596                __vector_25
-                0x00000960                initExternalInterrupt
-                0x00000962                initPeripherals
-                0x00000980                toggleBlueLed
-                0x000009b6                updateRedLed
-                0x000009de                updateGreenLed
-                0x00000a06                updateBlueLed
-                0x00000a2e                main
- .text          0x00001032       0x66 spi.o
-                0x00001032                initSPI
-                0x0000104a                SPI_ReadWrite_Block
-                0x00001070                SPI_Write_Block
-                0x0000108c                SPI_Write_Byte
- .text          0x00001098      0x212 mirf.o
-                0x00001098                mirf_data_ready
-                0x000010b2                flush_rx_fifo
-                0x000010be                mirf_config_register
-                0x000010e6                mirf_get_data
-                0x0000110e                mirf_read_register
-                0x00001140                rx_fifo_is_empty
-                0x00001166                mirf_write_register
-                0x0000119a                mirf_set_TADDR
-                0x000011a6                mirf_set_RADDR
-                0x000011b6                mirf_config
-                0x00001258                mirf_init
-                0x00001262                mirf_send
- .text          0x000012aa      0x250 e_agenda.o
-                0x000012aa                e_start_agendas_processing
-                0x000012d0                e_end_agendas_processing
-                0x000012dc                e_activate_agenda
-                0x00001352                e_destroy_agenda
-                0x000013a6                e_set_agenda_cycle
-                0x000013d6                e_reset_agenda
-                0x00001406                e_pause_agenda
-                0x00001434                e_restart_agenda
-                0x00001464                __vector_13
- .text          0x000014fa      0x21c e_remote_control.o
-                0x000014fa                e_read_remote_control
-                0x0000166e                e_init_remote_control
-                0x00001684                __vector_10
-                0x00001704                e_get_check
-                0x0000170a                e_get_address
-                0x00001710                e_get_data
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
- .text          0x00001716        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
-                0x00001716                . = ALIGN (0x2)
+                0x00000160                initAdc
+                0x0000018e                __vector_29
+                0x00000306                initPwm
+                0x000003d4                __vector_45
+                0x000004ca                __vector_42
+                0x000004ee                __vector_43
+                0x00000512                __vector_35
+                0x0000062a                __vector_32
+                0x0000064e                __vector_33
+                0x00000672                initUsart
+                0x0000069c                usartTransmit
+                0x000006aa                __vector_25
+                0x00000a74                initExternalInterrupt
+                0x00000a76                initPeripherals
+                0x00000a94                toggleBlueLed
+                0x00000aca                updateRedLed
+                0x00000af2                updateGreenLed
+                0x00000b1a                updateBlueLed
+                0x00000b42                main
+ .text          0x000012b8       0x66 spi.o
+                0x000012b8                initSPI
+                0x000012d0                SPI_ReadWrite_Block
+                0x000012f6                SPI_Write_Block
+                0x00001312                SPI_Write_Byte
+ .text          0x0000131e      0x270 mirf.o
+                0x0000131e                mirf_data_ready
+                0x00001338                flush_rx_fifo
+                0x00001344                mirf_config_register
+                0x0000136c                mirf_get_data
+                0x00001394                mirf_read_register
+                0x000013c6                rx_fifo_is_empty
+                0x000013ec                mirf_write_register
+                0x00001420                mirf_set_TADDR
+                0x0000142c                mirf_set_RADDR
+                0x0000143c                mirf_config
+                0x000014de                mirf_init
+                0x000014e8                mirf_send
+                0x00001530                flushTxFifo
+                0x0000153c                writeAckPayload
+ .text          0x0000158e      0x250 e_agenda.o
+                0x0000158e                e_start_agendas_processing
+                0x000015b4                e_end_agendas_processing
+                0x000015c0                e_activate_agenda
+                0x00001636                e_destroy_agenda
+                0x0000168a                e_set_agenda_cycle
+                0x000016ba                e_reset_agenda
+                0x000016ea                e_pause_agenda
+                0x00001718                e_restart_agenda
+                0x00001748                __vector_13
+ .text          0x000017de      0x21c e_remote_control.o
+                0x000017de                e_read_remote_control
+                0x00001952                e_init_remote_control
+                0x00001968                __vector_10
+                0x000019e8                e_get_check
+                0x000019ee                e_get_address
+                0x000019f4                e_get_data
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
+ .text          0x000019fa        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+                0x000019fa                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00001716       0x28 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
-                0x00001716                __udivmodhi4
- .text.libgcc   0x0000173e       0x26 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
-                0x0000173e                _div
-                0x0000173e                __divmodhi4
- .text.libgcc   0x00001764        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
- .text.libgcc   0x00001764        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
- .text.libgcc   0x00001764        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
+ .text.libgcc   0x000019fa       0x28 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
+                0x000019fa                __udivmodhi4
+ .text.libgcc   0x00001a22       0x26 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
+                0x00001a22                _div
+                0x00001a22                __divmodhi4
+ .text.libgcc   0x00001a48        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
+ .text.libgcc   0x00001a48        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00001a48        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
  .text.avr-libc
-                0x00001764      0x266 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
-                0x00001764                malloc
-                0x00001898                free
-                0x000019ca                . = ALIGN (0x2)
+                0x00001a48      0x266 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+                0x00001a48                malloc
+                0x00001b7c                free
+                0x00001cae                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000019ca        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
-                0x000019ca                _exit
-                0x000019ca                exit
+ .fini9         0x00001cae        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
+                0x00001cae                _exit
+                0x00001cae                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -337,11 +340,11 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000019ca        0x2 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
+ .fini0         0x00001cae        0x2 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
  *(.fini0)
-                0x000019cc                _etext = .
+                0x00001cb0                _etext = .
 
-.data           0x00800200       0x86 load address 0x000019cc
+.data           0x00800200       0x86 load address 0x00001cb0
                 0x00800200                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800200        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6/crtm2560.o
@@ -374,11 +377,11 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
                 0x00800286                _edata = .
                 0x00800286                PROVIDE (__data_end, .)
 
-.bss            0x00800286       0x87
+.bss            0x00800286       0x8f
                 0x00800286                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x00800286        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6/crtm2560.o
- .bss           0x00800286       0x71 main.o
+ .bss           0x00800286       0x73 main.o
                 0x00800286                currentAdChannel
                 0x00800287                channelIndex
                 0x00800288                currentProx
@@ -408,45 +411,48 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
                 0x008002e9                last_right_vel_sum
                 0x008002eb                pwm_right
                 0x008002ef                pwm_left
-                0x008002f3                sendAdcValues
-                0x008002f4                blinkState
-                0x008002f5                ir_move
-                0x008002f6                colorState
- .bss           0x008002f7        0x0 spi.o
- .bss           0x008002f7        0x0 mirf.o
- .bss           0x008002f7        0x3 e_agenda.o
-                0x008002f7                my_toggle_state
- .bss           0x008002fa        0x8 e_remote_control.o
-                0x008002fa                address
-                0x008002fb                data_ir
-                0x008002fc                my_toggle_state2
-                0x008002fd                my_toggle_state3
-                0x008002fe                command_received
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
- .bss           0x00800302        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+                0x008002f3                speedl
+                0x008002f4                speedr
+                0x008002f5                sendAdcValues
+                0x008002f6                blinkState
+                0x008002f7                ir_move
+                0x008002f8                colorState
+ .bss           0x008002f9        0x0 spi.o
+ .bss           0x008002f9        0x0 mirf.o
+ .bss           0x008002f9        0x3 e_agenda.o
+                0x008002f9                my_toggle_state
+ .bss           0x008002fc        0x8 e_remote_control.o
+                0x008002fc                address
+                0x008002fd                data_ir
+                0x008002fe                my_toggle_state2
+                0x008002ff                my_toggle_state3
+                0x00800300                command_received
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_udivmodhi4.o)
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_divmodhi4.o)
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_exit.o)
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_copy_data.o)
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/avr6\libgcc.a(_clear_bss.o)
+ .bss           0x00800304        0x0 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x00800302        0x6 main.o
-                0x00800302                rfData
- COMMON         0x00800308        0x1 mirf.o
-                0x00800308                PTX
- COMMON         0x00800309        0x4 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
-                0x00800309                __brkval
-                0x0080030b                __flp
-                0x0080030d                PROVIDE (__bss_end, .)
-                0x000019cc                __data_load_start = LOADADDR (.data)
-                0x00001a52                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800304        0xc main.o
+                0x00800304                dataLED
+                0x0080030a                rfData
+ COMMON         0x00800310        0x1 mirf.o
+                0x00800310                PTX
+ COMMON         0x00800311        0x4 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+                0x00800311                __brkval
+                0x00800313                __flp
+                0x00800315                PROVIDE (__bss_end, .)
+                0x00001cb0                __data_load_start = LOADADDR (.data)
+                0x00001d36                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080030d        0x0
-                0x0080030d                PROVIDE (__noinit_start, .)
+.noinit         0x00800315        0x0
+                0x00800315                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0080030d                PROVIDE (__noinit_end, .)
-                0x0080030d                _end = .
-                0x0080030d                PROVIDE (__heap_start, .)
+                0x00800315                PROVIDE (__noinit_end, .)
+                0x00800315                _end = .
+                0x00800315                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -517,81 +523,81 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
                 0x000000a0       0x28 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
 .debug_pubnames
-                0x00000000      0x848
+                0x00000000      0x88e
  *(.debug_pubnames)
  .debug_pubnames
-                0x00000000      0x494 main.o
+                0x00000000      0x4b6 main.o
  .debug_pubnames
-                0x00000494       0x5d spi.o
+                0x000004b6       0x5d spi.o
  .debug_pubnames
-                0x000004f1      0x101 mirf.o
+                0x00000513      0x125 mirf.o
  .debug_pubnames
-                0x000005f2       0xef e_agenda.o
+                0x00000638       0xef e_agenda.o
  .debug_pubnames
-                0x000006e1       0xe8 e_remote_control.o
+                0x00000727       0xe8 e_remote_control.o
  .debug_pubnames
-                0x000007c9       0x7f c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+                0x0000080f       0x7f c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
-.debug_info     0x00000000     0x137c
+.debug_info     0x00000000     0x149f
  *(.debug_info)
- .debug_info    0x00000000      0x7be main.o
- .debug_info    0x000007be      0x14b spi.o
- .debug_info    0x00000909      0x2c9 mirf.o
- .debug_info    0x00000bd2      0x2ef e_agenda.o
- .debug_info    0x00000ec1      0x225 e_remote_control.o
- .debug_info    0x000010e6      0x296 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_info    0x00000000      0x881 main.o
+ .debug_info    0x00000881      0x14b spi.o
+ .debug_info    0x000009cc      0x329 mirf.o
+ .debug_info    0x00000cf5      0x2ef e_agenda.o
+ .debug_info    0x00000fe4      0x225 e_remote_control.o
+ .debug_info    0x00001209      0x296 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x65b
+.debug_abbrev   0x00000000      0x69b
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x191 main.o
- .debug_abbrev  0x00000191       0xbd spi.o
- .debug_abbrev  0x0000024e      0x10d mirf.o
- .debug_abbrev  0x0000035b      0x12e e_agenda.o
- .debug_abbrev  0x00000489       0xdd e_remote_control.o
- .debug_abbrev  0x00000566       0xf5 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_abbrev  0x00000000      0x1af main.o
+ .debug_abbrev  0x000001af       0xbd spi.o
+ .debug_abbrev  0x0000026c      0x12f mirf.o
+ .debug_abbrev  0x0000039b      0x12e e_agenda.o
+ .debug_abbrev  0x000004c9       0xdd e_remote_control.o
+ .debug_abbrev  0x000005a6       0xf5 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
-.debug_line     0x00000000     0x1b20
+.debug_line     0x00000000     0x1cb7
  *(.debug_line)
- .debug_line    0x00000000      0xc2b main.o
- .debug_line    0x00000c2b      0x18c spi.o
- .debug_line    0x00000db7      0x3a2 mirf.o
- .debug_line    0x00001159      0x3a3 e_agenda.o
- .debug_line    0x000014fc      0x25c e_remote_control.o
- .debug_line    0x00001758      0x3c8 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_line    0x00000000      0xd50 main.o
+ .debug_line    0x00000d50      0x18c spi.o
+ .debug_line    0x00000edc      0x414 mirf.o
+ .debug_line    0x000012f0      0x3a3 e_agenda.o
+ .debug_line    0x00001693      0x25c e_remote_control.o
+ .debug_line    0x000018ef      0x3c8 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
-.debug_frame    0x00000000      0x3b0
+.debug_frame    0x00000000      0x3d0
  *(.debug_frame)
  .debug_frame   0x00000000      0x150 main.o
  .debug_frame   0x00000150       0x50 spi.o
- .debug_frame   0x000001a0       0xd0 mirf.o
- .debug_frame   0x00000270       0xa0 e_agenda.o
- .debug_frame   0x00000310       0x70 e_remote_control.o
- .debug_frame   0x00000380       0x30 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_frame   0x000001a0       0xf0 mirf.o
+ .debug_frame   0x00000290       0xa0 e_agenda.o
+ .debug_frame   0x00000330       0x70 e_remote_control.o
+ .debug_frame   0x000003a0       0x30 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
-.debug_str      0x00000000      0x81c
+.debug_str      0x00000000      0x85c
  *(.debug_str)
- .debug_str     0x00000000      0x448 main.o
-                                0x4cb (size before relaxing)
- .debug_str     0x00000448       0x50 spi.o
+ .debug_str     0x00000000      0x467 main.o
+                                0x4ea (size before relaxing)
+ .debug_str     0x00000467       0x50 spi.o
                                 0x129 (size before relaxing)
- .debug_str     0x00000498       0xcd mirf.o
-                                0x1b8 (size before relaxing)
- .debug_str     0x00000565      0x10f e_agenda.o
+ .debug_str     0x000004b7       0xee mirf.o
+                                0x1d9 (size before relaxing)
+ .debug_str     0x000005a5      0x10f e_agenda.o
                                 0x1f1 (size before relaxing)
- .debug_str     0x00000674       0xbf e_remote_control.o
+ .debug_str     0x000006b4       0xbf e_remote_control.o
                                 0x1c0 (size before relaxing)
- .debug_str     0x00000733       0xe9 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_str     0x00000773       0xe9 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
                                 0x16a (size before relaxing)
 
-.debug_loc      0x00000000      0xb7a
+.debug_loc      0x00000000      0xc13
  *(.debug_loc)
- .debug_loc     0x00000000      0x1a7 main.o
- .debug_loc     0x000001a7       0xa3 spi.o
- .debug_loc     0x0000024a      0x193 mirf.o
- .debug_loc     0x000003dd      0x32a e_agenda.o
- .debug_loc     0x00000707       0x4a e_remote_control.o
- .debug_loc     0x00000751      0x429 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
+ .debug_loc     0x00000000      0x1f6 main.o
+ .debug_loc     0x000001f6       0xa3 spi.o
+ .debug_loc     0x00000299      0x1dd mirf.o
+ .debug_loc     0x00000476      0x32a e_agenda.o
+ .debug_loc     0x000007a0       0x4a e_remote_control.o
+ .debug_loc     0x000007ea      0x429 c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5.1/../../../../avr/lib/avr6\libc.a(malloc.o)
 
 .debug_macinfo
  *(.debug_macinfo)

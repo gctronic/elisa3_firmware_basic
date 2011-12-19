@@ -245,3 +245,32 @@ void mirf_send(uint8_t * value, uint8_t len)
     
     mirf_CE_hi;                     // Start transmission
 }
+
+void writeAckPayload(unsigned char *data, unsigned char size) {
+
+	unsigned char k = 0;
+
+	flushTxFifo();
+
+    mirf_CSN_lo;
+
+	SPI_Write_Byte(NRF_W_ACK_PAYLOAD_P0);
+
+	for(k=0; k<size; k++) {
+		SPI_Write_Byte(data[k]);
+	}	
+
+    mirf_CSN_hi;
+
+
+}
+
+
+void flushTxFifo() {
+
+    mirf_CSN_lo;
+    SPI_Write_Byte(FLUSH_TX);
+    mirf_CSN_hi;
+
+}
+

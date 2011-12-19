@@ -32,7 +32,7 @@
 #define USE_REDUCED_PACKET
 #define BIDIRECTIONAL
 
-#define RF_ADDR 3020
+#define RF_ADDR 3202
 
 #ifdef USE_REDUCED_PACKET
 	#define PAYLOAD_SIZE 6
@@ -65,6 +65,9 @@ uint8_t mirf_data_ready();
 void mirf_get_data(uint8_t * data);
 uint8_t rx_fifo_is_empty();
 void flush_rx_fifo();
+void writeAckPayload(unsigned char *data, unsigned char size);
+void flushTxFifo();
+
 
 // Public extended functions
 void mirf_config_register(uint8_t reg, uint8_t value);

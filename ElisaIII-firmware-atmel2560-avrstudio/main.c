@@ -66,6 +66,11 @@ signed long int pwm_right = 0;							// last pwm values before update; this pwm 
 signed long int pwm_left = 0;
 
 
+//--nRF--//
+#define CHANGE_STATE 0x0
+#define CHANGE_RF 0x1
+unsigned int dataLED[3];
+unsigned char speedl=0, speedr=0;
 uint8_t rfData[PAYLOAD_SIZE];
 
 unsigned char peripheralChoice = 5;	// red led=0, green led=1, blue led=2, right motor=3, left motor=4
@@ -120,6 +125,7 @@ void initPorts(void) {
 	//PORTB &= ~(1 << 7);
 
 	DDRC = 0xF0;	// selector as input; IR leds as output; sens-enable, sleep as output
+	PORTC = 0xB0;	// sleep = 1, IR leds = 1
 
 	DDRD = 0x00;	// all pins to input; when usart and i2c peripherals are activated they change the pins direction accordingly
 
@@ -165,13 +171,21 @@ void initAdc(void) {
 ISR(ADC_vect) {	
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
 		
-	//PORTB |= 0x80;
+	//PORTB |= (1 << 7);
 
 	int value = 0;
 	value = ADCL;			// must be read first!!
 	value = (ADCH<<8) | value;
 
-/*
+	//proximityValue[currentProx] = value;
+	/*
+	if(rightMotorPhase == passivePhase) {
+		right_vel_sum += value;
+		num_rvel_samples_avg++;
+	}
+	*/
+
+
 	// save the last data
 	switch(adcSaveDataTo) {
 
@@ -251,21 +265,6 @@ ISR(ADC_vect) {
 
 	}
 	adcSamplingState = (adcSamplingState+1)%5;
-*/	
-
-
-	//usartTransmit((unsigned char)(value&0xFF));
-	//usartTransmit((unsigned char)(value>>8));
-
-	//proximityValue[currentProx] = value;
-	if(rightMotorPhase == passivePhase) {
-		right_vel_sum += value;
-		num_rvel_samples_avg++;
-	}
-
-
-/*
-	currentAdChannel = 9;
 
 	// channel selection: continuously change the channel sampled in sequence
 	if(currentAdChannel < 8) {
@@ -275,7 +274,7 @@ ISR(ADC_vect) {
 		ADCSRB |= (1 << MUX5);
 		ADMUX |= currentAdChannel-8;
 	}
-*/
+
 
 	/*
 	switch(currentAdChannel) {
@@ -329,12 +328,13 @@ ISR(ADC_vect) {
 	*/
 
 
-	//PORTB &= 0x7F;
+	//PORTB &= ~(1 << 7);
 
 }
 
 
 void initPwm() {
+
 
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
@@ -350,9 +350,9 @@ void initPwm() {
 	OCR1C = pwm_blue;
 	//DDRB &= ~(1 << 7) & ~(1 << 6) & ~(1 << 5);	// leds as input to turn them off
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
-
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
+
 
 	// Motor right timer3/pwm
 	// Timers clock input = Fosc = 8 MHz
@@ -823,17 +823,19 @@ void updateBlueLed(unsigned char value) {
 int main(void) {
 
 	unsigned char debugData = 0xAA;
+	unsigned int i = 0;
+	unsigned char packetId = 0;
 	choosePeripheral = 1;
 	channelIndex = 0;
 
 	initPeripherals();
-	currentAdChannel = 12;
-
 
 	e_start_agendas_processing();
 	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
 	e_init_remote_control();
 
+/*
+	currentAdChannel = 12;
 	// channel selection: continuously change the channel sampled in sequence
 	if(currentAdChannel < 8) {
 		ADCSRB &= ~(1 << MUX5);
@@ -842,12 +844,13 @@ int main(void) {
 		ADCSRB |= (1 << MUX5);
 		ADMUX |= currentAdChannel-8;
 	}
+*/
 
 	//usartTransmit(debugData);				
 
 	while(1) {
 
-		// PORTB ^= (1 << 7); // Toggle the blue LED
+		//PORTB ^= (1 << 6); // Toggle the green LED
 
 		// test ok
 		//if(TCNT3 >= 2000) {
@@ -990,7 +993,7 @@ int main(void) {
 
 		}	// ir command received
 
-
+/*
 		if(sendAdcValues) {
 		
 			sendAdcValues = 0;
@@ -1011,19 +1014,88 @@ int main(void) {
 			usartTransmit((unsigned char)(last_num_rvel_samples_avg>>8));
 
 		}
-
+*/
 
 
 		if(!rx_fifo_is_empty()) {
 
 			// clear irq status
-			mirf_config_register(CONFIG, 0x70);
+			mirf_config_register(STATUS, 0x70);
 
 			mirf_get_data(rfData);
 			flush_rx_fifo();
 
+			//usartTransmit(rfData[0]);
+
+
+
 #ifdef USE_REDUCED_PACKET
 
+			//if((data[3]&0b00001000)==0b00001000) {	// check the 4th bit to sleep
+			// it was noticed that some robots sometimes "think" to receive something and the data read are wrong,
+			// this could lead to go to sleep involuntarily; in order to avoid this situation we define that the 
+			// sleep message should be completely zero, but the flag bit
+			if(rfData[0]==0 && rfData[1]==0 && rfData[2]==0 && (rfData[3]==0b00001000 || rfData[3]==0b00011000) && rfData[4]==0 && rfData[5]==0) {
+				//sleep(ALARM_PAUSE_1_MIN);
+			}
+
+			speedr = (rfData[4]&0x7F);	// cast the speed to be at most 127, thus the received speed are in the range 0..127 (usually 0..100),
+			speedl = (rfData[5]&0x7F);	// the received speed is then shifted by 3 (x8) in order to have a speed more or less
+										// in the same range of the measured speed that is 0..800.
+										// In order to have greater resolution at lower speed we shift the speed only by 2 (x4),
+										// this means that the range is more or less 0..400.
+
+
+			if((rfData[4]&0x80)==0x80) {			// motor right forward
+				pwm_right = speedr<<2;				// scale the speed received (0..100) to be in the range 0..400
+			} else {								// backward
+				pwm_right = -(speedr<<2);
+			}
+
+			if((rfData[5]&0x80)==0x80) {			// motor left forward
+				pwm_left = speedl<<2;		
+			} else {								// backward
+				pwm_left = -(speedl<<2);
+			}
+			
+			if (pwm_right>(MAX_MOTORS_PWM)) pwm_right=(MAX_MOTORS_PWM);
+            if (pwm_left>(MAX_MOTORS_PWM)) pwm_left=(MAX_MOTORS_PWM);
+            if (pwm_right<-(MAX_MOTORS_PWM)) pwm_right=-(MAX_MOTORS_PWM);
+            if (pwm_left<-(MAX_MOTORS_PWM)) pwm_left=-(MAX_MOTORS_PWM);
+		
+
+			for(i=0; i<3; i++) {
+				dataLED[i]=rfData[i]&0xFF;
+			}
+			pwm_red = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[0]&0xFF)/100;
+			pwm_blue = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[1]&0xFF)/100;
+			pwm_green = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[2]&0xFF)/100;
+			updateRedLed(pwm_red);	
+			updateGreenLed(pwm_green);
+			updateBlueLed(pwm_blue);
+			
+
+			if(rfData[3]== 1) {			// turn on one IR
+				//LED_IR1 = 0;
+				//LED_IR2 = 1;
+			} else if(rfData[3]==2) {	// turn on two IRs
+				//LED_IR1 = 1;
+				//LED_IR2 = 0;
+			} else if(rfData[3]==3) {	// turn on all three IRs
+				//LED_IR1 = 0;
+				//LED_IR2 = 0;											
+			} else {					// turn off IRs
+				//LED_IR1 = 1;
+				//LED_IR2 = 1;
+			}
+
+			if((rfData[3]&0b00000100)==0b00000100) {	// check the 3rd bit to enable/disable the IR receiving
+				//ir_enabled = 1;
+			} else {
+				//ir_enabled = 0;
+			}
+
+			//desired_orientation = current_angle;
 			
 
 #else
@@ -1031,6 +1103,12 @@ int main(void) {
 			
 
 #endif
+
+#ifdef BIDIRECTIONAL
+			packetId = (packetId+1)%256;
+			writeAckPayload(&packetId, 1);
+#endif
+
 
 		}
 
