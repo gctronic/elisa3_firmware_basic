@@ -59,7 +59,6 @@ EPFL Ecole polytechnique federale de Lausanne http://www.epfl.ch
 #include <avr\io.h>
 #include <avr\interrupt.h>
 
-extern unsigned char blinkState;
 
 /*------ internal variables ------*/
 
@@ -71,10 +70,10 @@ unsigned char address = 0;
 unsigned char data_ir = 0;
 unsigned char check = 2;
 
-unsigned char my_toggle_state2 = 0;
 unsigned char my_toggle_state3 = 0;
+extern unsigned char command_received;
+extern unsigned char blinkState;
 
-unsigned char command_received = 0;
 
 /*! \brief Initialise the IR receiver ports */
 void e_init_remote_control(void) // initialisation for IR interruptions on INT0
@@ -139,7 +138,7 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 {
 	static int i = -1;
 		
-	PORTB ^= (1 << 6);
+//	PORTB ^= (1 << 6);
 
 	if (i == -1)	// start bit confirm  change timer period
 	{

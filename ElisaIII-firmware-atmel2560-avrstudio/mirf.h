@@ -28,17 +28,7 @@
 #define _MIRF_H_
 
 #include <avr/io.h>
-
-#define USE_REDUCED_PACKET
-#define BIDIRECTIONAL
-
-#define RF_ADDR 3202
-
-#ifdef USE_REDUCED_PACKET
-	#define PAYLOAD_SIZE 6
-#else
-	#define PAYLOAD_SIZE 31
-#endif
+#include "constants.h"
 
 // Mirf settings
 #define mirf_CH         40
