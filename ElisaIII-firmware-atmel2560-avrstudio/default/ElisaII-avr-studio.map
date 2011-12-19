@@ -486,14 +486,14 @@ LOAD c:/program files (x86)/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.5
  .debug_frame   0x00000120       0x50 spi.o
  .debug_frame   0x00000170       0xd0 mirf.o
 
-.debug_str      0x00000000      0x4e9
+.debug_str      0x00000000      0x50f
  *(.debug_str)
- .debug_str     0x00000000      0x3c7 main.o
-                                0x44a (size before relaxing)
- .debug_str     0x000003c7       0x50 spi.o
-                                0x103 (size before relaxing)
- .debug_str     0x00000417       0xd2 mirf.o
-                                0x192 (size before relaxing)
+ .debug_str     0x00000000      0x3ed main.o
+                                0x470 (size before relaxing)
+ .debug_str     0x000003ed       0x50 spi.o
+                                0x129 (size before relaxing)
+ .debug_str     0x0000043d       0xd2 mirf.o
+                                0x1b8 (size before relaxing)
 
 .debug_loc      0x00000000      0x383
  *(.debug_loc)

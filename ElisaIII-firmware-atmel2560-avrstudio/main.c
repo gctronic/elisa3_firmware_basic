@@ -6,6 +6,7 @@
 #include "spi.h"
 #include "mirf.h"
 #include "nRF24L01.h"
+#include "e_agenda.h"
 
 volatile unsigned char currentAdChannel = 0;
 // channel 0..6:  prox0..6
@@ -70,6 +71,8 @@ unsigned char peripheralChoice = 5;	// red led=0, green led=1, blue led=2, right
 unsigned char choosePeripheral = 1;
 unsigned char pwm_red = 255, pwm_green = 255, pwm_blue = 255;
 unsigned char sendAdcValues = 0;
+
+unsigned char blinkState = 0;
 
 FUSES = {
 	.low = (FUSE_CKSEL0 & FUSE_CKSEL2 & FUSE_CKSEL3 & FUSE_SUT0),	// internal 8MHz clock, no divisor
@@ -752,6 +755,19 @@ void initPeripherals(void) {
 
 }
 
+void toggleBlueLed() {
+
+	blinkState = 1 - blinkState;
+
+	if(blinkState) {
+		TCCR1A |= (1 << COM1C1);	// enable OCC
+		OCR1C = 255;
+	} else {
+		TCCR1A &= ~(1 << COM1C1);
+		PORTB &= ~(1 << 7);
+	}
+
+}
 
 int main(void) {
 
@@ -761,6 +777,10 @@ int main(void) {
 
 	initPeripherals();
 	currentAdChannel = 12;
+
+	e_start_agendas_processing();
+	e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
+	//PORTB |= (1 << 7);
 
 	// channel selection: continuously change the channel sampled in sequence
 	if(currentAdChannel < 8) {
@@ -775,7 +795,7 @@ int main(void) {
 
 	while(1) {
 
-		//PORTB ^= (1 << 7); // Toggle the LED
+		// PORTB ^= (1 << 7); // Toggle the blue LED
 
 		// test ok
 		//if(TCNT3 >= 2000) {
