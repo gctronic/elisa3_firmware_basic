@@ -25,7 +25,10 @@ unsigned char channelSequence[120] =
 10, 12, 14, 13, 15, 11, 12, 14, 13, 15, 11, 12, 14, 13, 15};
 unsigned char channelIndex = 0; 
 
+unsigned char changeChannel = 0;
+unsigned char channelChanged = 0;
 unsigned char currentProx = 0;
+unsigned char currentProx2 = 0;
 unsigned char currentMotLeftChannel = 0;
 unsigned char currentMotRightChannel = 0;
 unsigned char rightMotorPhase = 0;
@@ -33,6 +36,7 @@ unsigned char leftMotorPhase = 0;
 #define activePhase 0
 #define passivePhase 1
 volatile unsigned int proximityValue[24] = {0};
+volatile unsigned int lastProximityValue[24] = {0};
 volatile unsigned int cliffValue[8] = {0};
 unsigned char adcSaveDataTo = 0;
 #define saveToProx 				0
@@ -42,6 +46,10 @@ unsigned char adcSaveDataTo = 0;
 #define saveToLeftMotorCurrent	4
 #define saveToLeftMotorVel		5
 unsigned char adcSamplingState = 0;
+unsigned char rightChannelPhase = 0;
+unsigned char leftChannelPhase = 0;
+unsigned char currentRightPhase = 0;
+unsigned char nextRightPhase = 0;
 
 //--Current consumption controller--//
 char start_left_current_sampling = 0;				// set at the beginning of the motors period
@@ -54,14 +62,14 @@ unsigned int last_right_current = 0;
 //--Speed controller--//
 char start_left_vel_sampling = 0;						// set at the end of duty cycle
 char start_right_vel_sampling = 0;
-volatile unsigned int num_lvel_samples_avg = 0;			// current number of samples received for filtering (average) the left velocity value
+unsigned int num_lvel_samples_avg = 0;			// current number of samples received for filtering (average) the left velocity value
 volatile unsigned int last_num_lvel_samples_avg = 0;
-volatile unsigned int num_rvel_samples_avg = 0;			// current number of samples received for filtering (average) the right velocity value
+unsigned int num_rvel_samples_avg = 0;			// current number of samples received for filtering (average) the right velocity value
 volatile unsigned int last_num_rvel_samples_avg = 0;
 unsigned int left_vel_sum = 0;							// sum of all the adc values (at the end they will be divided by the total number of samples received)
-unsigned int last_left_vel_sum = 0;
+volatile unsigned int last_left_vel_sum = 0;
 unsigned int right_vel_sum = 0;
-unsigned int last_right_vel_sum = 0;
+volatile unsigned int last_right_vel_sum = 0;
 signed long int pwm_right = 0;							// last pwm values before update; this pwm is expressed in the range 0..PERIOD MOTORS
 signed long int pwm_left = 0;
 
@@ -87,7 +95,9 @@ extern unsigned char command_received;
 
 unsigned char colorState = 0;
 
-#define STEP_MOTORS 100
+unsigned char myTimeout = 0;
+
+#define STEP_MOTORS 30
 #define MAX_MOTORS_PWM 1023
 #define MAX_LEDS_PWM 255
 
@@ -120,28 +130,38 @@ void initPorts(void) {
 	PORTA = 0x00;	// proximity pulses turned off
 	
 	DDRB = 0xF7;	// pwm for led r/g/b as output; CE, MOSI, SCK, SS as output (master) 
-	PORTB |= (1 << 5) | (1 << 6) | (1 << 7); // leds off	
+	PORTB = 0xE0;
+	//PORTB |= (1 << 5) | (1 << 6) | (1 << 7); // leds off	
 	//PORTB &= ~(1 << 5) & ~(1 << 6) & ~(1 << 7); // leds off
 	//PORTB &= ~(1 << 7);
 
 	DDRC = 0xF0;	// selector as input; IR leds as output; sens-enable, sleep as output
 	PORTC = 0xB0;	// sleep = 1, IR leds = 1
 
-	DDRD = 0x00;	// all pins to input; when usart and i2c peripherals are activated they change the pins direction accordingly
+	DDRD = 0xFF;	// all pins to output; when usart and i2c peripherals are activated they change the pins direction accordingly
+	PORTD = 0x00;	// default for unused pins is 0
 
-	DDRE = 0x18;	// pwm and dir for motor right as output; when usart is activated it changes the pins direction accordingly
+	//DDRE = 0x18;	// pwm and dir for motor right as output; when usart is activated it changes the pins direction accordingly
+	DDRE = 0xFF;	// all pins to output
+	PORTE = 0x00;	// default for unused pins is 0; pwm for motors set to 0 when stopped
 
-	DDRF = 0x00;	// adc channel pins as input
+	DDRF = 0x00;	// adc channel pins as input		
+
+	DDRG = 0xFF;	// unused pins as output
+	PORTG = 0x00;	// default for unused pins is 0
 	
-	DDRG = 0x00;	// unused pins as input
-	
-	DDRH = 0x58;	// pwm and dir for motor left as output; when usart is activated it changes the pins direction accordingly
-		
-	DDRJ = 0x0F;	// cliff pulses as output; charge-on, button0, remote as input
+	//DDRH = 0x58;	// pwm and dir for motor left as output; when usart is activated it changes the pins direction accordingly
+	DDRH = 0xFF;	// all pins to output
+	PORTH = 0x00;	// default for unused pins is 0; pwm for motors set to 0 when stopped
+
+	DDRJ = 0x8F;	// cliff pulses as output; charge-on, button0, remote as input; unused as output
+	PORTJ = 0x00;	// cliff pulse turned off
 
 	DDRK = 0x00;	// adc channel pins as input
 
-	DDRL = 0x08;	// output compare for pwm as output
+	DDRL = 0xFF;	// all pins to output
+	PORTL = 0x00;	// pwm (unused) and unused pins to 0
+
 		
 }
 
@@ -154,10 +174,12 @@ void initAdc(void) {
 	// ADCSRB -----> -		ACME	 - 		- 		MUX5 	 ADTS2 	ADTS1 	ADTS0
 	//				 0		0		 0		0		0		 0		0		0
 
-	ADCSRA |= (1 << ADPS2) | (1 << ADPS1);	// 1/64 prescaler => 8 MHz / 64 = 125 KHz
+	ADCSRA |= (1 << ADPS2) | (1 << ADPS1);	// 1/64 prescaler => 8 MHz / 64 = 125 KHz => Tad;
+											// one sample need 13.5 Tad in free running mode, so interrupt frequency is 125/13.5= 9.26 KHz (107 us)
 	ADMUX |= (1 << REFS0); 	// voltage reference to AVCC (external)
 	ADCSRA |= (1 << ADATE); // auto-trigger mode
 	//ADRTS2:0 in ADCSRB  are already set to free running by default (0b000)
+	ADCSRB &= 0xF8;
 	ADCSRA |= (1 << ADIE);	// enable interrupt on conversion completion
 	ADCSRA |= (1 << ADEN);	// enable ADC
 	ADCSRA |= (1 << ADSC);	// start first conversion (start from channel 0)
@@ -171,27 +193,130 @@ void initAdc(void) {
 ISR(ADC_vect) {	
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
 		
-	//PORTB |= (1 << 7);
+	PORTB &= ~(1 << 7);
 
-	int value = 0;
-	value = ADCL;			// must be read first!!
+	PORTA = 0x00;	// always turn off the pulses
+	PORTJ &= 0xF0;
+
+	int value = ADCL;			// must be read first!!
 	value = (ADCH<<8) | value;
 
-	//proximityValue[currentProx] = value;
-	/*
+/*
+	if(channelChanged) {
+		channelChanged = 0;
+		return;
+	}
+*/
+
+/*	
+	currentProx = 7;
+	currentAdChannel = currentProx;
+	proximityValue[currentProx] = value;
+*/
+
+/*
+	proximityValue[currentProx2] = value;
+	currentProx = (currentProx+1)%12;
+	if(currentProx == 0) {
+		currentProx2 = (currentProx2+1)%12;
+	}
+	currentAdChannel = currentProx2;
+*/
+	//if(currentProx==0) {
+	//	int i=0;
+	//	for(i=0; i<24; i++) {
+	//		lastProximityValue[i] = proximityValue[i];
+	//	}
+	//}
+
+
+// motor right velocity
+/*
+	//currentRightPhase = nextRightPhase;
+	//nextRightPhase = rightMotorPhase;
+	currentAdChannel = 12;	// forward
 	if(rightMotorPhase == passivePhase) {
+		PORTB ^= (1 << 7);
 		right_vel_sum += value;
 		num_rvel_samples_avg++;
 	}
-	*/
+*/
+/*
+	currentAdChannel = 13;	// forward
+	if(rightMotorPhase == passivePhase) {
+		PORTB ^= (1 << 7);
+		right_vel_sum += value;
+		num_rvel_samples_avg++;
+	}
+*/
+
+//	motor right current
+/*
+	currentAdChannel = 13;	// forward
+	if(rightMotorPhase == activePhase) {
+		right_current_avg += value;
+		right_current_avg = right_current_avg>>1;
+	}
+*/
+/*
+	currentAdChannel = 12;	// forward
+	if(rightMotorPhase == activePhase) {
+		right_current_avg += value;
+		right_current_avg = right_current_avg>>1;
+	}
+*/
+
+// motor left velocity
+/*
+	currentAdChannel = 14;	// forward
+	if(leftMotorPhase == passivePhase) {
+		left_vel_sum += value;
+		num_lvel_samples_avg++;
+	}
+*/
+/*
+	currentAdChannel = 15;	// backward
+	if(leftMotorPhase == passivePhase) {
+		left_vel_sum += value;
+		num_lvel_samples_avg++;
+	}
+*/
+
+// motor left current
+/*
+	currentAdChannel = 15;	// forward
+	if(leftMotorPhase == activePhase) {
+		left_current_avg += value;
+		left_current_avg = left_current_avg>>1;
+	}
+*/
+/*
+	currentAdChannel = 14;	// backward
+	if(leftMotorPhase == activePhase) {
+		left_current_avg += value;
+		left_current_avg = left_current_avg>>1;
+	}
+*/
+
 
 
 	// save the last data
+
 	switch(adcSaveDataTo) {
 
-		case saveToProx:	
+		case saveToProx:
+			//if(currentProx==0) {
+			//	int i=0;
+			//	for(i=0; i<24; i++) {
+			//		lastProximityValue[i] = proximityValue[i];
+			//	}
+			//}
 			proximityValue[currentProx] = value;
-			currentProx = (currentProx+1)%24;
+			//currentProx = (currentProx+1)%24;
+			currentProx++;
+			if(currentProx > 23) {
+				currentProx = 0;
+			}
 			break;
 
 		//case saveToCliff:	
@@ -199,82 +324,181 @@ ISR(ADC_vect) {
 		//	break;
 
 		case saveToRightMotorCurrent:
-			right_current_avg = value;
+			right_current_avg += value;
 			right_current_avg = right_current_avg >> 1;
 			break;
 
 		case saveToRightMotorVel:
-
+			right_vel_sum += value;
+			num_rvel_samples_avg++;
 			break;
 
 		case saveToLeftMotorCurrent:
-			left_current_avg = value;
+			left_current_avg += value;
 			left_current_avg = left_current_avg >> 1;
 			break;
 
 		case saveToLeftMotorVel:
-
+			left_vel_sum += value;
+			num_lvel_samples_avg++;
 			break;
 
 	}
 
+
+/*
+	// only sensors => it works but shifted by one in the index (sensor 0 saved in proximityValue[1], etc.)
+	switch(adcSamplingState) {
+		case 0:
+			currentAdChannel = currentProx;
+			adcSaveDataTo = saveToProx;
+			adcSamplingState = 0;
+			break;			
+	}
+*/
+
+/*
+	// only motors => it works
+	switch(adcSamplingState) {
+
+		case 0:
+			currentAdChannel = currentMotLeftChannel;
+			leftChannelPhase = leftMotorPhase;
+			if(rightChannelPhase == activePhase) {			// the first this isn't really correct
+				adcSaveDataTo = saveToRightMotorCurrent;
+			} else {
+				adcSaveDataTo = saveToRightMotorVel;
+			}
+			adcSamplingState = 1;
+			break;
+
+		case 1:
+			currentAdChannel = currentMotRightChannel;
+			rightChannelPhase = rightMotorPhase;
+			if(leftChannelPhase == activePhase) {
+				adcSaveDataTo = saveToLeftMotorCurrent;
+			} else {
+				adcSaveDataTo = saveToLeftMotorVel;
+			}
+			adcSamplingState = 2;
+			break;
+
+		case 2:
+			currentAdChannel = currentMotLeftChannel;
+			leftChannelPhase = leftMotorPhase;
+			if(rightChannelPhase == activePhase) {
+				adcSaveDataTo = saveToRightMotorCurrent;
+			} else {
+				adcSaveDataTo = saveToRightMotorVel;
+			}
+			adcSamplingState = 3;
+			break;
+
+		case 3:
+			currentAdChannel = currentMotRightChannel;	
+			rightChannelPhase = rightMotorPhase;	
+			if(leftChannelPhase == activePhase) {
+				adcSaveDataTo = saveToLeftMotorCurrent;
+			} else {
+				adcSaveDataTo = saveToLeftMotorVel;
+			}
+			adcSamplingState = 0;
+			break;
+
+	}
+*/	
+
+	// complete sequence
 	// select next channel
 	// ...the sequence has to be changed in order to satisfy motors sampling requirements!
 	switch(adcSamplingState) {
 
 		case 0:
-			currentAdChannel = currentProx;
-			if(rightMotorPhase == activePhase) {			// the first this isn't really correct
+			currentAdChannel = currentProx>>1;
+			//if((currentProx%2)==1) {	// active phase
+			if(currentProx & 0x01) {
+				if(currentProx < 16) {
+					//PORTA = 0x00;	// already done at the ISR beginning...
+					//PORTA = (1 << (currentProx>>1));
+					PORTA = (1 << currentAdChannel);
+				} else {
+					PORTJ = (1 << ((currentProx-16)>>1));
+				}
+			}
+			if(rightChannelPhase == activePhase) {			// the first this isn't really correct
 				adcSaveDataTo = saveToRightMotorCurrent;
 			} else {
 				adcSaveDataTo = saveToRightMotorVel;
 			}
+			adcSamplingState = 1;
 			break;
 
 		case 1:
 			currentAdChannel = currentMotLeftChannel;
+			leftChannelPhase = leftMotorPhase;
 			adcSaveDataTo = saveToProx;
+			adcSamplingState = 2;
 			break;
 
 		case 2:
 			currentAdChannel = currentMotRightChannel;
-			if(leftMotorPhase == activePhase) {
+			rightChannelPhase = rightMotorPhase;
+			if(leftChannelPhase == activePhase) {
 				adcSaveDataTo = saveToLeftMotorCurrent;
 			} else {
 				adcSaveDataTo = saveToLeftMotorVel;
 			}
+			adcSamplingState = 3;
 			break;
 
 		case 3:
 			currentAdChannel = currentMotLeftChannel;
-			if(rightMotorPhase == activePhase) {
+			leftChannelPhase = leftMotorPhase;
+			if(rightChannelPhase == activePhase) {
 				adcSaveDataTo = saveToRightMotorCurrent;
 			} else {
 				adcSaveDataTo = saveToRightMotorVel;
 			}
+			adcSamplingState = 4;
 			break;
 
 		case 4:
-			currentAdChannel = currentMotRightChannel;		
-			if(leftMotorPhase == activePhase) {
+			currentAdChannel = currentMotRightChannel;	
+			rightChannelPhase = rightMotorPhase;	
+			if(leftChannelPhase == activePhase) {
 				adcSaveDataTo = saveToLeftMotorCurrent;
 			} else {
 				adcSaveDataTo = saveToLeftMotorVel;
 			}
+			adcSamplingState = 0;
 			break;
 
 	}
-	adcSamplingState = (adcSamplingState+1)%5;
+	//adcSamplingState = (adcSamplingState+1)%5;
+	
 
-	// channel selection: continuously change the channel sampled in sequence
-	if(currentAdChannel < 8) {
-		ADCSRB &= ~(1 << MUX5);
-		ADMUX |= currentAdChannel;
-	} else {
-		ADCSRB |= (1 << MUX5);
-		ADMUX |= currentAdChannel-8;
-	}
 
+	//if(changeChannel) {
+	//	changeChannel = 0;
+
+	//	currentProx = (currentProx+1)%12;
+		//currentProx = 1;
+	//	currentAdChannel = currentProx;
+
+		// channel selection: continuously change the channel sampled in sequence
+		if(currentAdChannel < 8) {
+			ADCSRB &= ~(1 << MUX5);
+			ADMUX = 0x40 + currentAdChannel;
+		} else {
+			ADCSRB |= (1 << MUX5);
+			ADMUX = 0x40 + (currentAdChannel-8);
+		}
+		
+	//	channelChanged = 1;
+		
+	//	return;
+	//}
+	//proximityValue[currentProx] = value;
 
 	/*
 	switch(currentAdChannel) {
@@ -327,15 +551,15 @@ ISR(ADC_vect) {
 	}
 	*/
 
+	PORTB |= (1 << 7);
 
-	//PORTB &= ~(1 << 7);
 
 }
 
 
 void initPwm() {
 
-
+/*
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
 	// Period freq = Fosc/TOP (max timer value) => TOP = Fosc/period freq
@@ -352,7 +576,7 @@ void initPwm() {
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
-
+*/
 
 	// Motor right timer3/pwm
 	// Timers clock input = Fosc = 8 MHz
@@ -397,6 +621,12 @@ ISR(TIMER4_OVF_vect) {
 	leftMotorPhase = activePhase;
 	last_left_current = left_current_avg;
 	left_current_avg = 0;
+
+	last_left_vel_sum = left_vel_sum;
+	last_num_lvel_samples_avg = num_lvel_samples_avg;
+	left_vel_sum = 0;
+	num_lvel_samples_avg = 0;
+
 	// start control
 
 	// PORTB ^= (1 << 7); // Toggle the LED
@@ -493,13 +723,19 @@ ISR(TIMER3_OVF_vect) {
 
 // motor right forward
 ISR(TIMER3_COMPA_vect) {
+
+	PORTB &= ~(1 << 5);
+
 	rightMotorPhase = passivePhase;
 	// select channel 12 to sample the right velocity
 	currentMotRightChannel = 12;
+
+	PORTB |= (1 << 5);
 }
 
 // motor right backward
 ISR(TIMER3_COMPB_vect) {
+
 	rightMotorPhase = passivePhase;
 	// select channel 13 to sample the right velocity
 	currentMotRightChannel = 13;
@@ -533,13 +769,19 @@ ISR(TIMER1_COMPC_vect) {
 void initUsart() {
 
 	// clock is 8 MHz, thus:
+	// Normal mode:
 	// @9600 baud: 8000000/16/9600-1 = 51 => 8000000/16/52 = 9615 => 100-(9600/9615*100)=0.15% of error
+	// @19200 baud: 8000000/16/19200-1 = 25 => 8000000/16/26 = 19230 => 100-(19200/19230*100)=0.15% of error
+	// @38400 baud: 8000000/16/38400-1 = 12 => 8000000/16/13 = 38461 => 100-(38400/38461*100)=0.15% of error
+	// Double speed mode:
+	// @57600 baud: 8000000/8/57600-1 = 16 => 8000000/8/17 = 58823 => 100-(57600/58823*100)=2.08% of error	
 
 	// set baudrate
 	UBRR0H = 0;
-	UBRR0L = 51;
+	UBRR0L = 16;
 
-	UCSR0A  &= ~(1 << U2X0);								// disable double transmission speed
+	//UCSR0A  &= ~(1 << U2X0);								// disable double transmission speed
+	UCSR0A  |= (1 << U2X0);									// enable double speed
 
 	UCSR0B |= (1 << TXEN0) | (1 << RXEN0) | (1 << RXCIE0);	// enable uart0 transmitter and receiver; enable rx interrupt
 	
@@ -820,6 +1062,10 @@ void updateBlueLed(unsigned char value) {
 
 }
 
+void sendValues() {
+	myTimeout = 1;
+}
+
 int main(void) {
 
 	unsigned char debugData = 0xAA;
@@ -832,6 +1078,7 @@ int main(void) {
 
 	e_start_agendas_processing();
 	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
+	e_activate_agenda(sendValues, 20000);	// every 2 seconds
 	e_init_remote_control();
 
 /*
@@ -993,31 +1240,69 @@ int main(void) {
 
 		}	// ir command received
 
-/*
-		if(sendAdcValues) {
-		
-			sendAdcValues = 0;
+
+		//if(sendAdcValues && myTimeout) {
+		//if(sendAdcValues) {
+		if(myTimeout) {
 			
-			last_right_vel_sum = (unsigned int)(last_right_vel_sum/last_num_rvel_samples_avg);
+			//currentProx = (currentProx+1)%12;
+			//changeChannel = 1;
+			
+			sendAdcValues = 0;
+			myTimeout = 0;
+			
+			//last_right_vel_sum = (unsigned int)(last_right_vel_sum/last_num_rvel_samples_avg);
+
+			//PORTB &= ~(1 << 6);
+			//last_left_vel_sum = (unsigned int)(last_left_vel_sum/last_num_lvel_samples_avg);
+			//PORTB |= (1 << 6);
 
 			usartTransmit(0xAA);
 			usartTransmit(0xAA);
-			//usartTransmit(last_left_current&0xFF);
-			//usartTransmit(last_left_current>>8);
-			//usartTransmit(last_right_current&0xFF);
-			//usartTransmit(last_right_current>>8);
-			//usartTransmit((unsigned char)(proximityValue[currentProx]&0xFF));
-			//usartTransmit((unsigned char)(proximityValue[currentProx]>>8));
-			usartTransmit((unsigned char)(last_right_vel_sum&0xFF));
-			usartTransmit((unsigned char)(last_right_vel_sum>>8));
-			usartTransmit((unsigned char)(last_num_rvel_samples_avg&0xFF));
-			usartTransmit((unsigned char)(last_num_rvel_samples_avg>>8));
+			for(i=0; i<24; i++) {
+				usartTransmit((unsigned char)(proximityValue[i]&0xFF));
+				usartTransmit((unsigned char)(proximityValue[i]>>8));
+			}
+			usartTransmit(last_right_current&0xFF);
+			usartTransmit(last_right_current>>8);
+			usartTransmit(last_left_current&0xFF);
+			usartTransmit(last_left_current>>8);
 
+			// two possible cases cause the number of samples to be zero:
+			// - when the pwm is at its maximum (thus no passive phase)
+			// - a missing output compare match interrupt that indicates the start of the passive phase
+			if(last_num_rvel_samples_avg != 0) {
+				usartTransmit((unsigned char)((last_right_vel_sum/last_num_rvel_samples_avg)&0xFF));
+				usartTransmit((unsigned char)((last_right_vel_sum/last_num_rvel_samples_avg)>>8));
+			} else {
+				usartTransmit((unsigned char)((1023)&0xFF));	// probably we don't use the pwm to its maximum, so
+				usartTransmit((unsigned char)((1023)>>8));	// if the number of samples is 0 it means that the 
+				//usartTransmit((unsigned char)((0)&0xFF));		// interrupt was missed (...it is really possible?)
+				//usartTransmit((unsigned char)((0)>>8));
+			}
+
+			//usartTransmit((unsigned char)(last_num_rvel_samples_avg&0xFF));
+			//usartTransmit((unsigned char)(last_num_rvel_samples_avg>>8));
+
+			//usartTransmit((unsigned char)(last_num_lvel_samples_avg&0xFF));
+			//usartTransmit((unsigned char)(last_num_lvel_samples_avg>>8));
+						
+			if(last_num_lvel_samples_avg != 0) {
+				usartTransmit((unsigned char)((last_left_vel_sum/last_num_lvel_samples_avg)&0xFF));
+				usartTransmit((unsigned char)((last_left_vel_sum/last_num_lvel_samples_avg)>>8));
+			} else {
+				usartTransmit((unsigned char)((1023)&0xFF));
+				usartTransmit((unsigned char)((1023)>>8));
+				//usartTransmit((unsigned char)((0)&0xFF));
+				//usartTransmit((unsigned char)((0)>>8));
+			}
+			
 		}
-*/
 
 
-		if(!rx_fifo_is_empty()) {
+
+		//if(!rx_fifo_is_empty()) {
+		if(mirf_data_ready()) {
 
 			// clear irq status
 			mirf_config_register(STATUS, 0x70);

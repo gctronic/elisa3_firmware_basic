@@ -139,6 +139,8 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 {
 	static int i = -1;
 		
+	PORTB ^= (1 << 6);
+
 	if (i == -1)	// start bit confirm  change timer period
 	{
 
