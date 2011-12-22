@@ -116,6 +116,23 @@ unsigned char ir_move = 0;
 unsigned char command_received = 0;
 unsigned char colorState = 0;		// used with command 0 to switch from one color to the next
 
+/*********************/
+/*** ACCELEROMETER ***/
+/*********************/
+#ifdef ACC_MMA7455L
+	unsigned char accelAddress = 0x1C<<1;
+#endif
+#ifdef ACC_ADXL345
+	unsigned char accelAddress = 0x53<<1;
+#endif
+
+signed int accX=0, accY=0, accZ=0;						// raw accelerometer calibrated values
+unsigned int absAccX = 0, absAccY = 0, absAccZ = 0;
+unsigned int accOffsetX = 0;							// values obtained during the calibration process; acc = raw_acc - offset
+unsigned int accOffsetY = 0;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
+unsigned int accOffsetZ = 0;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
+signed int currentAngle = 0;							// current orientation of the robot extracted from both the x and y axes
+
 /***************/
 /*** VARIOUS ***/
 /***************/

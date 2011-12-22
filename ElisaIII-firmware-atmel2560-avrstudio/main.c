@@ -2,13 +2,17 @@
 
 #include <avr\io.h>
 #include <avr\interrupt.h>
+#include <math.h>
 #include "constants.h"
+#include "ports_io.h"
 #include "spi.h"
 #include "mirf.h"
 #include "nRF24L01.h"
 #include "e_agenda.h"
 #include "e_remote_control.h"
 #include "speed_control.h"
+#include "usart.h"
+#include "twimaster.h"
 
 // adc
 extern volatile unsigned char currentAdChannel;
@@ -79,13 +83,25 @@ extern unsigned char ir_move;
 extern unsigned char command_received;
 extern unsigned char colorState;
 
+// accelerometer
+extern int accelAddress;
+extern int accX;
+extern int accY;
+extern int accZ;
+extern unsigned int absAccX, absAccY, absAccZ;
+extern unsigned int accOffsetX;							// values obtained during the calibration process; acc = raw_acc - offset
+extern unsigned int accOffsetY;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
+extern unsigned int accOffsetZ;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
+extern signed int currentAngle;							// current orientation of the robot extracted from both the x and y axes
 
+
+/*
 FUSES = {
 	.low = (FUSE_CKSEL0 & FUSE_CKSEL2 & FUSE_CKSEL3 & FUSE_SUT0),	// internal 8MHz clock, no divisor
 	.high = (FUSE_BOOTSZ0 & FUSE_BOOTSZ1 & FUSE_SPIEN),				// jtag disabled
 	.extended = EFUSE_DEFAULT,
 };
-
+*/
 
 void usartTransmit(unsigned char data);
 
@@ -103,46 +119,7 @@ void usartTransmit(unsigned char data);
 //      } 
 
 
-void initPorts(void) {
 
-	DDRA = 0xFF;	// proximity pulses as output
-	PORTA = 0x00;	// proximity pulses turned off
-	
-	DDRB = 0xF7;	// pwm for led r/g/b as output; CE, MOSI, SCK, SS as output (master) 
-	PORTB = 0xE0;
-	//PORTB |= (1 << 5) | (1 << 6) | (1 << 7); // leds off	
-	//PORTB &= ~(1 << 5) & ~(1 << 6) & ~(1 << 7); // leds off
-	//PORTB &= ~(1 << 7);
-
-	DDRC = 0xF0;	// selector as input; IR leds as output; sens-enable, sleep as output
-	PORTC = 0xB0;	// sleep = 1, IR leds = 1
-
-	DDRD = 0xFF;	// all pins to output; when usart and i2c peripherals are activated they change the pins direction accordingly
-	PORTD = 0x00;	// default for unused pins is 0
-
-	//DDRE = 0x18;	// pwm and dir for motor right as output; when usart is activated it changes the pins direction accordingly
-	DDRE = 0xFF;	// all pins to output
-	PORTE = 0x00;	// default for unused pins is 0; pwm for motors set to 0 when stopped
-
-	DDRF = 0x00;	// adc channel pins as input		
-
-	DDRG = 0xFF;	// unused pins as output
-	PORTG = 0x00;	// default for unused pins is 0
-	
-	//DDRH = 0x58;	// pwm and dir for motor left as output; when usart is activated it changes the pins direction accordingly
-	DDRH = 0xFF;	// all pins to output
-	PORTH = 0x00;	// default for unused pins is 0; pwm for motors set to 0 when stopped
-
-	DDRJ = 0x8F;	// cliff pulses as output; charge-on, button0, remote as input; unused as output
-	PORTJ = 0x00;	// cliff pulse turned off
-
-	DDRK = 0x00;	// adc channel pins as input
-
-	DDRL = 0xFF;	// all pins to output
-	PORTL = 0x00;	// pwm (unused) and unused pins to 0
-
-		
-}
 
 void initAdc(void) {
 
@@ -174,8 +151,8 @@ ISR(ADC_vect) {
 		
 //	PORTB &= ~(1 << 7);
 
-	PORTA = 0x00;	// always turn off the pulses
-	PORTJ &= 0xF0;
+//	PORTA = 0x00;	// always turn off the pulses
+//	PORTJ &= 0xF0;
 
 	int value = ADCL;			// must be read first!!
 	value = (ADCH<<8) | value;
@@ -191,6 +168,8 @@ ISR(ADC_vect) {
 			if(currentProx > 23) {
 				currentProx = 0;
 			}
+			PORTA = 0x00;	// always turn off the pulses
+			PORTJ &= 0xF0;
 			break;
 
 		case SAVE_TO_RIGHT_MOTOR_CURRENT:
@@ -215,6 +194,9 @@ ISR(ADC_vect) {
 
 	}
 
+	//PORTA = 0x00;	// always turn off the pulses
+	//PORTJ &= 0xF0;
+
 	// complete sequence
 	// select next channel
 	// ...the sequence has to be changed in order to satisfy motors sampling requirements!
@@ -223,6 +205,7 @@ ISR(ADC_vect) {
 		case 0:
 			currentAdChannel = currentProx>>1;
 			//if((currentProx%2)==1) {	// active phase
+/*
 			if(currentProx & 0x01) {
 				if(currentProx < 16) {
 					//PORTA = 0x00;	// already done at the ISR beginning...
@@ -232,6 +215,7 @@ ISR(ADC_vect) {
 					PORTJ = (1 << ((currentProx-16)>>1));
 				}
 			}
+*/
 			if(rightChannelPhase == ACTIVE_PHASE) {			// the first this isn't really correct
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_CURRENT;
 			} else {
@@ -278,6 +262,17 @@ ISR(ADC_vect) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_VEL;
 			}
 			adcSamplingState = 0;
+			
+			if(currentProx & 0x01) {
+				if(currentProx < 16) {
+					//PORTA = 0x00;	// already done at the ISR beginning...
+					PORTA = (1 << (currentProx>>1));
+					//PORTA = (1 << currentAdChannel);
+				} else {
+					PORTJ = (1 << ((currentProx-16)>>1));
+				}
+			}
+
 			break;
 
 	}
@@ -510,238 +505,247 @@ ISR(TIMER1_COMPC_vect) {
 }
 */
 
-void initUsart() {
+void readAccelXYZ() {
 
-	// clock is 8 MHz, thus:
-	// Normal mode:
-	// @9600 baud: 8000000/16/9600-1 = 51 => 8000000/16/52 = 9615 => 100-(9600/9615*100)=0.15% of error
-	// @19200 baud: 8000000/16/19200-1 = 25 => 8000000/16/26 = 19230 => 100-(19200/19230*100)=0.15% of error
-	// @38400 baud: 8000000/16/38400-1 = 12 => 8000000/16/13 = 38461 => 100-(38400/38461*100)=0.15% of error
-	// Double speed mode:
-	// @57600 baud: 8000000/8/57600-1 = 16 => 8000000/8/17 = 58823 => 100-(57600/58823*100)=2.08% of error	
+	int i = 0;
+	unsigned char buff[6], ret;
 
-	// set baudrate
-	UBRR0H = 0;
-	UBRR0L = 16;
 
-	//UCSR0A  &= ~(1 << U2X0);								// disable double transmission speed
-	UCSR0A  |= (1 << U2X0);									// enable double speed
+#ifdef ACC_MMA7455L
 
-	UCSR0B |= (1 << TXEN0) | (1 << RXEN0) | (1 << RXCIE0);	// enable uart0 transmitter and receiver; enable rx interrupt
+#endif
+
+
+#ifdef ACC_ADXL345
+
+	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x32);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+	for(i=0; i<5; i++) {
+		buff[i] = i2c_readAck();				// read one byte
+	}
+	buff[i] = i2c_readNak();					// read last byte
+	i2c_stop();									// set stop conditon = release bus
+
+	accX = (((int)buff[1]) << 8) | buff[0];    // Y axis
+	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+	accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+
+
+/*
+	accX = i2c_readNak();
+	i2c_stop();
+
+
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x01);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	accX = accX + i2c_readNak()*256;
+	i2c_stop();
+
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x02);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	accY = i2c_readNak();
+	i2c_stop();
+
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x03);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	accY = accY + i2c_readNak()*256;
+	i2c_stop();
+
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x04);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	accZ = i2c_readNak();
+	i2c_stop();
+
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x05);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	accZ = accZ + i2c_readNak()*256;
+	i2c_stop();
+*/
+
+#endif
+
+}
+
+void readAccelXY() {
+
+	int i = 0;
+	unsigned char buff[4], ret;
+
+
+#ifdef ACC_MMA7455L
+
+#endif
+
+
+#ifdef ACC_ADXL345
+
+	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x32);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+	for(i=0; i<3; i++) {
+		buff[i] = i2c_readAck();				// read one byte
+	}
+	buff[i] = i2c_readNak();					// read last byte
+	i2c_stop();									// set stop conditon = release bus
+
+	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+
+#endif
+
+}
+
+void initI2C() {
+
+	unsigned char ret;
+  
+	// init I2C bus
+	i2c_init();
+
+#ifdef ACC_MMA7455L
+
+	// configure device
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if ( ret ) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x16);	// power register
+        i2c_write(0x01);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+#endif
+
+#ifdef ACC_ADXL345
+
+	// configure device
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if ( ret ) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		PORTB &= ~(1 << 5);
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x2D);	// power register
+        i2c_write(0x08);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if ( ret ) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		PORTB &= ~(1 << 5);
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x31);	// Data format register
+        i2c_write(0x08);	// set to full resolution; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if ( ret ) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		PORTB &= ~(1 << 5);
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x2C);	// Data format register
+        i2c_write(0x09);	// set to full resolution; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
 	
-	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);					// set frame format: 8data, no parity, 1 stop bit
+#endif
 
 }
 
-void usartTransmit(unsigned char data) {
+void calibrateAccelerometer() {
 
-	// wait for empty transmit buffer
-	while (!(UCSR0A & (1<<UDRE0)));
+	int j=0;
+	accOffsetX = 0;
+	accOffsetY = 0;
+	accOffsetZ = 0;
 
-	// put data into buffer, sends the data
-	UDR0 = data;
+	for(j=0; j<50; j++) {
+		readAccelXYZ();
+		accOffsetX += accX;
+		accOffsetY += accY;
+		accOffsetZ += accZ;
+	}
+	accOffsetX = accOffsetX/50;
+	accOffsetY = accOffsetY/50;
+	accOffsetZ = accOffsetZ/50;
 
 }
 
-ISR(USART0_RX_vect) {
+void computeAngle() {
 
-	char receivedByte = UDR0;
+	readAccelXY();
 
-	if(choosePeripheral) {
-		switch(receivedByte) {
-			case '0': // red led
-				peripheralChoice = 0;
-				choosePeripheral = 0;
-				break;
-			case '1': // green led
-				peripheralChoice = 1;
-				choosePeripheral = 0;
-				break;
-			case '2': // blue led
-				peripheralChoice = 2;
-				choosePeripheral = 0;
-				break;
-			case '3': // right motor
-				peripheralChoice = 3;
-				choosePeripheral = 0;
-				break;
-			case '4': // left motor
-				peripheralChoice = 4;
-				choosePeripheral = 0;
-				break;
-			case '5':
-				peripheralChoice = 5;
-				choosePeripheral = 0;
-				sendAdcValues = 1;
-				break;
-			default:
-				break;				 
-		}
+	accX = accX-accOffsetX;
+	accY = accY-accOffsetY;
+	//accZ = accZ-accOffsetZ;
 
-	} else {	// apply values to chosen peripheral
-
-		int current_pwm=0;
-
-		switch(peripheralChoice) {
-			case 0:	// red led
-				if(receivedByte == '-') {
-					TCCR1A |= (1 << COM1A1);	// enable OCA
-					current_pwm = pwm_red+10;
-					if(current_pwm > 255) {
-						current_pwm = 255;
-					}
-					pwm_red = current_pwm;
-					OCR1A = pwm_red;
-				} else if(receivedByte == '+') {
-					current_pwm = pwm_red-10;
-					if(current_pwm < 0) {
-						current_pwm = 0;
-					}
-					pwm_red = current_pwm;
-					if(pwm_red == 0) {
-						TCCR1A &= ~(1 << COM1A1);
-						PORTB &= ~(1 << 5);
-					} else {
-						OCR1A = pwm_red;
-					}
-
-				} else {
-					choosePeripheral = 1;
-				}
-				break;
-			case 1:	// green led
-				if(receivedByte == '-') {
-					TCCR1A |= (1 << COM1B1);	// enable OCB
-					current_pwm = pwm_green+10;
-					if(current_pwm > 255) {
-						current_pwm = 255;
-					}
-					pwm_green = current_pwm;
-					OCR1B = pwm_green;
-				} else if(receivedByte == '+') {
-					current_pwm = pwm_green-10;
-					if(current_pwm < 0) {
-						current_pwm = 0;
-					}
-					pwm_green = current_pwm;
-					if(pwm_green == 0) {
-						TCCR1A &= ~(1 << COM1B1);
-						PORTB &= ~(1 << 6);
-					} else {
-						OCR1B = pwm_green;
-					}
-				} else {
-					choosePeripheral = 1;
-				}
-				break;
-			case 2: // blue led
-				if(receivedByte == '-') {
-					TCCR1A |= (1 << COM1C1);	// enable OCC
-					current_pwm = pwm_blue+10;
-					if(current_pwm > 255) {
-						current_pwm = 255;
-					}
-					pwm_blue = current_pwm;
-					OCR1C = pwm_blue;
-				} else if(receivedByte == '+') {
-					current_pwm = pwm_blue-10;
-					if(current_pwm < 0) {
-						current_pwm = 0;
-					}
-					pwm_blue = current_pwm;
-					if(pwm_blue == 0) {
-						TCCR1A &= ~(1 << COM1C1);
-						PORTB &= ~(1 << 7);
-					} else {
-						OCR1C = pwm_blue;
-					}
-				} else {
-					choosePeripheral = 1;
-				}
-				break;
-			case 3: // right motor
-				if(receivedByte == '+') {
-					pwm_right += STEP_MOTORS;
-					if(pwm_right > MAX_MOTORS_PWM) {
-						pwm_right = MAX_MOTORS_PWM;
-					}
-					if(pwm_right >= 0) {
-						OCR3A = (int)pwm_right;
-					} else {
-						OCR3B = (int)(-pwm_right);
-					}
-				} else if(receivedByte == '-') {
-					pwm_right -= STEP_MOTORS;
-					if(pwm_right < -MAX_MOTORS_PWM) {
-						pwm_right = -MAX_MOTORS_PWM;
-					}
-					if(pwm_right >= 0) {
-						OCR3A = (int)pwm_right;		// I set the new value for the output compares here
-					} else {						// so the next timer interrupt the values are immediately
-						OCR3B = (int)(-pwm_right);	// updated
-					}
-				} else if(receivedByte == 's') {
-					pwm_right = 0;
-					OCR3A = 0;
-					OCR3B = 0;
-				} else {
-					choosePeripheral = 1;
-				}
-				break;
-			case 4: // left motor
-				if(receivedByte == '+') {
-					pwm_left += STEP_MOTORS;
-					if(pwm_left > MAX_MOTORS_PWM) {
-						pwm_left = MAX_MOTORS_PWM;
-					}
-					if(pwm_left >= 0) {
-						OCR4A = pwm_left;
-					} else {
-						OCR4B = -pwm_left;
-					}
-				} else if(receivedByte == '-') {
-					pwm_left -= STEP_MOTORS;
-					if(pwm_left < -MAX_MOTORS_PWM) {
-						pwm_left = -MAX_MOTORS_PWM;
-					}
-					if(pwm_left >= 0) {
-						OCR4A = pwm_left;
-					} else {
-						OCR4B = -pwm_left;
-					}
-				} else if(receivedByte == 's') {
-					pwm_left = 0;
-					OCR4A = 0;
-					OCR4B = 0;
-				} else {
-					choosePeripheral = 1;
-				}
-				break;
-			case 5: // adc
-				if(receivedByte == 's') {
-					sendAdcValues = 0;
-					choosePeripheral = 1;
-				}
-
-		}		
-
+/*
+	if(accX < 0) {
+		absAccX = -accX;
+	} else {
+		absAccX = accX;
+	}
+	if(accY < 0) {
+		absAccY = -accY;
+	} else {
+		absAccY = accY;
+	}
+	if(accZ < 0) {
+		absAccZ = -accZ;
+	} else {
+		absAccZ = accZ;
 	}
 
+	if(abs_acc_z <= NULL_ANGLE_THRESHOLD && abs_acc_y <= NULL_ANGLE_THRESHOLD) {
+		curr_position = ORIZZONTAL_POS;
+	} else {
+		curr_position = VERTICAL_POS;
+	}
 
+	if(prev_position == curr_position) {
+		times_in_same_pos++;
+		if(times_in_same_pos >= SAME_POS_NUM) {
+			times_in_same_pos = 0;
+			orizzontal_position = curr_position;	// 1 = orizzontal, 0 = vertical
+		}
+	} else {
+		times_in_same_pos = 0;
+	}
+
+	prev_position = curr_position;	
+*/
+
+	currentAngle = (signed int)(atan2f((float)accX, (float)accY)*RAD_2_DEG);	//180.0/PI;	//x/y
+
+	//current_angle = current_angle*RAD_2_DEG;
+	if(currentAngle<0) {
+		currentAngle = 360+currentAngle;	// angles from 0 to 360
+	}
 
 }
-
 
 void initPeripherals(void) {
 
 	cli();			// disable global interrupts (by default it should already be disabled)
 
-	initPorts();
+	initPortsIO();
 	initAdc();
 	initPwm();
 	initSPI();
 	mirf_init();
 	initUsart();
+	initI2C();
 
 	sei();			// enable global interrupts
 
@@ -807,6 +811,7 @@ unsigned char getSelector() {
    return (SEL0) + 2*(SEL1) + 4*(SEL2) + 8*(SEL3);
 }
 
+
 int main(void) {
 
 	//unsigned char debugData = 0xAA;
@@ -815,6 +820,10 @@ int main(void) {
 	choosePeripheral = 1;
 
 	initPeripherals();
+
+PORTB &= ~(1 << 5);
+	calibrateAccelerometer();
+PORTB |= (1 << 5);
 
 	e_start_agendas_processing();
 	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
@@ -998,6 +1007,19 @@ int main(void) {
 				//usartTransmit((unsigned char)((0)>>8));
 			}
 			
+			readAccelXYZ();
+			usartTransmit(accX&0xFF);
+			usartTransmit(accX>>8);
+			usartTransmit(accY&0xFF);
+			usartTransmit(accY>>8);
+			usartTransmit(accZ&0xFF);
+			usartTransmit(accZ>>8);	
+			PORTB &= ~(1 << 6);
+			computeAngle();
+			PORTB |= (1 << 6);
+			usartTransmit(currentAngle&0xFF);
+			usartTransmit(currentAngle>>8);												
+
 		}
 
 

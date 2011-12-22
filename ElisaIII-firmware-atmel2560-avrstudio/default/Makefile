@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o spi.o mirf.o e_agenda.o e_remote_control.o 
+OBJECTS = main.o spi.o mirf.o e_agenda.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -59,6 +59,21 @@ e_agenda.o: ../e_agenda.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 e_remote_control.o: ../e_remote_control.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+speed_control.o: ../speed_control.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+variables.o: ../variables.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+ports_io.o: ../ports_io.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+twimaster.o: ../twimaster.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+usart.o: ../usart.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link

@@ -120,7 +120,7 @@ int e_activate_agenda(void (*func)(void), int cycle)
 		else
 			current = current->next;
 	}
-	if(!(current = malloc(sizeof(Agenda))))
+	if(!(current = (Agenda*) malloc(sizeof(Agenda))))
 		exit (1); //(EXIT_FAILURE);
 
 	current->cycle = cycle;

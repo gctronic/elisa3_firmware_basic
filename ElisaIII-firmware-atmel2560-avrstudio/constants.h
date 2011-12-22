@@ -110,6 +110,8 @@
 #define SEL1 		(PINC & _BV(PC1))>>1
 #define SEL2 		(PINC & _BV(PC2))>>2
 #define SEL3 		(PINC & _BV(PC3))>>3
+#define ACC_ADXL345
+//#define ACC_MMA7455L
 
 /***********/
 /*** ADC ***/
