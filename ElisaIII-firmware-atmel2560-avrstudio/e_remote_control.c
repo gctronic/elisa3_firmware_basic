@@ -53,7 +53,7 @@ EPFL Ecole polytechnique federale de Lausanne http://www.epfl.ch
 
 //#include <p24FJ64GA104.h>
 #include "e_remote_control.h"
-#include "e_agenda.h"
+//#include "e_agenda.h"
 //#include <ports.h>
 //#include <outcompare.h>
 #include <avr\io.h>
@@ -89,6 +89,9 @@ void e_init_remote_control(void) // initialisation for IR interruptions on INT0
 	IEC0bits.INT0IE = 1;      //enable interrupt on INT0  
 	return;
 */
+
+	TCCR2A |= (1 << WGM01); 	// mode 2 => CTC mode
+
 }
 
 ISR(PCINT1_vect) {
@@ -112,6 +115,11 @@ ISR(PCINT1_vect) {
 
 
 	if(bit_is_clear(PINJ, 6)) {
+
+	PORTB ^= (1 << 5);
+
+//		PORTB &= ~(1 << 5);
+
 /*
 		blinkState = 1 - blinkState;
 
@@ -127,7 +135,22 @@ ISR(PCINT1_vect) {
 		PCICR &= ~(1 << PCIE1);
 		PCMSK1 &= ~(1 << PCINT15);
 	//	e_set_led(1,1);
-		e_activate_agenda(e_read_remote_control, 20); //activate the IR Receiver agenda with a 2.1[ms] cycle value
+		
+		//e_activate_agenda(e_read_remote_control, 20); //activate the IR Receiver agenda with a 2.1[ms] cycle value
+		// we set the resolution of the timer to be:
+		// 0.128 ms (prescaler 1/1024): 1/(8000000/1024) = 0.000128
+		// 0.032 ms (prescaler 1/256): 1/(8000000/256) = 0.000032
+		// we need 2 ms of delay:
+		// 2/0.128 = 15.6
+		//OCR2A = 16;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 2/0.032 = 63 => 2.016 ms
+		OCR2A = 64;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);		
+				
+//		PORTB |= (1 << 5);
+
 		check_temp = address_temp = data_temp = 0;
 		return;
 	}
@@ -162,12 +185,20 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 				//IFS0bits.INT0IF = 0;    //clear interrupt flag from first receive !
 				PCICR |= (1 << PCIE1);
 				PCMSK1 |= (1 << PCINT15);
-				e_destroy_agenda(e_read_remote_control);
+				//e_destroy_agenda(e_read_remote_control);
 				i = -1;
 			}
 		else			   // read the check bit
 			{
-				e_set_agenda_cycle(e_read_remote_control, 6); //cycle value is 0.6 to go to check bit[ms]
+				//e_set_agenda_cycle(e_read_remote_control, 6); //cycle value is 0.6 to go to check bit[ms]
+				// we need a delay of 0.6 ms: 0.6 / 0.128 = 4.6
+				//OCR2A = 5;
+				//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+				// 0.6/0.032 = 19 => 0.608
+				OCR2A = 28;
+				TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+				TIMSK2 |= (1 << OCIE2A);									
+
 				check_temp = address_temp = data_temp = 0;
 				//e_set_led(1,1);
 				i=0;
@@ -192,7 +223,15 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 
 //	e_set_led(3,1);
 		check_temp = REMOTE;	   // read the check bit
-		e_set_agenda_cycle(e_read_remote_control, 18); //cycle value is 1.778[ms]
+		//e_set_agenda_cycle(e_read_remote_control, 18); //cycle value is 1.778[ms]
+		// we need a delay of 0.6 ms: 1.8 / 0.128 = 14
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56 => 1.792
+		OCR2A = 53;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
+
 		//e_set_led(1,1);
 	} 
 	else if ((i > 1) && (i < 7)) // we read address
@@ -211,6 +250,13 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 
 //	e_set_led(4,1);
 		
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56
+		OCR2A = 55;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
+
 		unsigned char temp = REMOTE;
 		temp <<= 6-i;
 		address_temp += temp;
@@ -230,6 +276,13 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 //		}
 
 //			e_set_led(5,1);
+
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56
+		OCR2A = 54;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
 
 		unsigned char temp = REMOTE;
 		temp <<= 6+6-i;
@@ -255,7 +308,7 @@ void e_read_remote_control(void) // interrupt from timer for next bits
 		//IFS0bits.INT0IF = 0;    //clear interrupt flag from first receive !
 		PCICR |= (1 << PCIE1);
 		PCMSK1 |= (1 << PCINT15);
-		e_destroy_agenda(e_read_remote_control);
+		//e_destroy_agenda(e_read_remote_control);
 		i = -1;
 		check = check_temp;
 		address = address_temp;
@@ -288,4 +341,100 @@ unsigned char e_get_address(void) {
  */
 unsigned char e_get_data(void) {
 	return data_ir;
+}
+
+ISR(TIMER2_COMPA_vect) {
+//void __attribute__((interrupt, auto_psv))
+// _T4Interrupt(void)
+//{
+
+	static int i = -1;
+
+//	PORTB ^= (1 << 5);
+
+	PORTB &= ~(1 << 5);
+
+	TCCR2B &= ~(1 << CS22) &~(1 << CS21) &~(1 << CS20);
+
+	//e_read_remote_control();
+		
+//	PORTB ^= (1 << 6);
+
+	if (i == -1)	// start bit confirm  change timer period
+	{
+
+		if(REMOTE) {	//if high it is only a noise
+
+			PCICR |= (1 << PCIE1);		// enable interrupt
+			PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
+			i = -1;
+		} else {	   // read the check bit
+			
+			//cycle value is 0.6 to go to check bit[ms]
+			// we need a delay of 0.6 ms: 0.6 / 0.128 = 4.6
+			//OCR2A = 5;
+			//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+			// 0.6/0.032 = 19 => 0.608
+			OCR2A = 28;
+			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+			TIMSK2 |= (1 << OCIE2A);									
+
+			check_temp = address_temp = data_temp = 0;
+			i=0;
+		}
+	} else if (i == 1)	{ // check bit read and change timer period
+
+		check_temp = REMOTE;	   // read the check bit
+		//cycle value is 1.778[ms]
+		// we need a delay of 0.6 ms: 1.8 / 0.128 = 14
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56 => 1.792
+		OCR2A = 53;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
+
+	} else if ((i > 1) && (i < 7)) { // we read address
+		
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56
+		OCR2A = 55;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
+
+		unsigned char temp = REMOTE;
+		temp <<= 6-i;
+		address_temp += temp;
+
+	} else if ((i > 6) && (i < 13 )) { // we read data
+
+		//OCR2A = 14;
+		//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+		// 1.8/0.032 = 56
+		OCR2A = 54;
+		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+		TIMSK2 |= (1 << OCIE2A);
+
+		unsigned char temp = REMOTE;
+		temp <<= 6+6-i;
+		data_temp += temp;
+
+	} else if (i == 13) { // last bit read
+
+		PCICR |= (1 << PCIE1);		// enable interrupt
+		PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
+
+		i = -1;
+		check = check_temp;
+		address = address_temp;
+		data_ir = data_temp;
+		command_received=1;
+	} 
+	
+	if(i!=-1)
+		i++;
+
+	PORTB |= (1 << 5);
+
 }

@@ -281,7 +281,7 @@ int e_restart_agenda(void (*func)(void))
  * \n Do it for number of cycle positive or null.
  * \n Check if a service has to be activated. 
  */
-
+/*
 ISR(TIMER2_COMPA_vect) {
 //void __attribute__((interrupt, auto_psv))
 // _T4Interrupt(void)
@@ -320,5 +320,5 @@ ISR(TIMER2_COMPA_vect) {
 	}
   return;
 }
-
+*/
 /* End of File : alarm.c */

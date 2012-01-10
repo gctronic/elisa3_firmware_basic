@@ -31,6 +31,8 @@ unsigned char adcSaveDataTo = 0;					// indicate where to save the currently sam
 unsigned char adcSamplingState = 0;					// indicate which channel to select
 unsigned char rightChannelPhase = 0;				// right motor phase when the channel was selected
 unsigned char leftChannelPhase = 0;					// left motor phase when the channel was selected
+unsigned int batteryLevel = 0;
+unsigned char measBattery = 0;
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -120,7 +122,7 @@ unsigned char colorState = 0;		// used with command 0 to switch from one color t
 /*** ACCELEROMETER ***/
 /*********************/
 #ifdef ACC_MMA7455L
-	unsigned char accelAddress = 0x1C<<1;
+	unsigned char accelAddress = 0x1D<<1;
 #endif
 #ifdef ACC_ADXL345
 	unsigned char accelAddress = 0x53<<1;
@@ -137,4 +139,5 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 /*** VARIOUS ***/
 /***************/
 unsigned char myTimeout = 0;
+unsigned int delayCounter = 0;
 

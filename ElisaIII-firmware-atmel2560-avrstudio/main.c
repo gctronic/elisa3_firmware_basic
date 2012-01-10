@@ -26,6 +26,8 @@ extern unsigned char adcSaveDataTo;
 extern unsigned char adcSamplingState;
 extern unsigned char rightChannelPhase;
 extern unsigned char leftChannelPhase;
+extern unsigned int batteryLevel;
+extern unsigned char measBattery;
 
 // consumption controller
 extern unsigned int left_current_avg;
@@ -77,6 +79,7 @@ extern unsigned char ackPayload[16];
 
 // various
 extern unsigned char myTimeout;
+extern unsigned int delayCounter;
 
 // ir remote control
 extern unsigned char ir_move;
@@ -149,10 +152,12 @@ void initAdc(void) {
 ISR(ADC_vect) {	
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
 		
-//	PORTB &= ~(1 << 7);
+	PORTB &= ~(1 << 7);
 
 //	PORTA = 0x00;	// always turn off the pulses
 //	PORTJ &= 0xF0;
+
+	delayCounter++;
 
 	int value = ADCL;			// must be read first!!
 	value = (ADCH<<8) | value;
@@ -162,8 +167,14 @@ ISR(ADC_vect) {
 	switch(adcSaveDataTo) {
 
 		case SAVE_TO_PROX:
-			proximityValue[currentProx] = value;
-			//currentProx = (currentProx+1)%24;
+			if(currentProx==14 && measBattery==2) {
+				batteryLevel = value;
+				measBattery = 0;
+				PORTC &= ~(1 << 6);
+			} else {
+				proximityValue[currentProx] = value;
+				//currentProx = (currentProx+1)%24;
+			}
 			currentProx++;
 			if(currentProx > 23) {
 				currentProx = 0;
@@ -263,15 +274,31 @@ ISR(ADC_vect) {
 			}
 			adcSamplingState = 0;
 			
-			if(currentProx & 0x01) {
-				if(currentProx < 16) {
-					//PORTA = 0x00;	// already done at the ISR beginning...
-					PORTA = (1 << (currentProx>>1));
-					//PORTA = (1 << currentAdChannel);
-				} else {
-					PORTJ = (1 << ((currentProx-16)>>1));
+//			if(measBattery) {
+//				PORTC |= (1 << 6);	// sense enable on
+//			} else { 	// activate pulses
+
+				if(currentProx==14 && measBattery==1) {
+					measBattery=2;
+					PORTC |= (1 << 6);	// sense enable on
 				}
-			}
+
+				if(currentProx & 0x01) {
+					if(currentProx < 16) {
+						if(currentProx==14 && measBattery==1) {
+							measBattery=2;
+							PORTC |= (1 << 6);	// sense enable on
+						} else {
+							//PORTA = 0x00;	// already done at the ISR beginning...
+							PORTA = (1 << (currentProx>>1));
+							//PORTA = (1 << currentAdChannel);
+						}
+					} else {
+						PORTJ = (1 << ((currentProx-16)>>1));
+					}
+				}
+
+//			}
 
 			break;
 
@@ -287,7 +314,7 @@ ISR(ADC_vect) {
 	}
 
 
-//	PORTB |= (1 << 7);
+	PORTB |= (1 << 7);
 
 }
 
@@ -351,6 +378,8 @@ void initPwm() {
 // Motor left
 ISR(TIMER4_OVF_vect) {
 
+	PORTB &= ~(1 << 6);
+
 	leftMotorPhase = ACTIVE_PHASE;
 
 	// copy sampling variables
@@ -372,47 +401,63 @@ ISR(TIMER4_OVF_vect) {
 	if(pwm_left == 0) {
 		// select channel 15 to sample left current
 		currentMotLeftChannel = 15;
-		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
-		PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
-		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
-		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+//		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
+//		PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
+//		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
+//		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
 	} else if(pwm_left > 0) {   		// move forward
 		// select channel 15 to sample left current
 		currentMotLeftChannel = 15;
-		TCCR4A  &= ~(1 << COM4B1);		// disable OCB
-		TIMSK4 &= ~(1 << OCIE4B);		// disable OCB interrupt
-		PORTH &= ~(1 << 4);				// output to 0
-		TCCR4A |= (1 << COM4A1);		// enable OCA
-		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt
+//		TCCR4A  &= ~(1 << COM4B1);		// disable OCB
+//		TIMSK4 &= ~(1 << OCIE4B);		// disable OCB interrupt
+//		PORTH &= ~(1 << 4);				// output to 0
+//		TCCR4A |= (1 << COM4A1);		// enable OCA
+//		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt
 	} else if(pwm_left < 0) {      		// move backward
 		// select channel 14 to sample left current
 		currentMotLeftChannel = 14;
-		TCCR4A  &= ~(1 << COM4A1);		// disable OCA
-		TIMSK4 &= ~(1 << OCIE4A);		// disable OCA interrupt
-		PORTH &= ~(1 << 3);				// output to 0
-		TCCR4A |= (1 << COM4B1);		// enable OCB
-		TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
+//		TCCR4A  &= ~(1 << COM4A1);		// disable OCA
+//		TIMSK4 &= ~(1 << OCIE4A);		// disable OCA interrupt
+//		PORTH &= ~(1 << 3);				// output to 0
+//		TCCR4A |= (1 << COM4B1);		// enable OCB
+//		TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
 	}
+
+	PORTB |= (1 << 6);
 
 }
 
 // motor left forward
 ISR(TIMER4_COMPA_vect) {
+
+	PORTB &= ~(1 << 6);
+
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 14 to sample the left velocity
 	currentMotLeftChannel = 14;
+
+	PORTB |= (1 << 6);
+
 }
 
 // motor left backward
 ISR(TIMER4_COMPB_vect) {
+
+	PORTB &= ~(1 << 6);
+
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 15 to sample the left velocity
 	currentMotLeftChannel = 15;
+
+	PORTB |= (1 << 6);
+
 }
 
 // Motor right
 ISR(TIMER3_OVF_vect) {
+
+	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = ACTIVE_PHASE;
 	sendAdcValues = 1;
@@ -435,49 +480,55 @@ ISR(TIMER3_OVF_vect) {
 	if(pwm_right == 0) {
 		// select channel 13 to sample left current
 		currentMotRightChannel = 13;
-		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
-		PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
-		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
-		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+//		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
+//		PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
+//		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
+//		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
 	}else if(pwm_right > 0) {   		// move forward
 		// select channel 13 to sample left current
 		currentMotRightChannel = 13;
-		TCCR3A  &= ~(1 << COM3B1);		// disable OCB
-		TIMSK3 &= ~(1 << OCIE3B);		// disable OCB interrupt
-		PORTE &= ~(1 << 4);				// output to 0
-		TCCR3A |= (1 << COM3A1);		// enable OCA
-		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt
+//		TCCR3A  &= ~(1 << COM3B1);		// disable OCB
+//		TIMSK3 &= ~(1 << OCIE3B);		// disable OCB interrupt
+//		PORTE &= ~(1 << 4);				// output to 0
+//		TCCR3A |= (1 << COM3A1);		// enable OCA
+//		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt
 	} else if(pwm_right < 0) {      	// move backward
 		// select channel 12 to sample left current
 		currentMotRightChannel = 12;
-		TCCR3A  &= ~(1 << COM3A1);		// disable OCA
-		TIMSK3 &= ~(1 << OCIE3A);		// disable OCA interrupt
-		PORTE &= ~(1 << 3);				// output to 0
-		TCCR3A |= (1 << COM3B1);		// enable OCB
-		TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
+//		TCCR3A  &= ~(1 << COM3A1);		// disable OCA
+//		TIMSK3 &= ~(1 << OCIE3A);		// disable OCA interrupt
+//		PORTE &= ~(1 << 3);				// output to 0
+//		TCCR3A |= (1 << COM3B1);		// enable OCB
+//		TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
 	}
+
+	PORTB |= (1 << 6);
 
 }
 
 // motor right forward
 ISR(TIMER3_COMPA_vect) {
 
-//	PORTB &= ~(1 << 5);
+	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 12 to sample the right velocity
 	currentMotRightChannel = 12;
 
-//	PORTB |= (1 << 5);
+	PORTB |= (1 << 6);
 }
 
 // motor right backward
 ISR(TIMER3_COMPB_vect) {
 
+	PORTB &= ~(1 << 6);
+
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 13 to sample the right velocity
 	currentMotRightChannel = 13;
+
+	PORTB |= (1 << 6);
 }
 
 /*
@@ -512,6 +563,30 @@ void readAccelXYZ() {
 
 
 #ifdef ACC_MMA7455L
+	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x00);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+	for(i=0; i<5; i++) {
+		buff[i] = i2c_readAck();				// read one byte
+	}
+	buff[i] = i2c_readNak();					// read last byte
+	i2c_stop();									// set stop conditon = release bus
+
+	// 10 bits valus in 2's complement
+	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+	if(accX > 511) {
+		accX -= 1023;
+	}
+	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+	if(accY > 511) {
+		accY -= 1023;
+	}
+	accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+	if(accZ > 511) {
+		accZ -= 1023;
+	}
 
 #endif
 
@@ -529,7 +604,8 @@ void readAccelXYZ() {
 	buff[i] = i2c_readNak();					// read last byte
 	i2c_stop();									// set stop conditon = release bus
 
-	accX = (((int)buff[1]) << 8) | buff[0];    // Y axis
+	// 16 bits values in 2's complement
+	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
 	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
 	accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
 
@@ -581,6 +657,27 @@ void readAccelXY() {
 
 
 #ifdef ACC_MMA7455L
+	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+	i2c_start(accelAddress+I2C_WRITE);	
+	i2c_write(0x00);							// sends address to read from
+	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+	for(i=0; i<3; i++) {
+		buff[i] = i2c_readAck();				// read one byte
+	}
+	buff[i] = i2c_readNak();					// read last byte
+	i2c_stop();									// set stop conditon = release bus
+
+	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+	if(accX > 511) {
+		accX -= 1023;
+	}
+	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+	if(accY > 511) {
+		accY -= 1023;
+	}
+	//accX = ((((buff[1]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[0];    // X axis
+	//accY = ((((buff[3]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[2];    // Y axis
 
 #endif
 
@@ -618,9 +715,10 @@ void initI2C() {
 	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
     if ( ret ) {			// failed to issue start condition, possibly no device found
         i2c_stop();
+		PORTB &= ~(1 << 5);
     }else {					// issuing start condition ok, device accessible
         i2c_write(0x16);	// power register
-        i2c_write(0x01);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_write(0x41);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
         i2c_stop();			// set stop conditon = release bus
     }
 
@@ -686,9 +784,15 @@ void computeAngle() {
 
 	readAccelXY();
 
+#ifdef ACC_MMA7455L
+
+#endif
+
+#ifdef ACC_ADXL345
 	accX = accX-accOffsetX;
 	accY = accY-accOffsetY;
 	//accZ = accZ-accOffsetZ;
+#endif
 
 /*
 	if(accX < 0) {
@@ -825,9 +929,9 @@ PORTB &= ~(1 << 5);
 	calibrateAccelerometer();
 PORTB |= (1 << 5);
 
-	e_start_agendas_processing();
+//	e_start_agendas_processing();
 	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
-	e_activate_agenda(sendValues, 20000);	// every 2 seconds
+//	e_activate_agenda(sendValues, 20000);	// every 2 seconds
 	e_init_remote_control();
 
 	//usartTransmit(debugData);				
@@ -835,6 +939,11 @@ PORTB |= (1 << 5);
 	while(1) {
 
 		//PORTB ^= (1 << 6); // Toggle the green LED
+
+
+		if(delayCounter >= 10000) {
+			measBattery = 1;
+		}
 
 		ir_move = e_get_data();
 
@@ -953,8 +1062,10 @@ PORTB |= (1 << 5);
 
 		//if(sendAdcValues && myTimeout) {
 		//if(sendAdcValues) {
-		if(myTimeout) {
-			
+		//if(myTimeout) {
+		if(delayCounter >= 10000) {
+			delayCounter = 0;
+
 			sendAdcValues = 0;
 			myTimeout = 0;
 			
@@ -1014,11 +1125,16 @@ PORTB |= (1 << 5);
 			usartTransmit(accY>>8);
 			usartTransmit(accZ&0xFF);
 			usartTransmit(accZ>>8);	
-			PORTB &= ~(1 << 6);
+			//PORTB &= ~(1 << 6);
 			computeAngle();
-			PORTB |= (1 << 6);
+			//PORTB |= (1 << 6);
 			usartTransmit(currentAngle&0xFF);
-			usartTransmit(currentAngle>>8);												
+			usartTransmit(currentAngle>>8);		
+			
+			usartTransmit(batteryLevel&0xFF);
+			usartTransmit(batteryLevel>>8);	
+			
+			usartTransmit(ir_move);									
 
 		}
 
@@ -1115,9 +1231,25 @@ PORTB |= (1 << 5);
 #ifdef BIDIRECTIONAL
 			packetId = (packetId+1)%256;
 			//writeAckPayload(&packetId, 1);
-			for(i=0; i<12; i++) {
-				ackPayload[i] = (proximityValue[(i*2)+1]>>2);
-			}
+			//for(i=0; i<12; i++) {
+			//	ackPayload[i] = (proximityValue[(i*2)+1]>>2);
+			//}
+			ackPayload[0] = proximityValue[0]&0xFF;
+			ackPayload[1] = proximityValue[0]>>8;
+			ackPayload[2] = proximityValue[1]&0xFF;
+			ackPayload[3] = proximityValue[1]>>8;
+			ackPayload[4] = proximityValue[2]&0xFF;
+			ackPayload[5] = proximityValue[2]>>8;
+			ackPayload[6] = proximityValue[3]&0xFF;
+			ackPayload[7] = proximityValue[3]>>8;
+			ackPayload[8] = proximityValue[18]&0xFF;
+			ackPayload[9] = proximityValue[18]>>8;
+			ackPayload[10] = proximityValue[19]&0xFF;
+			ackPayload[11] = proximityValue[19]>>8;
+			ackPayload[12] = proximityValue[20]&0xFF;
+			ackPayload[13] = proximityValue[20]>>8;
+			ackPayload[14] = proximityValue[21]&0xFF;
+			ackPayload[15] = proximityValue[21]>>8;
 			writeAckPayload(ackPayload, 16);
 #endif
 
@@ -1145,9 +1277,9 @@ PORTB |= (1 << 5);
 				//if(!orizzontal_position) {
 				//	start_vertical_speed_control(&pwm_left_working, &pwm_right_working);
 				//} else {
-					PORTB &= ~(1 << 5);
+					//PORTB &= ~(1 << 5);
 					start_orizzontal_speed_control(&pwm_left_working, &pwm_right_working);
-					PORTB |= (1 << 5);
+					//PORTB |= (1 << 5);
 				//}
 				//start_power_control(&pwm_left_working, &pwm_right_working);		// the values for the new pwm must be current limited by the controller just before update them
 				
@@ -1186,6 +1318,58 @@ PORTB |= (1 << 5);
 				OCR4A = pwm_left;
 			} else {
 				OCR4B = -pwm_left;
+			}
+
+			if(pwm_left == 0) {
+				// select channel 15 to sample left current
+				//currentMotLeftChannel = 15;
+				TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
+				PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
+				TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
+				TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+												// the pwm is turned off...is it correct??
+			} else if(pwm_left > 0) {   		// move forward
+				// select channel 15 to sample left current
+				//currentMotLeftChannel = 15;
+				TCCR4A  &= ~(1 << COM4B1);		// disable OCB
+				TIMSK4 &= ~(1 << OCIE4B);		// disable OCB interrupt
+				PORTH &= ~(1 << 4);				// output to 0
+				TCCR4A |= (1 << COM4A1);		// enable OCA
+				TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt
+			} else if(pwm_left < 0) {      		// move backward
+				// select channel 14 to sample left current
+				//currentMotLeftChannel = 14;
+				TCCR4A  &= ~(1 << COM4A1);		// disable OCA
+				TIMSK4 &= ~(1 << OCIE4A);		// disable OCA interrupt
+				PORTH &= ~(1 << 3);				// output to 0
+				TCCR4A |= (1 << COM4B1);		// enable OCB
+				TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
+			}
+
+			if(pwm_right == 0) {
+				// select channel 13 to sample left current
+				//currentMotRightChannel = 13;
+				TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
+				PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
+				TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
+				TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+												// the pwm is turned off...is it correct??
+			}else if(pwm_right > 0) {   		// move forward
+				// select channel 13 to sample left current
+				//currentMotRightChannel = 13;
+				TCCR3A  &= ~(1 << COM3B1);		// disable OCB
+				TIMSK3 &= ~(1 << OCIE3B);		// disable OCB interrupt
+				PORTE &= ~(1 << 4);				// output to 0
+				TCCR3A |= (1 << COM3A1);		// enable OCA
+				TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt
+			} else if(pwm_right < 0) {      	// move backward
+				// select channel 12 to sample left current
+				//currentMotRightChannel = 12;
+				TCCR3A  &= ~(1 << COM3A1);		// disable OCA
+				TIMSK3 &= ~(1 << OCIE3A);		// disable OCA interrupt
+				PORTE &= ~(1 << 3);				// output to 0
+				TCCR3A |= (1 << COM3B1);		// enable OCB
+				TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
 			}
 
 		}
