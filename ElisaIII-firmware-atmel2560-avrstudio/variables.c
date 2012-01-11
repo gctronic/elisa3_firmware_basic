@@ -97,6 +97,7 @@ unsigned int dataLED[3];							// array containing the value received through th
 unsigned char speedl=0, speedr=0;					// current speed for left and right motors received through the radio
 unsigned char rfData[PAYLOAD_SIZE];					// data received through the radio
 unsigned char ackPayload[16];						// data to send back to the base-station
+unsigned char packetId = 3;
 
 /****************/
 /*** RGB LEDS ***/
@@ -121,13 +122,8 @@ unsigned char colorState = 0;		// used with command 0 to switch from one color t
 /*********************/
 /*** ACCELEROMETER ***/
 /*********************/
-#ifdef ACC_MMA7455L
-	unsigned char accelAddress = 0x1D<<1;
-#endif
-#ifdef ACC_ADXL345
-	unsigned char accelAddress = 0x53<<1;
-#endif
-
+unsigned char accelAddress = MMA7455L_ADDR;
+unsigned char useAccel = USE_MMAX7455L;
 signed int accX=0, accY=0, accZ=0;						// raw accelerometer calibrated values
 unsigned int absAccX = 0, absAccY = 0, absAccZ = 0;
 unsigned int accOffsetX = 0;							// values obtained during the calibration process; acc = raw_acc - offset
@@ -140,4 +136,4 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 /***************/
 unsigned char myTimeout = 0;
 unsigned int delayCounter = 0;
-
+unsigned char currentSelector = 0;

@@ -76,10 +76,12 @@ extern unsigned char speedl;
 extern unsigned char speedr;
 extern unsigned char rfData[PAYLOAD_SIZE];
 extern unsigned char ackPayload[16];
+extern unsigned char packetId;
 
 // various
 extern unsigned char myTimeout;
 extern unsigned int delayCounter;
+extern unsigned char currentSelector;
 
 // ir remote control
 extern unsigned char ir_move;
@@ -96,7 +98,7 @@ extern unsigned int accOffsetX;							// values obtained during the calibration 
 extern unsigned int accOffsetY;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
 extern unsigned int accOffsetZ;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
 extern signed int currentAngle;							// current orientation of the robot extracted from both the x and y axes
-
+extern unsigned char useAccel;
 
 /*
 FUSES = {
@@ -152,10 +154,7 @@ void initAdc(void) {
 ISR(ADC_vect) {	
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
 		
-	PORTB &= ~(1 << 7);
-
-//	PORTA = 0x00;	// always turn off the pulses
-//	PORTJ &= 0xF0;
+//	PORTB &= ~(1 << 7);
 
 	delayCounter++;
 
@@ -179,8 +178,8 @@ ISR(ADC_vect) {
 			if(currentProx > 23) {
 				currentProx = 0;
 			}
-			PORTA = 0x00;	// always turn off the pulses
-			PORTJ &= 0xF0;
+			//PORTA = 0x00;	// always turn off the pulses
+			//PORTJ &= 0xF0;
 			break;
 
 		case SAVE_TO_RIGHT_MOTOR_CURRENT:
@@ -314,14 +313,19 @@ ISR(ADC_vect) {
 	}
 
 
-	PORTB |= (1 << 7);
+	if(adcSamplingState == 2) {
+		PORTA = 0x00;	// always turn off the pulses
+		PORTJ &= 0xF0;
+	}
+
+//	PORTB |= (1 << 7);
 
 }
 
 
 void initPwm() {
 
-/*
+
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
 	// Period freq = Fosc/TOP (max timer value) => TOP = Fosc/period freq
@@ -338,7 +342,7 @@ void initPwm() {
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
-*/
+
 
 	// Motor right timer3/pwm
 	// Timers clock input = Fosc = 8 MHz
@@ -378,7 +382,7 @@ void initPwm() {
 // Motor left
 ISR(TIMER4_OVF_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	leftMotorPhase = ACTIVE_PHASE;
 
@@ -424,40 +428,40 @@ ISR(TIMER4_OVF_vect) {
 //		TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
 	}
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 
 }
 
 // motor left forward
 ISR(TIMER4_COMPA_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 14 to sample the left velocity
 	currentMotLeftChannel = 14;
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 
 }
 
 // motor left backward
 ISR(TIMER4_COMPB_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 15 to sample the left velocity
 	currentMotLeftChannel = 15;
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 
 }
 
 // Motor right
 ISR(TIMER3_OVF_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = ACTIVE_PHASE;
 	sendAdcValues = 1;
@@ -503,32 +507,32 @@ ISR(TIMER3_OVF_vect) {
 //		TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
 	}
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 
 }
 
 // motor right forward
 ISR(TIMER3_COMPA_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 12 to sample the right velocity
 	currentMotRightChannel = 12;
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 }
 
 // motor right backward
 ISR(TIMER3_COMPB_vect) {
 
-	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 13 to sample the right velocity
 	currentMotRightChannel = 13;
 
-	PORTB |= (1 << 6);
+//	PORTB |= (1 << 6);
 }
 
 /*
@@ -561,92 +565,50 @@ void readAccelXYZ() {
 	int i = 0;
 	unsigned char buff[6], ret;
 
+	if(useAccel == USE_MMAX7455L) {
 
-#ifdef ACC_MMA7455L
-	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x00);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+		//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+		i2c_start(accelAddress+I2C_WRITE);	
+		i2c_write(0x00);							// sends address to read from
+		i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
 
-	for(i=0; i<5; i++) {
-		buff[i] = i2c_readAck();				// read one byte
+		for(i=0; i<5; i++) {
+			buff[i] = i2c_readAck();				// read one byte
+		}
+		buff[i] = i2c_readNak();					// read last byte
+		i2c_stop();									// set stop conditon = release bus
+
+		// 10 bits valus in 2's complement
+		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+
+
+	} else if(useAccel == USE_ADXL345) {	
+
+		//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+		i2c_start(accelAddress+I2C_WRITE);	
+		i2c_write(0x32);							// sends address to read from
+		i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+		for(i=0; i<5; i++) {
+			buff[i] = i2c_readAck();				// read one byte
+		}
+		buff[i] = i2c_readNak();					// read last byte
+		i2c_stop();									// set stop conditon = release bus
+
+		// 16 bits values in 2's complement
+		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+
+	} else {
+
+		accX = 0;
+		accY = 0;
+		accZ = 0;
+
 	}
-	buff[i] = i2c_readNak();					// read last byte
-	i2c_stop();									// set stop conditon = release bus
-
-	// 10 bits valus in 2's complement
-	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-	if(accX > 511) {
-		accX -= 1023;
-	}
-	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-	if(accY > 511) {
-		accY -= 1023;
-	}
-	accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
-	if(accZ > 511) {
-		accZ -= 1023;
-	}
-
-#endif
-
-
-#ifdef ACC_ADXL345
-
-	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x32);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-
-	for(i=0; i<5; i++) {
-		buff[i] = i2c_readAck();				// read one byte
-	}
-	buff[i] = i2c_readNak();					// read last byte
-	i2c_stop();									// set stop conditon = release bus
-
-	// 16 bits values in 2's complement
-	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-	accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
-
-
-/*
-	accX = i2c_readNak();
-	i2c_stop();
-
-
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x01);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-	accX = accX + i2c_readNak()*256;
-	i2c_stop();
-
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x02);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-	accY = i2c_readNak();
-	i2c_stop();
-
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x03);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-	accY = accY + i2c_readNak()*256;
-	i2c_stop();
-
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x04);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-	accZ = i2c_readNak();
-	i2c_stop();
-
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x05);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
-	accZ = accZ + i2c_readNak()*256;
-	i2c_stop();
-*/
-
-#endif
 
 }
 
@@ -656,49 +618,106 @@ void readAccelXY() {
 	unsigned char buff[4], ret;
 
 
-#ifdef ACC_MMA7455L
-	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x00);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+	if(useAccel == USE_MMAX7455L) {
 
-	for(i=0; i<3; i++) {
-		buff[i] = i2c_readAck();				// read one byte
+		//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+		i2c_start(accelAddress+I2C_WRITE);	
+		i2c_write(0x00);							// sends address to read from
+		i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+		for(i=0; i<3; i++) {
+			buff[i] = i2c_readAck();				// read one byte
+		}
+		buff[i] = i2c_readNak();					// read last byte
+		i2c_stop();									// set stop conditon = release bus
+
+		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+
+		//accX = ((((buff[1]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[0];    // X axis
+		//accY = ((((buff[3]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[2];    // Y axis
+
+	} else if(useAccel == USE_ADXL345) {
+
+		//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
+		i2c_start(accelAddress+I2C_WRITE);	
+		i2c_write(0x32);							// sends address to read from
+		i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+
+		for(i=0; i<3; i++) {
+			buff[i] = i2c_readAck();				// read one byte
+		}
+		buff[i] = i2c_readNak();					// read last byte
+		i2c_stop();									// set stop conditon = release bus
+
+		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+
+	} else {
+
+		accX = 0;
+		accY = 0;
+
 	}
-	buff[i] = i2c_readNak();					// read last byte
-	i2c_stop();									// set stop conditon = release bus
-
-	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-	if(accX > 511) {
-		accX -= 1023;
-	}
-	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-	if(accY > 511) {
-		accY -= 1023;
-	}
-	//accX = ((((buff[1]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[0];    // X axis
-	//accY = ((((buff[3]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[2];    // Y axis
-
-#endif
 
 
-#ifdef ACC_ADXL345
+}
 
-	//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
-	i2c_start(accelAddress+I2C_WRITE);	
-	i2c_write(0x32);							// sends address to read from
-	i2c_rep_start(accelAddress+I2C_READ);		// set device address and read mode
+unsigned char initMMA7455L() {
 
-	for(i=0; i<3; i++) {
-		buff[i] = i2c_readAck();				// read one byte
-	}
-	buff[i] = i2c_readNak();					// read last byte
-	i2c_stop();									// set stop conditon = release bus
+	unsigned char ret = 0;
 
-	accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-	accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+	// configure device
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if (ret) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		return 1;
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x16);	// power register
+        i2c_write(0x45);	// measurement mode; 2g; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
 
-#endif
+	return 0;
+
+}
+
+unsigned char initADXL345() {
+	
+	unsigned char ret = 0;
+
+	// configure device
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if (ret) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		return 1;
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x2D);	// power register
+        i2c_write(0x08);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if (ret) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		return 1;
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x31);	// Data format register
+        i2c_write(0x00);	// set to 10-bits resolution; 2g sensitivity; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
+    if (ret) {			// failed to issue start condition, possibly no device found
+        i2c_stop();
+		return 1;
+    }else {					// issuing start condition ok, device accessible
+        i2c_write(0x2C);	// Data format register
+        i2c_write(0x09);	// set to full resolution; ret=0 -> Ok, ret=1 -> no ACK 
+        i2c_stop();			// set stop conditon = release bus
+    }
+
+	return 0;
 
 }
 
@@ -709,55 +728,17 @@ void initI2C() {
 	// init I2C bus
 	i2c_init();
 
-#ifdef ACC_MMA7455L
+	ret = initMMA7455L();
 
-	// configure device
-	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
-    if ( ret ) {			// failed to issue start condition, possibly no device found
-        i2c_stop();
-		PORTB &= ~(1 << 5);
-    }else {					// issuing start condition ok, device accessible
-        i2c_write(0x16);	// power register
-        i2c_write(0x41);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
-        i2c_stop();			// set stop conditon = release bus
-    }
-
-#endif
-
-#ifdef ACC_ADXL345
-
-	// configure device
-	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
-    if ( ret ) {			// failed to issue start condition, possibly no device found
-        i2c_stop();
-		PORTB &= ~(1 << 5);
-    }else {					// issuing start condition ok, device accessible
-        i2c_write(0x2D);	// power register
-        i2c_write(0x08);	// measurement mode; ret=0 -> Ok, ret=1 -> no ACK 
-        i2c_stop();			// set stop conditon = release bus
-    }
-
-	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
-    if ( ret ) {			// failed to issue start condition, possibly no device found
-        i2c_stop();
-		PORTB &= ~(1 << 5);
-    }else {					// issuing start condition ok, device accessible
-        i2c_write(0x31);	// Data format register
-        i2c_write(0x08);	// set to full resolution; ret=0 -> Ok, ret=1 -> no ACK 
-        i2c_stop();			// set stop conditon = release bus
-    }
-
-	ret = i2c_start(accelAddress+I2C_WRITE);       // set device address and write mode
-    if ( ret ) {			// failed to issue start condition, possibly no device found
-        i2c_stop();
-		PORTB &= ~(1 << 5);
-    }else {					// issuing start condition ok, device accessible
-        i2c_write(0x2C);	// Data format register
-        i2c_write(0x09);	// set to full resolution; ret=0 -> Ok, ret=1 -> no ACK 
-        i2c_stop();			// set stop conditon = release bus
-    }
-	
-#endif
+	if(ret) {	// MMA7455L doesn't respond, try with ADXL345
+		accelAddress = ADXL345_ADDR;
+		ret = initADXL345();
+		if(ret) {
+			useAccel = USE_NO_ACCEL;
+		} else {
+			useAccel = USE_ADXL345;
+		}
+	}
 
 }
 
@@ -784,15 +765,22 @@ void computeAngle() {
 
 	readAccelXY();
 
-#ifdef ACC_MMA7455L
+	if(useAccel == USE_MMAX7455L) {
+		if(accX > 511) {
+			accX -= 1023;
+		}
+		if(accY > 511) {
+			accY -= 1023;
+		}
+		if(accZ > 511) {
+			accZ -= 1023;
+		}
+	} else if(useAccel == USE_ADXL345) {
+		accX = accX-accOffsetX;
+		accY = accY-accOffsetY;
+		//accZ = accZ-accOffsetZ;
+	}
 
-#endif
-
-#ifdef ACC_ADXL345
-	accX = accX-accOffsetX;
-	accY = accY-accOffsetY;
-	//accZ = accZ-accOffsetZ;
-#endif
 
 /*
 	if(accX < 0) {
@@ -920,14 +908,13 @@ int main(void) {
 
 	//unsigned char debugData = 0xAA;
 	unsigned int i = 0;
-	unsigned char packetId = 0;
 	choosePeripheral = 1;
 
 	initPeripherals();
 
-PORTB &= ~(1 << 5);
+//PORTB &= ~(1 << 5);
 	calibrateAccelerometer();
-PORTB |= (1 << 5);
+//PORTB |= (1 << 5);
 
 //	e_start_agendas_processing();
 	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
@@ -940,8 +927,10 @@ PORTB |= (1 << 5);
 
 		//PORTB ^= (1 << 6); // Toggle the green LED
 
+		currentSelector = getSelector();
+		readAccelXYZ();
 
-		if(delayCounter >= 10000) {
+		if(delayCounter >= 20000) {
 			measBattery = 1;
 		}
 
@@ -1022,6 +1011,8 @@ PORTB |= (1 << 5);
 					colorState = (colorState+1)%5;
 
 					if(colorState==0) {		// turn on blue
+						LED_IR1_HIGH;
+						LED_IR2_HIGH;
 						pwm_blue = 0;
 						pwm_green = MAX_LEDS_PWM;
 						pwm_red = MAX_LEDS_PWM;					
@@ -1030,6 +1021,8 @@ PORTB |= (1 << 5);
 						pwm_green = 0;
 						pwm_red = MAX_LEDS_PWM;
 					} else if(colorState==2) {	// turn on red
+						LED_IR1_LOW;
+						LED_IR2_LOW;
 						pwm_blue = MAX_LEDS_PWM;
 						pwm_green = MAX_LEDS_PWM;
 						pwm_red = 0;
@@ -1063,7 +1056,7 @@ PORTB |= (1 << 5);
 		//if(sendAdcValues && myTimeout) {
 		//if(sendAdcValues) {
 		//if(myTimeout) {
-		if(delayCounter >= 10000) {
+		if(delayCounter >= 20000) {
 			delayCounter = 0;
 
 			sendAdcValues = 0;
@@ -1126,7 +1119,7 @@ PORTB |= (1 << 5);
 			usartTransmit(accZ&0xFF);
 			usartTransmit(accZ>>8);	
 			//PORTB &= ~(1 << 6);
-			computeAngle();
+			//computeAngle();
 			//PORTB |= (1 << 6);
 			usartTransmit(currentAngle&0xFF);
 			usartTransmit(currentAngle>>8);		
@@ -1134,7 +1127,11 @@ PORTB |= (1 << 5);
 			usartTransmit(batteryLevel&0xFF);
 			usartTransmit(batteryLevel>>8);	
 			
-			usartTransmit(ir_move);									
+			usartTransmit(ir_move);	
+			
+			usartTransmit(BUTTON0);
+			
+			usartTransmit(CHARGE_ON);								
 
 		}
 
@@ -1202,15 +1199,23 @@ PORTB |= (1 << 5);
 			if(rfData[3]== 1) {			// turn on one IR
 				//LED_IR1 = 0;
 				//LED_IR2 = 1;
+				LED_IR1_LOW;
+				LED_IR2_HIGH;
 			} else if(rfData[3]==2) {	// turn on two IRs
 				//LED_IR1 = 1;
 				//LED_IR2 = 0;
+				LED_IR1_HIGH;
+				LED_IR2_LOW;
 			} else if(rfData[3]==3) {	// turn on all three IRs
 				//LED_IR1 = 0;
 				//LED_IR2 = 0;											
+				LED_IR1_LOW;
+				LED_IR2_LOW;
 			} else {					// turn off IRs
 				//LED_IR1 = 1;
 				//LED_IR2 = 1;
+				LED_IR1_HIGH;
+				LED_IR2_HIGH;
 			}
 
 			if((rfData[3]&0b00000100)==0b00000100) {	// check the 3rd bit to enable/disable the IR receiving
@@ -1229,34 +1234,101 @@ PORTB |= (1 << 5);
 #endif
 
 #ifdef BIDIRECTIONAL
-			packetId = (packetId+1)%256;
+			//packetId = (packetId+1)%256;
 			//writeAckPayload(&packetId, 1);
 			//for(i=0; i<12; i++) {
 			//	ackPayload[i] = (proximityValue[(i*2)+1]>>2);
 			//}
-			ackPayload[0] = proximityValue[0]&0xFF;
-			ackPayload[1] = proximityValue[0]>>8;
-			ackPayload[2] = proximityValue[1]&0xFF;
-			ackPayload[3] = proximityValue[1]>>8;
-			ackPayload[4] = proximityValue[2]&0xFF;
-			ackPayload[5] = proximityValue[2]>>8;
-			ackPayload[6] = proximityValue[3]&0xFF;
-			ackPayload[7] = proximityValue[3]>>8;
-			ackPayload[8] = proximityValue[18]&0xFF;
-			ackPayload[9] = proximityValue[18]>>8;
-			ackPayload[10] = proximityValue[19]&0xFF;
-			ackPayload[11] = proximityValue[19]>>8;
-			ackPayload[12] = proximityValue[20]&0xFF;
-			ackPayload[13] = proximityValue[20]>>8;
-			ackPayload[14] = proximityValue[21]&0xFF;
-			ackPayload[15] = proximityValue[21]>>8;
+
+			ackPayload[0] = packetId&0xFF;
+
+			switch(packetId) {
+				case 3: 
+					ackPayload[1] = proximityValue[1]&0xFF;
+					ackPayload[2] = proximityValue[1]>>8;
+					ackPayload[3] = proximityValue[3]&0xFF;
+					ackPayload[4] = proximityValue[3]>>8;
+					ackPayload[5] = proximityValue[5]&0xFF;
+					ackPayload[6] = proximityValue[5]>>8;
+					ackPayload[7] = proximityValue[7]&0xFF;
+					ackPayload[8] = proximityValue[7]>>8;
+					ackPayload[9] = proximityValue[11]&0xFF;
+					ackPayload[10] = proximityValue[11]>>8;
+					ackPayload[11] = proximityValue[13]&0xFF;
+					ackPayload[12] = proximityValue[13]>>8;
+					ackPayload[13] = proximityValue[15]&0xFF;
+					ackPayload[14] = proximityValue[15]>>8;	
+					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);		
+					packetId = 4;
+					break;
+
+				case 4:
+					ackPayload[1] = proximityValue[9]&0xFF;
+					ackPayload[2] = proximityValue[9]>>8;
+					ackPayload[3] = proximityValue[17]&0xFF;
+					ackPayload[4] = proximityValue[17]>>8;
+					ackPayload[5] = proximityValue[19]&0xFF;
+					ackPayload[6] = proximityValue[19]>>8;
+					ackPayload[7] = proximityValue[21]&0xFF;
+					ackPayload[8] = proximityValue[21]>>8;
+					ackPayload[9] = proximityValue[23]&0xFF;
+					ackPayload[10] = proximityValue[23]>>8;
+					ackPayload[11] = accX&0xFF;
+					ackPayload[12] = accX>>8;
+					ackPayload[13] = accY&0xFF;
+					ackPayload[14] = accY>>8;
+					ackPayload[15] = ir_move;			
+					packetId = 5;
+					break;
+				
+				case 5:
+					ackPayload[1] = proximityValue[0]&0xFF;
+					ackPayload[2] = proximityValue[0]>>8;
+					ackPayload[3] = proximityValue[2]&0xFF;
+					ackPayload[4] = proximityValue[2]>>8;
+					ackPayload[5] = proximityValue[4]&0xFF;
+					ackPayload[6] = proximityValue[4]>>8;
+					ackPayload[7] = proximityValue[6]&0xFF;
+					ackPayload[8] = proximityValue[6]>>8;
+					ackPayload[9] = proximityValue[10]&0xFF;
+					ackPayload[10] = proximityValue[10]>>8;
+					ackPayload[11] = proximityValue[12]&0xFF;
+					ackPayload[12] = proximityValue[12]>>8;
+					ackPayload[13] = proximityValue[14]&0xFF;
+					ackPayload[14] = proximityValue[14]>>8;
+					ackPayload[15] = currentSelector;
+					packetId = 6;
+					break;	
+					
+				case 6:
+					ackPayload[1] = proximityValue[8]&0xFF;
+					ackPayload[2] = proximityValue[8]>>8;
+					ackPayload[3] = proximityValue[16]&0xFF;
+					ackPayload[4] = proximityValue[16]>>8;
+					ackPayload[5] = proximityValue[18]&0xFF;
+					ackPayload[6] = proximityValue[18]>>8;
+					ackPayload[7] = proximityValue[20]&0xFF;
+					ackPayload[8] = proximityValue[20]>>8;
+					ackPayload[9] = proximityValue[22]&0xFF;
+					ackPayload[10] = proximityValue[22]>>8;
+					ackPayload[11] = accZ&0xFF;
+					ackPayload[12] = accZ>>8;
+					ackPayload[13] = batteryLevel&0xFF;
+					ackPayload[14] = batteryLevel>>8;
+					ackPayload[15] = 0;				
+					packetId = 3;
+					break;											
+								
+
+			}
+
 			writeAckPayload(ackPayload, 16);
 #endif
 
 
 		}
 
-		if(getSelector() == 0) {	// no control
+		if(currentSelector == 0) {	// no control
 
 			if(start_control) {
 				pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
@@ -1265,7 +1337,7 @@ PORTB |= (1 << 5);
 				update_pwm = 1;
 			}
 
-		} else if(getSelector() == 2) {		// speed control
+		} else if(currentSelector == 2) {		// speed control
 
 			if(start_control && left_vel_changed && right_vel_changed) {
 				pwm_right_working = pwm_right_desired;

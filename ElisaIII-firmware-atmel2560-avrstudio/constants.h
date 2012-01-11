@@ -88,6 +88,21 @@
 #ifndef ORIZZONTAL_POS
 #define ORIZZONTAL_POS 1
 #endif
+#ifndef MMA7455L_ADDR
+#define MMA7455L_ADDR (0x1D<<1)
+#endif
+#ifndef ADXL345_ADDR
+#define ADXL345_ADDR (0x53<<1)
+#endif
+#ifndef USE_MMAX7455L
+#define USE_MMAX7455L 0
+#endif
+#ifndef USE_ADXL345
+#define USE_ADXL345 1
+#endif
+#ifndef USE_NO_ACCEL
+#define USE_NO_ACCEL 2
+#endif
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -110,8 +125,14 @@
 #define SEL1 		(PINC & _BV(PC1))>>1
 #define SEL2 		(PINC & _BV(PC2))>>2
 #define SEL3 		(PINC & _BV(PC3))>>3
-#define ACC_ADXL345
-//#define ACC_MMA7455L
+//#define ACC_ADXL345
+#define ACC_MMA7455L
+#define CHARGE_ON ((PINJ & _BV(PJ4))>>4)
+#define BUTTON0 ((PINJ & _BV(PJ5))>>5)
+#define LED_IR1_HIGH (PORTC |= (1<<4))
+#define LED_IR1_LOW (PORTC &= ~(1<<4))
+#define LED_IR2_HIGH (PORTC |= (1<<5))
+#define LED_IR2_LOW (PORTC &= ~(1<<5))
 
 /***********/
 /*** ADC ***/

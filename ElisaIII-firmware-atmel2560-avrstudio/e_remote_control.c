@@ -116,7 +116,7 @@ ISR(PCINT1_vect) {
 
 	if(bit_is_clear(PINJ, 6)) {
 
-	PORTB ^= (1 << 5);
+//	PORTB ^= (1 << 5);
 
 //		PORTB &= ~(1 << 5);
 
@@ -352,7 +352,7 @@ ISR(TIMER2_COMPA_vect) {
 
 //	PORTB ^= (1 << 5);
 
-	PORTB &= ~(1 << 5);
+//	PORTB &= ~(1 << 5);
 
 	TCCR2B &= ~(1 << CS22) &~(1 << CS21) &~(1 << CS20);
 
@@ -435,6 +435,6 @@ ISR(TIMER2_COMPA_vect) {
 	if(i!=-1)
 		i++;
 
-	PORTB |= (1 << 5);
+//	PORTB |= (1 << 5);
 
 }
