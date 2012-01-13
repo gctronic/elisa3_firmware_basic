@@ -26,7 +26,7 @@
 #define USE_REDUCED_PACKET
 #define CHANGE_STATE 0x0
 #define CHANGE_RF 0x1
-#define RF_ADDR 3203
+#define RF_ADDR 3200
 #ifdef USE_REDUCED_PACKET
 	#define PAYLOAD_SIZE 6
 #else

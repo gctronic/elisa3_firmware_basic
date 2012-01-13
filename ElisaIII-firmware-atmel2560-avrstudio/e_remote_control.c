@@ -118,7 +118,7 @@ ISR(PCINT1_vect) {
 
 //	PORTB ^= (1 << 5);
 
-//		PORTB &= ~(1 << 5);
+//		PORTB &= ~(1 << 6);
 
 /*
 		blinkState = 1 - blinkState;
@@ -368,6 +368,8 @@ ISR(TIMER2_COMPA_vect) {
 			PCICR |= (1 << PCIE1);		// enable interrupt
 			PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
 			i = -1;
+//			PORTB |= (1 << 6);
+
 		} else {	   // read the check bit
 			
 			//cycle value is 0.6 to go to check bit[ms]
@@ -430,6 +432,8 @@ ISR(TIMER2_COMPA_vect) {
 		address = address_temp;
 		data_ir = data_temp;
 		command_received=1;
+
+//		PORTB |= (1 << 6);
 	} 
 	
 	if(i!=-1)

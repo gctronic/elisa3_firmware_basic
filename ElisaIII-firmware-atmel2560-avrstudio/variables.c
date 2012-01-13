@@ -33,6 +33,7 @@ unsigned char rightChannelPhase = 0;				// right motor phase when the channel wa
 unsigned char leftChannelPhase = 0;					// left motor phase when the channel was selected
 unsigned int batteryLevel = 0;
 unsigned char measBattery = 0;
+signed int currentProxValue = 0;
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -118,6 +119,7 @@ unsigned char sendAdcValues = 0;
 unsigned char ir_move = 0;
 unsigned char command_received = 0;
 unsigned char colorState = 0;		// used with command 0 to switch from one color to the next
+unsigned char irEnabled = 1;
 
 /*********************/
 /*** ACCELEROMETER ***/

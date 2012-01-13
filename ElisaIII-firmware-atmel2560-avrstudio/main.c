@@ -28,6 +28,7 @@ extern unsigned char rightChannelPhase;
 extern unsigned char leftChannelPhase;
 extern unsigned int batteryLevel;
 extern unsigned char measBattery;
+extern signed int currentProxValue;
 
 // consumption controller
 extern unsigned int left_current_avg;
@@ -87,6 +88,7 @@ extern unsigned char currentSelector;
 extern unsigned char ir_move;
 extern unsigned char command_received;
 extern unsigned char colorState;
+extern unsigned char irEnabled;
 
 // accelerometer
 extern int accelAddress;
@@ -934,123 +936,127 @@ int main(void) {
 			measBattery = 1;
 		}
 
-		ir_move = e_get_data();
+		if(irEnabled) {
 
-		if(command_received) {
+			ir_move = e_get_data();
 
-			command_received = 0;
+			if(command_received) {
 
-			//usartTransmit(ir_move);
+				command_received = 0;
 
-			switch(ir_move) {
+				//usartTransmit(ir_move);
 
-				case 5:	// stop motors
-					pwm_right_desired = 0;
-					pwm_left_desired = 0;
-					break;
+				switch(ir_move) {
 
-				case 2:	// both motors forward
-					if(pwm_right_desired > pwm_left_desired) {
-						pwm_left_desired = pwm_right_desired;
-					} else {
-						pwm_right_desired = pwm_left_desired;
-					}
-					pwm_right_desired += STEP_MOTORS;
-					pwm_left_desired += STEP_MOTORS;
-	                if (pwm_right_desired > MAX_MOTORS_PWM) pwm_right_desired = MAX_MOTORS_PWM;
-    	            if (pwm_left_desired > MAX_MOTORS_PWM) pwm_left_desired = MAX_MOTORS_PWM;
-               		break;
+					case 5:	// stop motors
+						pwm_right_desired = 0;
+						pwm_left_desired = 0;
+						break;
 
-				case 8:	// both motors backward
-					if(pwm_right_desired < pwm_left) {
-						pwm_left_desired  = pwm_right_desired;
-					} else {
-						pwm_right_desired = pwm_left_desired;
-					}
-					pwm_right_desired -= STEP_MOTORS;
-					pwm_left_desired -= STEP_MOTORS;
-	                if (pwm_right_desired < -MAX_MOTORS_PWM) pwm_right_desired = -MAX_MOTORS_PWM;
-    	            if (pwm_left_desired < -MAX_MOTORS_PWM) pwm_left_desired = -MAX_MOTORS_PWM;
-                  	break;
+					case 2:	// both motors forward
+						if(pwm_right_desired > pwm_left_desired) {
+							pwm_left_desired = pwm_right_desired;
+						} else {
+							pwm_right_desired = pwm_left_desired;
+						}
+						pwm_right_desired += STEP_MOTORS;
+						pwm_left_desired += STEP_MOTORS;
+		                if (pwm_right_desired > MAX_MOTORS_PWM) pwm_right_desired = MAX_MOTORS_PWM;
+	    	            if (pwm_left_desired > MAX_MOTORS_PWM) pwm_left_desired = MAX_MOTORS_PWM;
+	               		break;
 
-				case 6:	// both motors right
-					pwm_right_desired -= STEP_MOTORS;
-					pwm_left_desired += STEP_MOTORS;
-                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
-                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
-					break;
+					case 8:	// both motors backward
+						if(pwm_right_desired < pwm_left) {
+							pwm_left_desired  = pwm_right_desired;
+						} else {
+							pwm_right_desired = pwm_left_desired;
+						}
+						pwm_right_desired -= STEP_MOTORS;
+						pwm_left_desired -= STEP_MOTORS;
+		                if (pwm_right_desired < -MAX_MOTORS_PWM) pwm_right_desired = -MAX_MOTORS_PWM;
+	    	            if (pwm_left_desired < -MAX_MOTORS_PWM) pwm_left_desired = -MAX_MOTORS_PWM;
+	                  	break;
 
-				case 4:	// both motors left
-					pwm_right_desired += STEP_MOTORS;
-					pwm_left_desired -= STEP_MOTORS;
-	                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
-    	            if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
-					break;
+					case 6:	// both motors right
+						pwm_right_desired -= STEP_MOTORS;
+						pwm_left_desired += STEP_MOTORS;
+	                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
+	                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
+						break;
 
-				case 3:	// left motor forward
-					pwm_left_desired += STEP_MOTORS;
-                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
-					break;
+					case 4:	// both motors left
+						pwm_right_desired += STEP_MOTORS;
+						pwm_left_desired -= STEP_MOTORS;
+		                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
+	    	            if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
+						break;
 
-				case 1:	// right motor forward
-					pwm_right_desired += STEP_MOTORS;
-	                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
-					break;
+					case 3:	// left motor forward
+						pwm_left_desired += STEP_MOTORS;
+	                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
+						break;
 
-				case 9:	// left motor backward
-					pwm_left_desired -= STEP_MOTORS;
-            	    if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
-					break;
+					case 1:	// right motor forward
+						pwm_right_desired += STEP_MOTORS;
+		                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
+						break;
 
-				case 7:	// right motor backward
-					pwm_right_desired -= STEP_MOTORS;
-                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
-					break;
+					case 9:	// left motor backward
+						pwm_left_desired -= STEP_MOTORS;
+	            	    if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
+						break;
 
-               	case 0:	// colors
-					colorState = (colorState+1)%5;
+					case 7:	// right motor backward
+						pwm_right_desired -= STEP_MOTORS;
+	                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
+						break;
 
-					if(colorState==0) {		// turn on blue
-						LED_IR1_HIGH;
-						LED_IR2_HIGH;
-						pwm_blue = 0;
-						pwm_green = MAX_LEDS_PWM;
-						pwm_red = MAX_LEDS_PWM;					
-					} else if(colorState==1) {	// turn on green
-						pwm_blue = MAX_LEDS_PWM;
-						pwm_green = 0;
-						pwm_red = MAX_LEDS_PWM;
-					} else if(colorState==2) {	// turn on red
-						LED_IR1_LOW;
-						LED_IR2_LOW;
-						pwm_blue = MAX_LEDS_PWM;
-						pwm_green = MAX_LEDS_PWM;
-						pwm_red = 0;
-					} else if(colorState==3) {	// turn on white
-						pwm_blue = 0;
-						pwm_green = 0;
-						pwm_red = 0;
-					} else if(colorState==4) {	// turn off
-						pwm_blue = MAX_LEDS_PWM;
-						pwm_green = MAX_LEDS_PWM;
-						pwm_red = MAX_LEDS_PWM;
-					}					
+	               	case 0:	// colors
+						colorState = (colorState+1)%5;
 
-					updateRedLed(pwm_red);	
-					updateGreenLed(pwm_green);
-					updateBlueLed(pwm_blue);
+						if(colorState==0) {		// turn on blue
+							LED_IR1_HIGH;
+							LED_IR2_HIGH;
+							pwm_blue = 0;
+							pwm_green = MAX_LEDS_PWM;
+							pwm_red = MAX_LEDS_PWM;					
+						} else if(colorState==1) {	// turn on green
+							pwm_blue = MAX_LEDS_PWM;
+							pwm_green = 0;
+							pwm_red = MAX_LEDS_PWM;
+						} else if(colorState==2) {	// turn on red
+							LED_IR1_LOW;
+							LED_IR2_LOW;
+							pwm_blue = MAX_LEDS_PWM;
+							pwm_green = MAX_LEDS_PWM;
+							pwm_red = 0;
+						} else if(colorState==3) {	// turn on white
+							pwm_blue = 0;
+							pwm_green = 0;
+							pwm_red = 0;
+						} else if(colorState==4) {	// turn off
+							pwm_blue = MAX_LEDS_PWM;
+							pwm_green = MAX_LEDS_PWM;
+							pwm_red = MAX_LEDS_PWM;
+						}					
 
-					//LED_IR1 = !LED_IR1;
-					//LED_IR2 = !LED_IR2;
+						updateRedLed(pwm_red);	
+						updateGreenLed(pwm_green);
+						updateBlueLed(pwm_blue);
 
-                  	break;
+						//LED_IR1 = !LED_IR1;
+						//LED_IR2 = !LED_IR2;
 
-               	default:
-                 	break;
+	                  	break;
 
-            }	// switch
+	               	default:
+	                 	break;
 
-		}	// ir command received
+	            }	// switch
+
+			}	// ir command received
+
+		}	// ir enabled check
 
 
 		//if(sendAdcValues && myTimeout) {
@@ -1219,9 +1225,9 @@ int main(void) {
 			}
 
 			if((rfData[3]&0b00000100)==0b00000100) {	// check the 3rd bit to enable/disable the IR receiving
-				//ir_enabled = 1;
+				irEnabled = 1;
 			} else {
-				//ir_enabled = 0;
+				irEnabled = 0;
 			}
 
 			//desired_orientation = current_angle;
@@ -1243,36 +1249,96 @@ int main(void) {
 			ackPayload[0] = packetId&0xFF;
 
 			switch(packetId) {
-				case 3: 
-					ackPayload[1] = proximityValue[1]&0xFF;
-					ackPayload[2] = proximityValue[1]>>8;
-					ackPayload[3] = proximityValue[3]&0xFF;
-					ackPayload[4] = proximityValue[3]>>8;
-					ackPayload[5] = proximityValue[5]&0xFF;
-					ackPayload[6] = proximityValue[5]>>8;
-					ackPayload[7] = proximityValue[7]&0xFF;
-					ackPayload[8] = proximityValue[7]>>8;
-					ackPayload[9] = proximityValue[11]&0xFF;
-					ackPayload[10] = proximityValue[11]>>8;
-					ackPayload[11] = proximityValue[13]&0xFF;
-					ackPayload[12] = proximityValue[13]>>8;
-					ackPayload[13] = proximityValue[15]&0xFF;
-					ackPayload[14] = proximityValue[15]>>8;	
+				case 3:
+					currentProxValue = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[1] = currentProxValue&0xFF;
+					ackPayload[2] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}					
+					ackPayload[3] = currentProxValue&0xFF;
+					ackPayload[4] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[5] = currentProxValue&0xFF;
+					ackPayload[6] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[7] = currentProxValue&0xFF;
+					ackPayload[8] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[9] = currentProxValue&0xFF;
+					ackPayload[10] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[11] = currentProxValue&0xFF;
+					ackPayload[12] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[13] = currentProxValue&0xFF;
+					ackPayload[14] = currentProxValue>>8;	
+
 					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);		
 					packetId = 4;
 					break;
 
 				case 4:
-					ackPayload[1] = proximityValue[9]&0xFF;
-					ackPayload[2] = proximityValue[9]>>8;
-					ackPayload[3] = proximityValue[17]&0xFF;
-					ackPayload[4] = proximityValue[17]>>8;
-					ackPayload[5] = proximityValue[19]&0xFF;
-					ackPayload[6] = proximityValue[19]>>8;
-					ackPayload[7] = proximityValue[21]&0xFF;
-					ackPayload[8] = proximityValue[21]>>8;
-					ackPayload[9] = proximityValue[23]&0xFF;
-					ackPayload[10] = proximityValue[23]>>8;
+					currentProxValue = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[1] = currentProxValue&0xFF;
+					ackPayload[2] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[3] = currentProxValue&0xFF;
+					ackPayload[4] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[5] = currentProxValue&0xFF;
+					ackPayload[6] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[7] = currentProxValue&0xFF;
+					ackPayload[8] = currentProxValue>>8;
+
+					currentProxValue = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
+					if(currentProxValue < 0) {
+						currentProxValue = 0;
+					}
+					ackPayload[9] = currentProxValue&0xFF;
+					ackPayload[10] = currentProxValue>>8;
+
 					ackPayload[11] = accX&0xFF;
 					ackPayload[12] = accX>>8;
 					ackPayload[13] = accY&0xFF;
