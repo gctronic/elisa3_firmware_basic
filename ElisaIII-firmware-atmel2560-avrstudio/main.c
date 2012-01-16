@@ -8,7 +8,6 @@
 #include "spi.h"
 #include "mirf.h"
 #include "nRF24L01.h"
-#include "e_agenda.h"
 #include "e_remote_control.h"
 #include "speed_control.h"
 #include "usart.h"
@@ -131,18 +130,17 @@ void usartTransmit(unsigned char data);
 void initAdc(void) {
 
 	// ADCSRA -----> ADEN	ADSC	 ADATE	ADIF	ADIE	 ADPS2	ADPS1	ADPS0
-	//				 0		0		 0		0		0		 0		0		0
+	// default		 0		0		 0		0		0		 0		0		0
 	// ADMUX  -----> REFS1	REFS0	 ADLAR	MUX4	MUX3 	 MUX2	MUX1	MUX0
-	//				 0		0		 0		0		0		 0		0		0
+	// default		 0		0		 0		0		0		 0		0		0
 	// ADCSRB -----> -		ACME	 - 		- 		MUX5 	 ADTS2 	ADTS1 	ADTS0
-	//				 0		0		 0		0		0		 0		0		0
+	// default		 0		0		 0		0		0		 0		0		0
 
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1);	// 1/64 prescaler => 8 MHz / 64 = 125 KHz => Tad;
-											// one sample need 13.5 Tad in free running mode, so interrupt frequency is 125/13.5= 9.26 KHz (107 us)
+											// one sample need 13 Tad in free running mode, so interrupt frequency is 125/13 = 9.6 KHz (104 us)
 	ADMUX |= (1 << REFS0); 	// voltage reference to AVCC (external)
 	ADCSRA |= (1 << ADATE); // auto-trigger mode
-	//ADRTS2:0 in ADCSRB  are already set to free running by default (0b000)
-	ADCSRB &= 0xF8;
+	ADCSRB &= 0xF8;			// for safety...ADRTS2:0 in ADCSRB should be already set to free running by default (0b000)
 	ADCSRA |= (1 << ADIE);	// enable interrupt on conversion completion
 	ADCSRA |= (1 << ADEN);	// enable ADC
 	ADCSRA |= (1 << ADSC);	// start first conversion (start from channel 0)
@@ -158,13 +156,12 @@ ISR(ADC_vect) {
 		
 //	PORTB &= ~(1 << 7);
 
-	delayCounter++;
+	delayCounter++;		// this variable is used to have basic delays based on the adc interrupt timing (one interrupt every 104 us)
 
 	int value = ADCL;			// must be read first!!
 	value = (ADCH<<8) | value;
 
 	// save the last data
-
 	switch(adcSaveDataTo) {
 
 		case SAVE_TO_PROX:
@@ -174,14 +171,11 @@ ISR(ADC_vect) {
 				PORTC &= ~(1 << 6);
 			} else {
 				proximityValue[currentProx] = value;
-				//currentProx = (currentProx+1)%24;
 			}
 			currentProx++;
 			if(currentProx > 23) {
 				currentProx = 0;
 			}
-			//PORTA = 0x00;	// always turn off the pulses
-			//PORTJ &= 0xF0;
 			break;
 
 		case SAVE_TO_RIGHT_MOTOR_CURRENT:
@@ -206,29 +200,13 @@ ISR(ADC_vect) {
 
 	}
 
-	//PORTA = 0x00;	// always turn off the pulses
-	//PORTJ &= 0xF0;
-
-	// complete sequence
 	// select next channel
-	// ...the sequence has to be changed in order to satisfy motors sampling requirements!
 	switch(adcSamplingState) {
 
-		case 0:
-			currentAdChannel = currentProx>>1;
-			//if((currentProx%2)==1) {	// active phase
-/*
-			if(currentProx & 0x01) {
-				if(currentProx < 16) {
-					//PORTA = 0x00;	// already done at the ISR beginning...
-					//PORTA = (1 << (currentProx>>1));
-					PORTA = (1 << currentAdChannel);
-				} else {
-					PORTJ = (1 << ((currentProx-16)>>1));
-				}
-			}
-*/
-			if(rightChannelPhase == ACTIVE_PHASE) {			// the first this isn't really correct
+		case 0:	// proximity
+			// currentProx goes from 0 to 23, currentAdChannel from 0 to 11
+			currentAdChannel = currentProx>>1;	// when currentProx is odd it means it is the active phase (pulse on)
+			if(rightChannelPhase == ACTIVE_PHASE) {			// the first time this isn't really correct
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_CURRENT;
 			} else {
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_VEL;
@@ -236,14 +214,14 @@ ISR(ADC_vect) {
 			adcSamplingState = 1;
 			break;
 
-		case 1:
+		case 1:	// left motor
 			currentAdChannel = currentMotLeftChannel;
 			leftChannelPhase = leftMotorPhase;
 			adcSaveDataTo = SAVE_TO_PROX;
 			adcSamplingState = 2;
 			break;
 
-		case 2:
+		case 2:	// right motor
 			currentAdChannel = currentMotRightChannel;
 			rightChannelPhase = rightMotorPhase;
 			if(leftChannelPhase == ACTIVE_PHASE) {
@@ -254,7 +232,7 @@ ISR(ADC_vect) {
 			adcSamplingState = 3;
 			break;
 
-		case 3:
+		case 3:	// left motor
 			currentAdChannel = currentMotLeftChannel;
 			leftChannelPhase = leftMotorPhase;
 			if(rightChannelPhase == ACTIVE_PHASE) {
@@ -265,7 +243,7 @@ ISR(ADC_vect) {
 			adcSamplingState = 4;
 			break;
 
-		case 4:
+		case 4:	// right motor
 			currentAdChannel = currentMotRightChannel;	
 			rightChannelPhase = rightMotorPhase;	
 			if(leftChannelPhase == ACTIVE_PHASE) {
@@ -274,33 +252,24 @@ ISR(ADC_vect) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_VEL;
 			}
 			adcSamplingState = 0;
-			
-//			if(measBattery) {
-//				PORTC |= (1 << 6);	// sense enable on
-//			} else { 	// activate pulses
 
-				if(currentProx==14 && measBattery==1) {
-					measBattery=2;
-					PORTC |= (1 << 6);	// sense enable on
-				}
+			if(currentProx==14 && measBattery==1) {
+				measBattery=2;
+				PORTC |= (1 << 6);	// sense enable on
+			}
 
-				if(currentProx & 0x01) {
-					if(currentProx < 16) {
-						if(currentProx==14 && measBattery==1) {
-							measBattery=2;
-							PORTC |= (1 << 6);	// sense enable on
-						} else {
-							//PORTA = 0x00;	// already done at the ISR beginning...
-							PORTA = (1 << (currentProx>>1));
-							//PORTA = (1 << currentAdChannel);
-						}
+			if(currentProx & 0x01) {	// if active phase
+				if(currentProx < 16) {
+					if(currentProx==14 && measBattery==1) {	// channel 7 is shared for both prox7 and battery sampling
+						measBattery=2;
+						PORTC |= (1 << 6);	// sense enable on
 					} else {
-						PORTJ = (1 << ((currentProx-16)>>1));
+						PORTA = (1 << (currentProx>>1));	// pulse on
 					}
+				} else {	
+					PORTJ = (1 << ((currentProx-16)>>1));	// pulse on
 				}
-
-//			}
-
+			}
 			break;
 
 	}
@@ -314,9 +283,9 @@ ISR(ADC_vect) {
 		ADMUX = 0x40 + (currentAdChannel-8);
 	}
 
-
-	if(adcSamplingState == 2) {
-		PORTA = 0x00;	// always turn off the pulses
+	// turn off the pulses in order to have 200 us of pulse
+	if(adcSamplingState == 2) { 
+		PORTA = 0x00;
 		PORTJ &= 0xF0;
 	}
 
@@ -636,9 +605,6 @@ void readAccelXY() {
 		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
 		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
 
-		//accX = ((((buff[1]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[0];    // X axis
-		//accY = ((((buff[3]&0x02)<<6) | (buff[1]&0x01)) << 8) | buff[2];    // Y axis
-
 	} else if(useAccel == USE_ADXL345) {
 
 		//i2c_start_wait(accelAddress+I2C_WRITE);		// set device address and write mode
@@ -918,9 +884,7 @@ int main(void) {
 	calibrateAccelerometer();
 //PORTB |= (1 << 5);
 
-//	e_start_agendas_processing();
-	//e_activate_agenda(toggleBlueLed, 10000);		// every 1 seconds
-//	e_activate_agenda(sendValues, 20000);	// every 2 seconds
+
 	e_init_remote_control();
 
 	//usartTransmit(debugData);				
@@ -943,8 +907,6 @@ int main(void) {
 			if(command_received) {
 
 				command_received = 0;
-
-				//usartTransmit(ir_move);
 
 				switch(ir_move) {
 
@@ -1044,9 +1006,6 @@ int main(void) {
 						updateGreenLed(pwm_green);
 						updateBlueLed(pwm_blue);
 
-						//LED_IR1 = !LED_IR1;
-						//LED_IR2 = !LED_IR2;
-
 	                  	break;
 
 	               	default:
@@ -1141,9 +1100,6 @@ int main(void) {
 
 		}
 
-
-
-		//if(!rx_fifo_is_empty()) {
 		if(mirf_data_ready()) {
 
 			// clear irq status

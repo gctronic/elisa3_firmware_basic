@@ -5,7 +5,7 @@
 ## General Flags
 PROJECT = ElisaII-avr-studio
 MCU = atmega2560
-TARGET = ElisaII-avr-studio.elf
+TARGET = Elisa3-avr-studio.elf
 CC = avr-gcc
 
 CPP = avr-g++
@@ -15,7 +15,7 @@ COMMON = -mmcu=$(MCU)
 
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
-CFLAGS += -Wall -gdwarf-2 -std=gnu99   -DF_CPU=8000000UL -O3 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CFLAGS += -Wall -gdwarf-2 -std=gnu99     -DF_CPU=8000000UL -O3 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d 
 
 ## Assembly specific flags
@@ -25,7 +25,7 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 
 ## Linker flags
 LDFLAGS = $(COMMON)
-LDFLAGS +=  -Wl,-Map=ElisaII-avr-studio.map
+LDFLAGS +=  -Wl,-Map=Elisa3-avr-studio.map
 
 
 ## Intel Hex file production flags
@@ -37,13 +37,13 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o spi.o mirf.o e_agenda.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o 
+OBJECTS = main.o spi.o mirf.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
 ## Build
-all: $(TARGET) ElisaII-avr-studio.hex ElisaII-avr-studio.eep ElisaII-avr-studio.lss size
+all: $(TARGET) Elisa3-avr-studio.hex Elisa3-avr-studio.eep Elisa3-avr-studio.lss size
 
 ## Compile
 main.o: ../main.c
@@ -53,9 +53,6 @@ spi.o: ../spi.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 mirf.o: ../mirf.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
-
-e_agenda.o: ../e_agenda.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 e_remote_control.o: ../e_remote_control.c
@@ -96,7 +93,7 @@ size: ${TARGET}
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) ElisaII-avr-studio.elf dep/* ElisaII-avr-studio.hex ElisaII-avr-studio.eep ElisaII-avr-studio.lss ElisaII-avr-studio.map
+	-rm -rf $(OBJECTS) Elisa3-avr-studio.elf dep/* Elisa3-avr-studio.hex Elisa3-avr-studio.eep Elisa3-avr-studio.lss Elisa3-avr-studio.map
 
 
 ## Other dependencies

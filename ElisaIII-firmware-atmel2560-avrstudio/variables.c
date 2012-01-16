@@ -120,6 +120,7 @@ unsigned char ir_move = 0;
 unsigned char command_received = 0;
 unsigned char colorState = 0;		// used with command 0 to switch from one color to the next
 unsigned char irEnabled = 1;
+unsigned char checkGlitch = 1;
 
 /*********************/
 /*** ACCELEROMETER ***/
