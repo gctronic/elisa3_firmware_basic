@@ -101,6 +101,17 @@ extern unsigned int accOffsetZ;							// after calibration: values between -3g a
 extern signed int currentAngle;							// current orientation of the robot extracted from both the x and y axes
 extern unsigned char useAccel;
 
+// obstacle avoidance
+extern unsigned char obstacleAvoidanceEnabled;
+extern signed int rightProxSum;
+extern signed int leftProxSum;
+
+// cliff avoidance
+extern unsigned char cliffAvoidanceEnabled;
+extern unsigned int minGroundValue;
+extern unsigned int minGround;
+extern unsigned char prevRot;
+
 /*
 FUSES = {
 	.low = (FUSE_CKSEL0 & FUSE_CKSEL2 & FUSE_CKSEL3 & FUSE_SUT0),	// internal 8MHz clock, no divisor
@@ -266,8 +277,30 @@ ISR(ADC_vect) {
 					} else {
 						PORTA = (1 << (currentProx>>1));	// pulse on
 					}
-				} else {	
+				} else {
+					#ifdef HW_REV_3_0
 					PORTJ = (1 << ((currentProx-16)>>1));	// pulse on
+					#endif
+					
+					#ifdef HW_REV_3_0_1
+					PORTJ &= ~(1 << ((currentProx-16)>>1));
+/*
+					if(currentProx==17) {
+						PORTJ = 0x0E;
+					} else if(currentProx==19) {
+						PORTJ &= 0x0D;
+					} else if(currentProx==21) {
+						PORTJ = 0x0B;
+					} else if(currentProx==23) {
+						PORTJ = 0x07;
+					} 
+*/
+					#endif
+
+					#ifdef HW_REV_3_1
+					PORTJ &= ~(1 << ((currentProx-16)>>1));
+					#endif
+
 				}
 			}
 			break;
@@ -284,9 +317,23 @@ ISR(ADC_vect) {
 	}
 
 	// turn off the pulses in order to have 200 us of pulse
-	if(adcSamplingState == 2) { 
-		PORTA = 0x00;
+	if(adcSamplingState == 2) {
+
+		#ifdef HW_REV_3_0
 		PORTJ &= 0xF0;
+		PORTA = 0x00;
+		#endif
+
+		#ifdef HW_REV_3_0_1
+		PORTJ = 0xFF;
+		PORTA = 0x00;
+		#endif
+
+		#ifdef HE_REV_3_1
+		PORTJ = 0xFF;
+		PORTA = 0x00;
+		#endif
+
 	}
 
 //	PORTB |= (1 << 7);
@@ -295,7 +342,6 @@ ISR(ADC_vect) {
 
 
 void initPwm() {
-
 
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
@@ -313,7 +359,6 @@ void initPwm() {
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
-
 
 	// Motor right timer3/pwm
 	// Timers clock input = Fosc = 8 MHz
@@ -871,6 +916,122 @@ unsigned char getSelector() {
    return (SEL0) + 2*(SEL1) + 4*(SEL2) + 8*(SEL3);
 }
 
+void obstacleAvoidance() {
+	// obstacle avoidance using the 3 front proximity sensors
+
+	signed int currentProxValue1=0, currentProxValue2=0, speedL=0, speedR=0;
+
+	if(speedr==0 || speedl==0) {
+		pwm_right_working = 0;
+		pwm_left_working = 0;
+		return;
+	}
+
+	// max speed tested = 40
+	if(speedr > 40) {
+		speedr = 40;
+	}
+	if(speedl > 40) {
+		speedl = 40;
+	}
+
+	currentProxValue1 = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
+	if(currentProxValue1 < 0) {
+		currentProxValue1 = 0;
+	}
+	currentProxValue2 = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
+	if(currentProxValue2 < 0) {
+		currentProxValue2 = 0;
+	}
+	rightProxSum = currentProxValue1/2 + currentProxValue2;
+	currentProxValue2 = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
+	if(currentProxValue2 < 0) {
+		currentProxValue2 = 0;
+	}
+	leftProxSum = currentProxValue1/4 + currentProxValue2;
+
+
+	rightProxSum = rightProxSum/(int)(300/speedr);	// scale the sum to have a moderate impact on the velocity
+	leftProxSum = leftProxSum/(int)(300/speedl);
+
+	if(rightProxSum > (int)(speedr*2)) {		// velocity of the motors goes from -30 to +30
+		rightProxSum = (int)(speedr*2);
+	}
+	if(leftProxSum > (int)(speedl*2)) {
+		leftProxSum = (int)(speedl*2);
+	}
+
+
+	speedL = (int)speedl - rightProxSum;
+	speedR = (int)speedr - leftProxSum;
+
+	if(speedL < 0) {
+		speedL = -speedL;
+		pwm_left_working = -(speedL<<2);
+	} else {
+		pwm_left_working = speedL<<2;
+	}
+
+	if(speedR < 0) {
+		speedR = -speedR;
+		pwm_right_working = -(speedR<<2);
+	} else {
+		pwm_right_working = speedR<<2;
+	}
+
+
+	if (pwm_right_working>(MAX_MOTORS_PWM/2)) pwm_right_working=(MAX_MOTORS_PWM/2);
+	if (pwm_left_working>(MAX_MOTORS_PWM/2)) pwm_left_working=(MAX_MOTORS_PWM/2);
+	if (pwm_right_working<-(MAX_MOTORS_PWM/2)) pwm_right_working=-(MAX_MOTORS_PWM/2);
+	if (pwm_left_working<-(MAX_MOTORS_PWM/2)) pwm_left_working=-(MAX_MOTORS_PWM/2);
+
+}
+
+void cliffAvoidance() {
+
+	signed int g0=0, g1=0, g2=0, g3=0;
+
+	g0 = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
+	if(g0 < 0) {
+		g0 = 0;
+	}
+
+	g1 = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
+	if(g1 < 0) {
+		g1 = 0;
+	}
+
+	g2 = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
+	if(g2 < 0) {
+		g2 = 0;
+	}
+
+	g3 = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
+	if(g3 < 0) {
+		g3 = 0;
+	}
+
+	minGroundValue = g0;
+	minGround = GROUND_LEFT;
+	if(g1 < minGroundValue) {
+		minGroundValue = g1;
+		minGround = GROUND_CENTER_LEFT;
+	}
+	if(g2 < minGroundValue) {
+		minGroundValue = g2;
+		minGround = GROUND_CENTER_RIGHT;
+	}
+	if(g3 < minGroundValue) {
+		minGroundValue = g3;
+		minGround = GROUND_RIGHT;
+	}
+
+	if(minGroundValue <= CLIFF_THR) {
+		pwm_right_working = 0;
+		pwm_left_working = 0;
+	}
+
+}
 
 int main(void) {
 
@@ -894,7 +1055,9 @@ int main(void) {
 		//PORTB ^= (1 << 6); // Toggle the green LED
 
 		currentSelector = getSelector();
+		//PORTB &= ~(1 << 6);
 		readAccelXYZ();
+		//PORTB |= (1 << 6);
 
 		if(delayCounter >= 20000) {
 			measBattery = 1;
@@ -1008,10 +1171,29 @@ int main(void) {
 
 	                  	break;
 
+					case 16:	// volume +
+						obstacleAvoidanceEnabled = 1;
+						break;
+					
+					case 17:	// volume -
+						obstacleAvoidanceEnabled = 0;
+						break;
+
+					case 32:	// program +
+						cliffAvoidanceEnabled = 1;
+						break;
+
+					case 33:	// program -
+						cliffAvoidanceEnabled = 0;
+						break;
+
 	               	default:
 	                 	break;
 
 	            }	// switch
+
+				speedr = pwm_right_desired >> 2;
+				speedl = pwm_right_desired >> 2;
 
 			}	// ir command received
 
@@ -1023,7 +1205,7 @@ int main(void) {
 		//if(myTimeout) {
 		if(delayCounter >= 20000) {
 			delayCounter = 0;
-
+/*
 			sendAdcValues = 0;
 			myTimeout = 0;
 			
@@ -1097,9 +1279,10 @@ int main(void) {
 			usartTransmit(BUTTON0);
 			
 			usartTransmit(CHARGE_ON);								
-
+*/
 		}
 
+//PORTB &= ~(1 << 7);
 		if(mirf_data_ready()) {
 
 			// clear irq status
@@ -1153,9 +1336,9 @@ int main(void) {
 			pwm_red = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[0]&0xFF)/100;
 			pwm_blue = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[1]&0xFF)/100;
 			pwm_green = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[2]&0xFF)/100;
-			updateRedLed(pwm_red);	
-			updateGreenLed(pwm_green);
-			updateBlueLed(pwm_blue);
+			//updateRedLed(pwm_red);	
+			//updateGreenLed(pwm_green);
+			//updateBlueLed(pwm_blue);
 			
 
 			if(rfData[3]== 1) {			// turn on one IR
@@ -1184,6 +1367,18 @@ int main(void) {
 				irEnabled = 1;
 			} else {
 				irEnabled = 0;
+			}
+
+			if((rfData[3]&0b00100000)==0b00100000) {	// check the sixth bit to enable/disable obstacle avoidance
+				obstacleAvoidanceEnabled = 1;
+			} else {
+				obstacleAvoidanceEnabled = 0;
+			}
+
+			if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
+				cliffAvoidanceEnabled = 1;
+			} else {
+				cliffAvoidanceEnabled = 0;
 			}
 
 			//desired_orientation = current_angle;
@@ -1349,12 +1544,24 @@ int main(void) {
 
 
 		}
+//PORTB |= (1 << 7);
+
 
 		if(currentSelector == 0) {	// no control
 
 			if(start_control) {
 				pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
-				pwm_left_working = pwm_left_desired;	
+				pwm_left_working = pwm_left_desired;
+				
+				if(obstacleAvoidanceEnabled) {
+					//PORTB &= ~(1 << 7);
+					obstacleAvoidance();
+					//PORTB |= (1 << 7);				
+				}
+				
+				if(cliffAvoidanceEnabled) {
+					cliffAvoidance();
+				}
 				start_control = 0;
 				update_pwm = 1;
 			}

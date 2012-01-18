@@ -26,7 +26,7 @@
 #define USE_REDUCED_PACKET
 #define CHANGE_STATE 0x0
 #define CHANGE_RF 0x1
-#define RF_ADDR 3200
+#define RF_ADDR 3200			// used to define hardware revision
 #ifdef USE_REDUCED_PACKET
 	#define PAYLOAD_SIZE 6
 #else
@@ -117,10 +117,15 @@
 /*********************/
 /*** HARDWARE DEFS ***/
 /*********************/
-//#define LED_IR1_DIR _TRISB12
-//#define LED_IR1 _LATB12
-//#define LED_IR2_DIR _TRISA10
-//#define LED_IR2 _LATA10
+#if RF_ADDR >= 3201 && RF_ADDR <= 3203
+	#define HW_REV_3_0
+#endif
+#if RF_ADDR == 3200
+	#define HW_REV_3_0_1
+#endif
+#if RF_ADDR > 3203
+	#define HW_REV_3_1
+#endif
 #define SEL0 		(PINC & _BV(PC0))>>0
 #define SEL1 		(PINC & _BV(PC1))>>1
 #define SEL2 		(PINC & _BV(PC2))>>2
@@ -145,5 +150,29 @@
 #define SAVE_TO_LEFT_MOTOR_CURRENT 3
 #define SAVE_TO_LEFT_MOTOR_VEL 4
 
+/***********************/
+/*** CLIFF AVOIDANCE ***/
+/***********************/
+#ifndef CLIFF_THR
+#define CLIFF_THR 115
+#endif
+#ifndef LEFT_ROT
+#define LEFT_ROT  1
+#endif
+#ifndef RIGHT_ROT
+#define RIGHT_ROT 2
+#endif
+#ifndef GROUND_RIGHT
+#define GROUND_RIGHT 0
+#endif
+#ifndef GROUND_CENTER_RIGHT
+#define GROUND_CENTER_RIGHT 1
+#endif
+#ifndef GROUND_CENTER_LEFT
+#define GROUND_CENTER_LEFT 2
+#endif
+#ifndef GROUND_LEFT
+#define GROUND_LEFT 3
+#endif
 
 #endif

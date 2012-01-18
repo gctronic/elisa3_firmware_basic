@@ -31,7 +31,15 @@ void initPortsIO(void) {
 	PORTH = 0x00;	// default for unused pins is 0; pwm for motors set to 0 when stopped
 
 	DDRJ = 0x8F;	// cliff pulses as output; charge-on, button0, remote as input; unused as output
-	PORTJ = 0x00;	// cliff pulse turned off
+	#ifdef HW_REV_3_0
+	PORTJ &= 0x00;	// cliff pulse turned off
+	#endif
+	#ifdef HW_REV_3_0_1
+	PORTJ = 0x0F;
+	#endif
+	#ifdef HE_REV_3_1
+	PORTJ = 0x0F;
+	#endif	
 
 	DDRK = 0x00;	// adc channel pins as input
 

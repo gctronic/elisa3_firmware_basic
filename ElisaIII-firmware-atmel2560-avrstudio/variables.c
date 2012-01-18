@@ -140,3 +140,19 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 unsigned char myTimeout = 0;
 unsigned int delayCounter = 0;
 unsigned char currentSelector = 0;
+
+/**************************/
+/*** OBSTACLE AVOIDANCE ***/
+/**************************/
+unsigned char obstacleAvoidanceEnabled = 0;
+signed int rightProxSum=0;
+signed int leftProxSum=0;
+
+/***********************/
+/*** CLIFF AVOIDANCE ***/
+/***********************/
+unsigned char cliffAvoidanceEnabled = 0;
+unsigned int minGroundValue = 0;
+unsigned int minGround = GROUND_LEFT;
+unsigned char prevRot = 0;
+

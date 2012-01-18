@@ -37,6 +37,7 @@ unsigned char check = 2;
 /* external variables */
 extern unsigned char command_received;
 extern unsigned char checkGlitch;
+extern unsigned char irEnabled;
 
 
 /*! \brief Initialise the IR receiver ports */
@@ -50,25 +51,28 @@ void e_init_remote_control(void) { 	// initialisation for IR interruptions on PC
 
 ISR(PCINT1_vect) {
 
+	if(irEnabled) {
 
-	if(bit_is_clear(PINJ, 6)) {
+		if(bit_is_clear(PINJ, 6)) {
 
-		//PORTB ^= (1 << 5);
-		//PORTB &= ~(1 << 6);
+			//PORTB ^= (1 << 5);
+			//PORTB &= ~(1 << 6);
    			
-		PCICR &= ~(1 << PCIE1);			// disable interrupt from falling edge
-		PCMSK1 &= ~(1 << PCINT15);
+			PCICR &= ~(1 << PCIE1);			// disable interrupt from falling edge
+			PCMSK1 &= ~(1 << PCINT15);
 		
-		// check the pin change isn't due to a glitch; to check this verify that
-		// the pin remain low for at least 400 us (the giltches last about 200 us)
-		// 0.4 / 0.032 = 13 => 0.416 us
-		checkGlitch = 1;
-		OCR2A = 13;
-		TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-		TIMSK2 |= (1 << OCIE2A);
+			// check the pin change isn't due to a glitch; to check this verify that
+			// the pin remain low for at least 400 us (the giltches last about 200 us)
+			// 0.4 / 0.032 = 13 => 0.416 us
+			checkGlitch = 1;
+			OCR2A = 13;
+			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+			TIMSK2 |= (1 << OCIE2A);
 
-		check_temp = address_temp = data_temp = 0;
-		return;
+			check_temp = address_temp = data_temp = 0;
+			return;
+
+		}
 
 	}
 	
