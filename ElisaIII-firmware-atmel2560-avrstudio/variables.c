@@ -27,6 +27,7 @@ volatile unsigned int proximityValue[24] = {0};		// array containing the proximi
 													// 16		cliff0	passive value
 													// 17		cliff0	active value
 													// ...
+int proximityResult[12] = {0};				// contains the values of the ambient - (ambient+reflected)
 unsigned char adcSaveDataTo = 0;					// indicate where to save the currently sampled channel
 unsigned char adcSamplingState = 0;					// indicate which channel to select
 unsigned char rightChannelPhase = 0;				// right motor phase when the channel was selected
@@ -121,6 +122,7 @@ unsigned char command_received = 0;
 unsigned char colorState = 0;		// used with command 0 to switch from one color to the next
 unsigned char irEnabled = 1;
 unsigned char checkGlitch = 1;
+unsigned char behaviorState = 0;
 
 /*********************/
 /*** ACCELEROMETER ***/

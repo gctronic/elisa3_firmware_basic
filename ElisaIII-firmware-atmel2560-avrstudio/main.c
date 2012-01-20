@@ -28,6 +28,7 @@ extern unsigned char leftChannelPhase;
 extern unsigned int batteryLevel;
 extern unsigned char measBattery;
 extern signed int currentProxValue;
+extern int proximityResult[12];
 
 // consumption controller
 extern unsigned int left_current_avg;
@@ -88,6 +89,7 @@ extern unsigned char ir_move;
 extern unsigned char command_received;
 extern unsigned char colorState;
 extern unsigned char irEnabled;
+extern unsigned char behaviorState;
 
 // accelerometer
 extern int accelAddress;
@@ -480,7 +482,6 @@ ISR(TIMER3_OVF_vect) {
 //	PORTB &= ~(1 << 6);
 
 	rightMotorPhase = ACTIVE_PHASE;
-	sendAdcValues = 1;
 
 	// copy sampling variables
 	last_right_current = right_current_avg;
@@ -919,6 +920,72 @@ unsigned char getSelector() {
 void obstacleAvoidance() {
 	// obstacle avoidance using the 3 front proximity sensors
 
+	//		forward
+	//
+	//			0
+	//		7		1
+	//	velL	x	 velR
+	//	  |		|	  |
+	//	  6	  y_0	  2
+	//
+	//
+	//		5		3
+	//			4
+	//
+	// The follwoing tables shows the weights (simplified respect to the trigonometry)
+	// of all the proximity sensors for the resulting force:
+	//
+	//		0		1		2		3		4		5		6		7
+	//	x	-1		-0.5	0		0.5		1		0.5		0		-0.5
+	//	y	0		0.5		1		0.5		0		-0.5	-1		-0.5
+
+	signed int velX=0, velY=0;
+	unsigned int sumSensorsX=0, sumSensorsY=0;
+	signed int speedL=0, speedR=0;
+
+
+	if(pwm_right_desired < 0) {
+		speedr = -speedr;
+	}
+	if(pwm_left_desired < 0) {
+		speedl = - speedl;
+	}
+
+	velX = (speedr + speedl)/2;
+	velY = (speedr - speedl)/2;
+
+	sumSensorsX = -proximityResult[0] - proximityResult[1]/2 + proximityResult[3]/2 + proximityResult[4] + proximityResult[5]/2 - proximityResult[7]/2;
+	sumSensorsY = proximityResult[1]/2 + proximityResult[2] + proximityResult[3]/2 - proximityResult[5]/2 - proximityResult[6] - proximityResult[7]/2;
+
+	velX += sumSensorsX/4;
+	velY += sumSensorsY/4;
+
+	speedR = (velX + velY);
+	speedL = (velX - velY);
+
+	if(speedL < 0) {
+		speedL = -speedL;
+		pwm_left_working = -(speedL<<2);
+	} else {
+		pwm_left_working = speedL<<2;
+	}
+
+	if(speedR < 0) {
+		speedR = -speedR;
+		pwm_right_working = -(speedR<<2);
+	} else {
+		pwm_right_working = speedR<<2;
+	}
+
+
+	if (pwm_right_working>(MAX_MOTORS_PWM/2)) pwm_right_working=(MAX_MOTORS_PWM/2);
+	if (pwm_left_working>(MAX_MOTORS_PWM/2)) pwm_left_working=(MAX_MOTORS_PWM/2);
+	if (pwm_right_working<-(MAX_MOTORS_PWM/2)) pwm_right_working=-(MAX_MOTORS_PWM/2);
+	if (pwm_left_working<-(MAX_MOTORS_PWM/2)) pwm_left_working=-(MAX_MOTORS_PWM/2);
+
+
+
+/*
 	signed int currentProxValue1=0, currentProxValue2=0, speedL=0, speedR=0;
 
 	if(speedr==0 || speedl==0) {
@@ -984,6 +1051,7 @@ void obstacleAvoidance() {
 	if (pwm_left_working>(MAX_MOTORS_PWM/2)) pwm_left_working=(MAX_MOTORS_PWM/2);
 	if (pwm_right_working<-(MAX_MOTORS_PWM/2)) pwm_right_working=-(MAX_MOTORS_PWM/2);
 	if (pwm_left_working<-(MAX_MOTORS_PWM/2)) pwm_left_working=-(MAX_MOTORS_PWM/2);
+*/
 
 }
 
@@ -1074,11 +1142,13 @@ int main(void) {
 				switch(ir_move) {
 
 					case 5:	// stop motors
+					case 51:
 						pwm_right_desired = 0;
 						pwm_left_desired = 0;
 						break;
 
 					case 2:	// both motors forward
+					case 31:
 						if(pwm_right_desired > pwm_left_desired) {
 							pwm_left_desired = pwm_right_desired;
 						} else {
@@ -1091,6 +1161,7 @@ int main(void) {
 	               		break;
 
 					case 8:	// both motors backward
+					case 30:
 						if(pwm_right_desired < pwm_left) {
 							pwm_left_desired  = pwm_right_desired;
 						} else {
@@ -1103,6 +1174,7 @@ int main(void) {
 	                  	break;
 
 					case 6:	// both motors right
+					case 47:
 						pwm_right_desired -= STEP_MOTORS;
 						pwm_left_desired += STEP_MOTORS;
 	                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
@@ -1110,6 +1182,7 @@ int main(void) {
 						break;
 
 					case 4:	// both motors left
+					case 46:
 						pwm_right_desired += STEP_MOTORS;
 						pwm_left_desired -= STEP_MOTORS;
 		                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
@@ -1137,6 +1210,7 @@ int main(void) {
 						break;
 
 	               	case 0:	// colors
+					case 50:
 						colorState = (colorState+1)%5;
 
 						if(colorState==0) {		// turn on blue
@@ -1186,14 +1260,45 @@ int main(void) {
 					case 33:	// program -
 						cliffAvoidanceEnabled = 0;
 						break;
+					
+					case 52:
+						behaviorState = (behaviorState+1)%4;
+						switch(behaviorState) {
+							case 0: 
+								obstacleAvoidanceEnabled = 0;
+								cliffAvoidanceEnabled = 0;
+								break;
+							case 1:
+								obstacleAvoidanceEnabled = 1;
+								cliffAvoidanceEnabled = 0;
+								break;
+							case 2:
+								obstacleAvoidanceEnabled = 0;
+								cliffAvoidanceEnabled = 1;
+								break;
+							case 3:
+								obstacleAvoidanceEnabled = 1;
+								cliffAvoidanceEnabled = 1;
+								break;
+									
+						}
+						break;		
 
 	               	default:
 	                 	break;
 
 	            }	// switch
-
-				speedr = pwm_right_desired >> 2;
-				speedl = pwm_right_desired >> 2;
+				
+				if(pwm_right_desired >= 0) {
+					speedr = pwm_right_desired >> 2;
+				} else {
+					speedr = (-pwm_right_desired) >> 2;
+				}
+				if(pwm_left_desired >= 0) {
+					speedl = pwm_left_desired >> 2;
+				} else {
+					speedl = (-pwm_left_desired) >> 2;
+				}
 
 			}	// ir command received
 
@@ -1336,30 +1441,20 @@ int main(void) {
 			pwm_red = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[0]&0xFF)/100;
 			pwm_blue = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[1]&0xFF)/100;
 			pwm_green = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[2]&0xFF)/100;
-			//updateRedLed(pwm_red);	
-			//updateGreenLed(pwm_green);
-			//updateBlueLed(pwm_blue);
+			updateRedLed(pwm_red);	
+			updateGreenLed(pwm_green);
+			updateBlueLed(pwm_blue);
 			
 
-			if(rfData[3]== 1) {			// turn on one IR
-				//LED_IR1 = 0;
-				//LED_IR2 = 1;
+			if((rfData[3]&0b00000001)==0b00000001) {	// turn on back IR
 				LED_IR1_LOW;
-				LED_IR2_HIGH;
-			} else if(rfData[3]==2) {	// turn on two IRs
-				//LED_IR1 = 1;
-				//LED_IR2 = 0;
-				LED_IR1_HIGH;
+			} else {
+				LED_IR1_HIGH; 
+			} 
+			
+			if((rfData[3]&0b00000010)==0b00000010) {	// turn on front IRs
 				LED_IR2_LOW;
-			} else if(rfData[3]==3) {	// turn on all three IRs
-				//LED_IR1 = 0;
-				//LED_IR2 = 0;											
-				LED_IR1_LOW;
-				LED_IR2_LOW;
-			} else {					// turn off IRs
-				//LED_IR1 = 1;
-				//LED_IR2 = 1;
-				LED_IR1_HIGH;
+			} else {
 				LED_IR2_HIGH;
 			}
 
@@ -1369,13 +1464,13 @@ int main(void) {
 				irEnabled = 0;
 			}
 
-			if((rfData[3]&0b00100000)==0b00100000) {	// check the sixth bit to enable/disable obstacle avoidance
+			if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
 				obstacleAvoidanceEnabled = 1;
 			} else {
 				obstacleAvoidanceEnabled = 0;
 			}
 
-			if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
+			if((rfData[3]&0b10000000)==0b10000000) {	// check the eight bit to enable/disable obstacle avoidance
 				cliffAvoidanceEnabled = 1;
 			} else {
 				cliffAvoidanceEnabled = 0;
@@ -1401,94 +1496,94 @@ int main(void) {
 
 			switch(packetId) {
 				case 3:
-					currentProxValue = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[0] = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
+					if(proximityResult[0] < 0) {
+						proximityResult[0] = 0;
 					}
-					ackPayload[1] = currentProxValue&0xFF;
-					ackPayload[2] = currentProxValue>>8;
+					ackPayload[1] = proximityResult[0]&0xFF;
+					ackPayload[2] = proximityResult[0]>>8;
 
-					currentProxValue = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[1] = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
+					if(proximityResult[1] < 0) {
+						proximityResult[1] = 0;
 					}					
-					ackPayload[3] = currentProxValue&0xFF;
-					ackPayload[4] = currentProxValue>>8;
+					ackPayload[3] = proximityResult[1]&0xFF;
+					ackPayload[4] = proximityResult[1]>>8;
 
-					currentProxValue = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[2] = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
+					if(proximityResult[2] < 0) {
+						proximityResult[2] = 0;
 					}
-					ackPayload[5] = currentProxValue&0xFF;
-					ackPayload[6] = currentProxValue>>8;
+					ackPayload[5] = proximityResult[2]&0xFF;
+					ackPayload[6] = proximityResult[2]>>8;
 
-					currentProxValue = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[3] = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
+					if(proximityResult[3] < 0) {
+						proximityResult[3] = 0;
 					}
-					ackPayload[7] = currentProxValue&0xFF;
-					ackPayload[8] = currentProxValue>>8;
+					ackPayload[7] = proximityResult[3]&0xFF;
+					ackPayload[8] = proximityResult[3]>>8;
 
-					currentProxValue = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[5] = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
+					if(proximityResult[5] < 0) {
+						proximityResult[5] = 0;
 					}
-					ackPayload[9] = currentProxValue&0xFF;
-					ackPayload[10] = currentProxValue>>8;
+					ackPayload[9] = proximityResult[5]&0xFF;
+					ackPayload[10] = proximityResult[5]>>8;
 
-					currentProxValue = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[6] = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
+					if(proximityResult[6] < 0) {
+						proximityResult[6] = 0;
 					}
-					ackPayload[11] = currentProxValue&0xFF;
-					ackPayload[12] = currentProxValue>>8;
+					ackPayload[11] = proximityResult[6]&0xFF;
+					ackPayload[12] = proximityResult[6]>>8;
 
-					currentProxValue = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[7] = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
+					if(proximityResult[7] < 0) {
+						proximityResult[7] = 0;
 					}
-					ackPayload[13] = currentProxValue&0xFF;
-					ackPayload[14] = currentProxValue>>8;	
+					ackPayload[13] = proximityResult[7]&0xFF;
+					ackPayload[14] = proximityResult[7]>>8;	
 
 					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);		
 					packetId = 4;
 					break;
 
 				case 4:
-					currentProxValue = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[4] = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
+					if(proximityResult[4] < 0) {
+						proximityResult[4] = 0;
 					}
-					ackPayload[1] = currentProxValue&0xFF;
-					ackPayload[2] = currentProxValue>>8;
+					ackPayload[1] = proximityResult[4]&0xFF;
+					ackPayload[2] = proximityResult[4]>>8;
 
-					currentProxValue = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[8] = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
+					if(proximityResult[8] < 0) {
+						proximityResult[8] = 0;
 					}
-					ackPayload[3] = currentProxValue&0xFF;
-					ackPayload[4] = currentProxValue>>8;
+					ackPayload[3] = proximityResult[8]&0xFF;
+					ackPayload[4] = proximityResult[8]>>8;
 
-					currentProxValue = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[9] = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
+					if(proximityResult[9] < 0) {
+						proximityResult[9] = 0;
 					}
-					ackPayload[5] = currentProxValue&0xFF;
-					ackPayload[6] = currentProxValue>>8;
+					ackPayload[5] = proximityResult[9]&0xFF;
+					ackPayload[6] = proximityResult[9]>>8;
 
-					currentProxValue = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[10] = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
+					if(proximityResult[10] < 0) {
+						proximityResult[10] = 0;
 					}
-					ackPayload[7] = currentProxValue&0xFF;
-					ackPayload[8] = currentProxValue>>8;
+					ackPayload[7] = proximityResult[10]&0xFF;
+					ackPayload[8] = proximityResult[10]>>8;
 
-					currentProxValue = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
-					if(currentProxValue < 0) {
-						currentProxValue = 0;
+					proximityResult[11] = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
+					if(proximityResult[11] < 0) {
+						proximityResult[11] = 0;
 					}
-					ackPayload[9] = currentProxValue&0xFF;
-					ackPayload[10] = currentProxValue>>8;
+					ackPayload[9] = proximityResult[11]&0xFF;
+					ackPayload[10] = proximityResult[11]>>8;
 
 					ackPayload[11] = accX&0xFF;
 					ackPayload[12] = accX>>8;
