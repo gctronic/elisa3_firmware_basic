@@ -28,6 +28,7 @@ volatile unsigned int proximityValue[24] = {0};		// array containing the proximi
 													// 17		cliff0	active value
 													// ...
 int proximityResult[12] = {0};				// contains the values of the ambient - (ambient+reflected)
+unsigned int proximityOffset[12] = {0};				// contains the calibration values
 unsigned char adcSaveDataTo = 0;					// indicate where to save the currently sampled channel
 unsigned char adcSamplingState = 0;					// indicate which channel to select
 unsigned char rightChannelPhase = 0;				// right motor phase when the channel was selected
@@ -35,6 +36,9 @@ unsigned char leftChannelPhase = 0;					// left motor phase when the channel was
 unsigned int batteryLevel = 0;
 unsigned char measBattery = 0;
 signed int currentProxValue = 0;
+unsigned char updateProx = 0;
+unsigned long proximitySum[12] = {0};
+unsigned char proxUpdated = 0;
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -91,6 +95,9 @@ unsigned char right_vel_changed = 0;				// the same for the right motor
 signed long int pwm_right_working = 0;				// current temporary pwm used in the controllers
 signed long int pwm_left_working = 0;
 unsigned char update_pwm = 0;						// indicate that the controllers finished and thus the motors pwm can be updated
+unsigned char last_left_vel_value = 0;					// this is the last sampled value for the velocity; it's saved because this value could be wrong (sampled during active phase)
+unsigned char last_right_vel_value = 0;					// thus it is substracted from the sum when computing the average velocity
+unsigned int last_pwm = 0;							// last pwm witten to OCRnx registers
 
 /***********/
 /*** NRF ***/
@@ -131,10 +138,13 @@ unsigned char accelAddress = MMA7455L_ADDR;
 unsigned char useAccel = USE_MMAX7455L;
 signed int accX=0, accY=0, accZ=0;						// raw accelerometer calibrated values
 unsigned int absAccX = 0, absAccY = 0, absAccZ = 0;
-unsigned int accOffsetX = 0;							// values obtained during the calibration process; acc = raw_acc - offset
-unsigned int accOffsetY = 0;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
-unsigned int accOffsetZ = 0;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
+signed int accOffsetX = 0;							// values obtained during the calibration process; acc = raw_acc - offset
+signed int accOffsetY = 0;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
+signed int accOffsetZ = 0;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
 signed int currentAngle = 0;							// current orientation of the robot extracted from both the x and y axes
+signed int accOffsetXSum = 0;
+signed int accOffsetYSum = 0;
+signed int accOffsetZSum = 0;
 
 /***************/
 /*** VARIOUS ***/
@@ -142,6 +152,8 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 unsigned char myTimeout = 0;
 unsigned int delayCounter = 0;
 unsigned char currentSelector = 0;
+unsigned char startCalibration = 0;
+signed int calibrationCycle = 0;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/

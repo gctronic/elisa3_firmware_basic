@@ -29,6 +29,10 @@ extern unsigned int batteryLevel;
 extern unsigned char measBattery;
 extern signed int currentProxValue;
 extern int proximityResult[12];
+extern unsigned int proximityOffset[12];
+extern unsigned char updateProx;
+extern unsigned long proximitySum[12];
+extern unsigned char proxUpdated;
 
 // consumption controller
 extern unsigned int left_current_avg;
@@ -59,6 +63,8 @@ extern unsigned int last_right_vel;
 extern signed long int pwm_right_working;
 extern signed long int pwm_left_working;
 extern unsigned char update_pwm;
+extern unsigned char last_left_vel_value;
+extern unsigned char last_right_vel_value;
 
 // uart
 extern unsigned char peripheralChoice;
@@ -83,6 +89,8 @@ extern unsigned char packetId;
 extern unsigned char myTimeout;
 extern unsigned int delayCounter;
 extern unsigned char currentSelector;
+extern unsigned char startCalibration;
+extern signed int calibrationCycle;
 
 // ir remote control
 extern unsigned char ir_move;
@@ -93,15 +101,18 @@ extern unsigned char behaviorState;
 
 // accelerometer
 extern int accelAddress;
-extern int accX;
-extern int accY;
-extern int accZ;
+extern signed int accX;
+extern signed int accY;
+extern signed int accZ;
 extern unsigned int absAccX, absAccY, absAccZ;
-extern unsigned int accOffsetX;							// values obtained during the calibration process; acc = raw_acc - offset
-extern unsigned int accOffsetY;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
-extern unsigned int accOffsetZ;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
+extern signed int accOffsetX;							// values obtained during the calibration process; acc = raw_acc - offset
+extern signed int accOffsetY;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
+extern signed int accOffsetZ;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
 extern signed int currentAngle;							// current orientation of the robot extracted from both the x and y axes
 extern unsigned char useAccel;
+extern signed int accOffsetXSum;
+extern signed int accOffsetYSum;
+extern signed int accOffsetZSum;
 
 // obstacle avoidance
 extern unsigned char obstacleAvoidanceEnabled;
@@ -121,6 +132,14 @@ FUSES = {
 	.extended = EFUSE_DEFAULT,
 };
 */
+
+unsigned int myAbs(int i) {
+	if(i < 0) {
+		return i*(-1);
+	} else {
+		return -i;
+	}
+}
 
 void usartTransmit(unsigned char data);
 
@@ -188,6 +207,7 @@ ISR(ADC_vect) {
 			currentProx++;
 			if(currentProx > 23) {
 				currentProx = 0;
+				updateProx = 1;
 			}
 			break;
 
@@ -199,6 +219,7 @@ ISR(ADC_vect) {
 		case SAVE_TO_RIGHT_MOTOR_VEL:
 			right_vel_sum += value;
 			num_rvel_samples_avg++;
+			last_left_vel_value = value;
 			break;
 
 		case SAVE_TO_LEFT_MOTOR_CURRENT:
@@ -209,6 +230,7 @@ ISR(ADC_vect) {
 		case SAVE_TO_LEFT_MOTOR_VEL:
 			left_vel_sum += value;
 			num_lvel_samples_avg++;
+			last_right_vel_value = value;
 			break;
 
 	}
@@ -236,8 +258,8 @@ ISR(ADC_vect) {
 
 		case 2:	// right motor
 			currentAdChannel = currentMotRightChannel;
-			rightChannelPhase = rightMotorPhase;
-			if(leftChannelPhase == ACTIVE_PHASE) {
+			rightChannelPhase = rightMotorPhase;			// save the phase (active/passive) when the channel is selected
+			if(leftChannelPhase == ACTIVE_PHASE) {			// check the phase when the channel was selected, not the current one that could be changed in the meantime
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_CURRENT;
 			} else {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_VEL;
@@ -580,7 +602,7 @@ ISR(TIMER1_COMPC_vect) {
 void readAccelXYZ() {
 
 	int i = 0;
-	unsigned char buff[6], ret;
+	unsigned char buff[6];
 
 	if(useAccel == USE_MMAX7455L) {
 
@@ -595,11 +617,37 @@ void readAccelXYZ() {
 		buff[i] = i2c_readNak();					// read last byte
 		i2c_stop();									// set stop conditon = release bus
 
-		// 10 bits valus in 2's complement
-		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-		accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
 
+		if(startCalibration) {
+			// 10 bits valus in 2's complement
+			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+			accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+		} else {
+			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
+			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+			accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;    // Z axis
+			/*
+			if(accOffsetX > 0) {
+				accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;
+			} else {
+				accX = ((((int)buff[1]) << 8) | buff[0]) + ((-accOffsetX)&0x03FF);    // X axis
+			}
+			cli();
+			if((unsigned int)accOffsetY > 32767) {
+				accY = ((((signed int)buff[3]) << 8) | buff[2]) + ((-accOffsetY)&0x03FF);    // Y axis
+			} else {
+				accY = ((((unsigned int)buff[3])<<8) | (unsigned int)buff[2]) - accOffsetY;
+				accY = 0;
+			}
+			sei();
+			if(accOffsetZ > 0) {
+				accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;
+			} else {
+				accZ = ((((int)buff[5]) << 8) | buff[4]) + ((-accOffsetZ)&0x03FF);    // Z axis
+			}
+			*/
+		}
 
 	} else if(useAccel == USE_ADXL345) {	
 
@@ -614,10 +662,16 @@ void readAccelXYZ() {
 		buff[i] = i2c_readNak();					// read last byte
 		i2c_stop();									// set stop conditon = release bus
 
-		// 16 bits values in 2's complement
-		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-		accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+		if(startCalibration) {
+			// 10 bits valus in 2's complement
+			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+			accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+		} else {
+			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
+			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+			accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;    // Z axis
+		}
 
 	} else {
 
@@ -632,7 +686,7 @@ void readAccelXYZ() {
 void readAccelXY() {
 
 	int i = 0;
-	unsigned char buff[4], ret;
+	unsigned char buff[4];
 
 
 	if(useAccel == USE_MMAX7455L) {
@@ -648,8 +702,22 @@ void readAccelXY() {
 		buff[i] = i2c_readNak();					// read last byte
 		i2c_stop();									// set stop conditon = release bus
 
-		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		if(startCalibration) {
+			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		} else {
+			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
+			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+		}
+
+/*
+		if(accX & 0x02000) {	// test 10th bit
+			accX |= 0xFC00;		// fill with ones (negative number in 2's complement)
+		}
+		if(accY & 0x02000) {
+			accY |= 0xFC00;
+		}
+*/
 
 	} else if(useAccel == USE_ADXL345) {
 
@@ -664,8 +732,13 @@ void readAccelXY() {
 		buff[i] = i2c_readNak();					// read last byte
 		i2c_stop();									// set stop conditon = release bus
 
-		accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-		accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		if(startCalibration) {
+			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
+			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+		} else {
+			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
+			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+		}
 
 	} else {
 
@@ -778,7 +851,7 @@ void calibrateAccelerometer() {
 void computeAngle() {
 
 	readAccelXY();
-
+/*
 	if(useAccel == USE_MMAX7455L) {
 		if(accX > 511) {
 			accX -= 1023;
@@ -794,7 +867,7 @@ void computeAngle() {
 		accY = accY-accOffsetY;
 		//accZ = accZ-accOffsetZ;
 	}
-
+*/
 
 /*
 	if(accX < 0) {
@@ -1110,7 +1183,7 @@ int main(void) {
 	initPeripherals();
 
 //PORTB &= ~(1 << 5);
-	calibrateAccelerometer();
+//	calibrateAccelerometer();
 //PORTB |= (1 << 5);
 
 
@@ -1127,8 +1200,214 @@ int main(void) {
 		readAccelXYZ();
 		//PORTB |= (1 << 6);
 
+		if(updateProx) {
+
+			updateProx = 0;
+			if(startCalibration) {
+
+				proximityResult[0] = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
+				if(proximityResult[0] < 0) {
+					proximityResult[0] = 0;
+				}
+
+				proximityResult[1] = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
+				if(proximityResult[1] < 0) {
+					proximityResult[1] = 0;
+				}					
+
+				proximityResult[2] = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
+				if(proximityResult[2] < 0) {
+					proximityResult[2] = 0;
+				}
+
+				proximityResult[3] = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
+				if(proximityResult[3] < 0) {
+					proximityResult[3] = 0;
+				}
+
+				proximityResult[4] = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
+				if(proximityResult[4] < 0) {
+					proximityResult[4] = 0;
+				}
+
+				proximityResult[5] = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
+				if(proximityResult[5] < 0) {
+					proximityResult[5] = 0;
+				}
+
+				proximityResult[6] = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
+				if(proximityResult[6] < 0) {
+					proximityResult[6] = 0;
+				}
+
+				proximityResult[7] = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
+				if(proximityResult[7] < 0) {
+					proximityResult[7] = 0;
+				}	
+
+				proximityResult[8] = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
+				if(proximityResult[8] < 0) {
+					proximityResult[8] = 0;
+				}
+
+				proximityResult[9] = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
+				if(proximityResult[9] < 0) {
+					proximityResult[9] = 0;
+				}
+
+				proximityResult[10] = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
+				if(proximityResult[10] < 0) {
+					proximityResult[10] = 0;
+				}
+
+				proximityResult[11] = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
+				if(proximityResult[11] < 0) {
+					proximityResult[11] = 0;
+				}
+
+			} else { 
+
+				proximityResult[0] = proximityValue[0] - proximityValue[1] - proximityOffset[0];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[0] < 0) {
+					proximityResult[0] = 0;
+				}
+
+				proximityResult[1] = proximityValue[2] - proximityValue[3] - proximityOffset[1];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[1] < 0) {
+					proximityResult[1] = 0;
+				}					
+
+				proximityResult[2] = proximityValue[4] - proximityValue[5] - proximityOffset[2];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[2] < 0) {
+					proximityResult[2] = 0;
+				}
+
+				proximityResult[3] = proximityValue[6] - proximityValue[7] - proximityOffset[3];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[3] < 0) {
+					proximityResult[3] = 0;
+				}
+
+				proximityResult[4] = proximityValue[8] - proximityValue[9] - proximityOffset[4];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[4] < 0) {
+					proximityResult[4] = 0;
+				}
+
+				proximityResult[5] = proximityValue[10] - proximityValue[11] - proximityOffset[5];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[5] < 0) {
+					proximityResult[5] = 0;
+				}
+
+				proximityResult[6] = proximityValue[12] - proximityValue[13] - proximityOffset[6];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[6] < 0) {
+					proximityResult[6] = 0;
+				}
+
+				proximityResult[7] = proximityValue[14] - proximityValue[15] - proximityOffset[7];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[7] < 0) {
+					proximityResult[7] = 0;
+				}	
+
+				proximityResult[8] = proximityValue[16] - proximityValue[17] - proximityOffset[8];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[8] < 0) {
+					proximityResult[8] = 0;
+				}
+
+				proximityResult[9] = proximityValue[18] - proximityValue[19] - proximityOffset[9];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[9] < 0) {
+					proximityResult[9] = 0;
+				}
+
+				proximityResult[10] = proximityValue[20] - proximityValue[21] - proximityOffset[10];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[10] < 0) {
+					proximityResult[10] = 0;
+				}
+
+				proximityResult[11] = proximityValue[22] - proximityValue[23] - proximityOffset[11];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[11] < 0) {
+					proximityResult[11] = 0;
+				}
+
+			}
+			proxUpdated = 1;
+		}
+/*
+		if(delayCounter%78 == 0) {
+			start_control = 1;
+		}
+*/
+/*
+		if(delayCounter >= 10000) {
+			pwm_right_desired = 40;
+			pwm_left_desired = 40;
+		} else {
+			pwm_right_desired = 0;
+			pwm_left_desired = 0;
+		}
+*/
 		if(delayCounter >= 20000) {
 			measBattery = 1;
+			/*
+			motorSpeed = 1 - motorSpeed;
+			if(motorSpeed) {
+				pwm_right_desired = 40;
+				pwm_left_desired = 40;
+			} else {
+				pwm_right_desired = 0;
+				pwm_left_desired = 0;
+			}
+			*/
+		}
+
+
+		if(startCalibration && calibrationCycle<CALIBRATION_CYCLES) {
+
+			if(proxUpdated) {
+
+				proxUpdated = 0;
+				
+				if(calibrationCycle==0) {
+					for(i=0; i<12; i++) {
+						proximitySum[i] = 0;
+					}
+					accOffsetXSum = 0;
+					accOffsetYSum = 0;
+					accOffsetZSum = 0;
+				}
+			
+				for (i=0;i<12;i++) {
+					proximitySum[i] += proximityResult[i];
+				}		
+
+				accOffsetXSum += accX;
+				accOffsetYSum += accY;
+				accOffsetZSum += accZ;
+				
+				calibrationCycle++;
+	
+			}
+
+			continue;
+
+		} else if(calibrationCycle == CALIBRATION_CYCLES) {
+
+			for (i=0;i<12;i++) {
+				proximityOffset[i]=(unsigned int)((float)proximitySum[i]/(float)calibrationCycle);
+			}
+
+			accOffsetX = (signed int)((float)accOffsetXSum/(float)calibrationCycle);				
+			accOffsetY = (signed int)(accOffsetYSum/calibrationCycle);
+			accOffsetZ = (signed int)((float)accOffsetZSum/(float)calibrationCycle);
+
+			startCalibration = 0;
+			calibrationCycle = 0;
+
+			pwm_red = 255;
+			pwm_green = 255;
+			pwm_blue = 255;
+			updateRedLed(pwm_red);
+			updateGreenLed(pwm_green);
+			updateBlueLed(pwm_blue);
+
 		}
 
 		if(irEnabled) {
@@ -1406,7 +1685,7 @@ int main(void) {
 			// it was noticed that some robots sometimes "think" to receive something and the data read are wrong,
 			// this could lead to go to sleep involuntarily; in order to avoid this situation we define that the 
 			// sleep message should be completely zero, but the flag bit
-			if(rfData[0]==0 && rfData[1]==0 && rfData[2]==0 && (rfData[3]==0b00001000 || rfData[3]==0b00011000) && rfData[4]==0 && rfData[5]==0) {
+			if(rfData[0]==0 && rfData[1]==0 && rfData[2]==0 && rfData[3]==0b00001000 && rfData[4]==0 && rfData[5]==0) {
 				//sleep(ALARM_PAUSE_1_MIN);
 			}
 
@@ -1464,6 +1743,17 @@ int main(void) {
 				irEnabled = 0;
 			}
 
+			if((rfData[3]&0b00010000)==0b00010000) {	// check the 5th bit to start calibration of all sensors
+				startCalibration = 1;
+				calibrationCycle = 0;
+				pwm_red = 0;
+				pwm_green = 0;
+				pwm_blue = 0;
+				updateRedLed(pwm_red);
+				updateGreenLed(pwm_green);
+				updateBlueLed(pwm_blue);
+			}
+
 			if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
 				obstacleAvoidanceEnabled = 1;
 			} else {
@@ -1496,96 +1786,36 @@ int main(void) {
 
 			switch(packetId) {
 				case 3:
-					proximityResult[0] = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
-					if(proximityResult[0] < 0) {
-						proximityResult[0] = 0;
-					}
 					ackPayload[1] = proximityResult[0]&0xFF;
-					ackPayload[2] = proximityResult[0]>>8;
-
-					proximityResult[1] = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
-					if(proximityResult[1] < 0) {
-						proximityResult[1] = 0;
-					}					
+					ackPayload[2] = proximityResult[0]>>8;					
 					ackPayload[3] = proximityResult[1]&0xFF;
 					ackPayload[4] = proximityResult[1]>>8;
-
-					proximityResult[2] = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
-					if(proximityResult[2] < 0) {
-						proximityResult[2] = 0;
-					}
 					ackPayload[5] = proximityResult[2]&0xFF;
 					ackPayload[6] = proximityResult[2]>>8;
-
-					proximityResult[3] = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
-					if(proximityResult[3] < 0) {
-						proximityResult[3] = 0;
-					}
 					ackPayload[7] = proximityResult[3]&0xFF;
 					ackPayload[8] = proximityResult[3]>>8;
-
-					proximityResult[5] = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
-					if(proximityResult[5] < 0) {
-						proximityResult[5] = 0;
-					}
 					ackPayload[9] = proximityResult[5]&0xFF;
 					ackPayload[10] = proximityResult[5]>>8;
-
-					proximityResult[6] = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
-					if(proximityResult[6] < 0) {
-						proximityResult[6] = 0;
-					}
 					ackPayload[11] = proximityResult[6]&0xFF;
 					ackPayload[12] = proximityResult[6]>>8;
-
-					proximityResult[7] = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
-					if(proximityResult[7] < 0) {
-						proximityResult[7] = 0;
-					}
 					ackPayload[13] = proximityResult[7]&0xFF;
 					ackPayload[14] = proximityResult[7]>>8;	
-
 					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);		
 					packetId = 4;
 					break;
 
 				case 4:
-					proximityResult[4] = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
-					if(proximityResult[4] < 0) {
-						proximityResult[4] = 0;
-					}
 					ackPayload[1] = proximityResult[4]&0xFF;
 					ackPayload[2] = proximityResult[4]>>8;
-
-					proximityResult[8] = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
-					if(proximityResult[8] < 0) {
-						proximityResult[8] = 0;
-					}
 					ackPayload[3] = proximityResult[8]&0xFF;
 					ackPayload[4] = proximityResult[8]>>8;
-
-					proximityResult[9] = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
-					if(proximityResult[9] < 0) {
-						proximityResult[9] = 0;
-					}
 					ackPayload[5] = proximityResult[9]&0xFF;
 					ackPayload[6] = proximityResult[9]>>8;
-
-					proximityResult[10] = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
-					if(proximityResult[10] < 0) {
-						proximityResult[10] = 0;
-					}
 					ackPayload[7] = proximityResult[10]&0xFF;
 					ackPayload[8] = proximityResult[10]>>8;
-
-					proximityResult[11] = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
-					if(proximityResult[11] < 0) {
-						proximityResult[11] = 0;
-					}
 					ackPayload[9] = proximityResult[11]&0xFF;
 					ackPayload[10] = proximityResult[11]>>8;
-
-					ackPayload[11] = accX&0xFF;
+					ackPayload[11] = accX&0xFF;	//((-accOffsetY)&0x03FF)
 					ackPayload[12] = accX>>8;
 					ackPayload[13] = accY&0xFF;
 					ackPayload[14] = accY>>8;
@@ -1688,13 +1918,21 @@ int main(void) {
 		}
 
 		if(compute_left_vel) {
-			last_left_vel = (unsigned int)(last_left_vel_sum/last_num_lvel_samples_avg);
+			if(last_num_lvel_samples_avg > 1) {
+				last_left_vel = (unsigned int)((last_left_vel_sum-last_left_vel_value)/(last_num_lvel_samples_avg-1));
+			} else {
+				last_left_vel = 0;
+			}
 			left_vel_changed = 1;
 			compute_left_vel = 0;
 		}
 
 		if(compute_right_vel) {
-			last_right_vel = (unsigned int)(last_right_vel_sum/last_num_rvel_samples_avg);
+			if(last_num_rvel_samples_avg > 1) {
+				last_right_vel = (unsigned int)((last_right_vel_sum-last_right_vel_value)/(last_num_rvel_samples_avg-1));
+			} else {
+				last_right_vel = 0;
+			}	
 			right_vel_changed = 1;
 			compute_right_vel = 0;
 		}
@@ -1715,7 +1953,7 @@ int main(void) {
 			} else {
 				OCR4B = -pwm_left;
 			}
-
+/*
 			if(pwm_left == 0) {
 				// select channel 15 to sample left current
 				//currentMotLeftChannel = 15;
@@ -1767,7 +2005,7 @@ int main(void) {
 				TCCR3A |= (1 << COM3B1);		// enable OCB
 				TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
 			}
-
+*/
 		}
 
 	} // while(1)

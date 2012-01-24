@@ -18,6 +18,9 @@
 #ifndef ALARM_PAUSE_1_MIN
 #define ALARM_PAUSE_1_MIN 60u
 #endif
+#ifndef CALIBRATION_CYCLES
+#define CALIBRATION_CYCLES 15
+#endif
 
 /***********/
 /*** NRF ***/
