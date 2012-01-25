@@ -41,19 +41,12 @@ extern unsigned int last_left_current;
 extern unsigned int last_right_current;
 
 // speed controller
-extern unsigned int num_lvel_samples_avg;
-extern volatile unsigned int last_num_lvel_samples_avg;
-extern unsigned int num_rvel_samples_avg;
-extern volatile unsigned int last_num_rvel_samples_avg;
 extern unsigned int left_vel_sum;
-extern volatile unsigned int last_left_vel_sum;
 extern unsigned int right_vel_sum;
-extern volatile unsigned int last_right_vel_sum;
 extern signed long int pwm_right;
 extern signed long int pwm_left;
 extern unsigned char compute_left_vel;
 extern unsigned char compute_right_vel;
-extern unsigned char start_control;
 extern signed long int pwm_right_desired;
 extern signed long int pwm_left_desired;
 extern unsigned char left_vel_changed;
@@ -63,8 +56,8 @@ extern unsigned int last_right_vel;
 extern signed long int pwm_right_working;
 extern signed long int pwm_left_working;
 extern unsigned char update_pwm;
-extern unsigned char last_left_vel_value;
-extern unsigned char last_right_vel_value;
+extern unsigned char firstSampleRight;
+extern unsigned char firstSampleLeft;
 
 // uart
 extern unsigned char peripheralChoice;
@@ -217,9 +210,14 @@ ISR(ADC_vect) {
 			break;
 
 		case SAVE_TO_RIGHT_MOTOR_VEL:
+			if(firstSampleRight > 0) {
 			right_vel_sum += value;
-			num_rvel_samples_avg++;
-			last_left_vel_value = value;
+				firstSampleRight++;
+				if(firstSampleRight==5) {
+					firstSampleRight = 0;
+					compute_right_vel = 1;
+				}
+			}
 			break;
 
 		case SAVE_TO_LEFT_MOTOR_CURRENT:
@@ -228,11 +226,19 @@ ISR(ADC_vect) {
 			break;
 
 		case SAVE_TO_LEFT_MOTOR_VEL:
+			//PORTB ^= (1 << 7);
+			if(firstSampleLeft > 0) {
 			left_vel_sum += value;
-			num_lvel_samples_avg++;
-			last_right_vel_value = value;
+				firstSampleLeft++;
+				if(firstSampleLeft==5) {
+					firstSampleLeft = 0;
+					compute_left_vel = 1;
+				}
+			}
 			break;
 
+		case SKIP_SAMPLE:
+			break;
 	}
 
 	// select next channel
@@ -243,8 +249,10 @@ ISR(ADC_vect) {
 			currentAdChannel = currentProx>>1;	// when currentProx is odd it means it is the active phase (pulse on)
 			if(rightChannelPhase == ACTIVE_PHASE) {			// the first time this isn't really correct
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_CURRENT;
-			} else {
+			} else if(rightChannelPhase == PASSIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_VEL;
+			} else {
+				adcSaveDataTo = SKIP_SAMPLE;
 			}
 			adcSamplingState = 1;
 			break;
@@ -258,11 +266,13 @@ ISR(ADC_vect) {
 
 		case 2:	// right motor
 			currentAdChannel = currentMotRightChannel;
-			rightChannelPhase = rightMotorPhase;			// save the phase (active/passive) when the channel is selected
-			if(leftChannelPhase == ACTIVE_PHASE) {			// check the phase when the channel was selected, not the current one that could be changed in the meantime
+			rightChannelPhase = rightMotorPhase;
+			if(leftChannelPhase == ACTIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_CURRENT;
-			} else {
+			} else if(leftChannelPhase == PASSIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_VEL;
+			} else {
+				adcSaveDataTo = SKIP_SAMPLE;
 			}
 			adcSamplingState = 3;
 			break;
@@ -272,8 +282,10 @@ ISR(ADC_vect) {
 			leftChannelPhase = leftMotorPhase;
 			if(rightChannelPhase == ACTIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_CURRENT;
-			} else {
+			} else if(rightChannelPhase == PASSIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_RIGHT_MOTOR_VEL;
+			} else {
+				adcSaveDataTo = SKIP_SAMPLE;
 			}
 			adcSamplingState = 4;
 			break;
@@ -283,8 +295,10 @@ ISR(ADC_vect) {
 			rightChannelPhase = rightMotorPhase;	
 			if(leftChannelPhase == ACTIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_CURRENT;
-			} else {
+			} else if(leftChannelPhase == PASSIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_VEL;
+			} else {
+				adcSaveDataTo = SKIP_SAMPLE;
 			}
 			adcSamplingState = 0;
 
@@ -424,48 +438,36 @@ ISR(TIMER4_OVF_vect) {
 
 //	PORTB &= ~(1 << 6);
 
-	leftMotorPhase = ACTIVE_PHASE;
-
-	// copy sampling variables
-	last_left_current = left_current_avg;
-	last_num_lvel_samples_avg = num_lvel_samples_avg;
-	last_left_vel_sum = left_vel_sum;
-
-	// reset sampling variables
-	left_current_avg = 0;
-	num_lvel_samples_avg = 0;
-	left_vel_sum = 0;
-
-	// start control
-	compute_left_vel = 1;
-	start_control = 1;
-
-	// PORTB ^= (1 << 7); // Toggle the LED
-
 	if(pwm_left == 0) {
+		left_vel_sum = 0;
+		last_left_vel = 0;
+		left_current_avg = 0;
+		leftMotorPhase = NO_PHASE;
 		// select channel 15 to sample left current
-		currentMotLeftChannel = 15;
-//		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
-//		PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
-//		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
-//		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+		//currentMotLeftChannel = 15;
+		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
+		PORTH &= ~(1 << 4) & ~(1 << 3);				// output to 0
+		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
+		//TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
 	} else if(pwm_left > 0) {   		// move forward
+		leftMotorPhase = ACTIVE_PHASE;
 		// select channel 15 to sample left current
 		currentMotLeftChannel = 15;
-//		TCCR4A  &= ~(1 << COM4B1);		// disable OCB
-//		TIMSK4 &= ~(1 << OCIE4B);		// disable OCB interrupt
-//		PORTH &= ~(1 << 4);				// output to 0
-//		TCCR4A |= (1 << COM4A1);		// enable OCA
-//		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt
+		TCCR4A  &= ~(1 << COM4B1);		// disable OCB
+		TIMSK4 &= ~(1 << OCIE4B);		// disable OCB interrupt
+		PORTH &= ~(1 << 4);				// output to 0
+		TCCR4A |= (1 << COM4A1);		// enable OCA
+		TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt
 	} else if(pwm_left < 0) {      		// move backward
+		leftMotorPhase = ACTIVE_PHASE;
 		// select channel 14 to sample left current
 		currentMotLeftChannel = 14;
-//		TCCR4A  &= ~(1 << COM4A1);		// disable OCA
-//		TIMSK4 &= ~(1 << OCIE4A);		// disable OCA interrupt
-//		PORTH &= ~(1 << 3);				// output to 0
-//		TCCR4A |= (1 << COM4B1);		// enable OCB
-//		TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
+		TCCR4A  &= ~(1 << COM4A1);		// disable OCA
+		TIMSK4 &= ~(1 << OCIE4A);		// disable OCA interrupt
+		PORTH &= ~(1 << 3);				// output to 0
+		TCCR4A |= (1 << COM4B1);		// enable OCB
+		TIMSK4 |= (1 << OCIE4B);		// enable OCB interrupt
 	}
 
 //	PORTB |= (1 << 6);
@@ -481,6 +483,8 @@ ISR(TIMER4_COMPA_vect) {
 	// select channel 14 to sample the left velocity
 	currentMotLeftChannel = 14;
 
+	firstSampleLeft = 1;
+
 //	PORTB |= (1 << 6);
 
 }
@@ -494,6 +498,8 @@ ISR(TIMER4_COMPB_vect) {
 	// select channel 15 to sample the left velocity
 	currentMotLeftChannel = 15;
 
+	firstSampleLeft = 1;
+
 //	PORTB |= (1 << 6);
 
 }
@@ -503,47 +509,38 @@ ISR(TIMER3_OVF_vect) {
 
 //	PORTB &= ~(1 << 6);
 
-	rightMotorPhase = ACTIVE_PHASE;
-
-	// copy sampling variables
-	last_right_current = right_current_avg;
-	last_right_vel_sum = right_vel_sum;
-	last_num_rvel_samples_avg = num_rvel_samples_avg;
-
-	// reset sampling variables
-	right_current_avg = 0;
-	right_vel_sum = 0;
-	num_rvel_samples_avg = 0;
-
-	// start control
-	compute_right_vel = 1;
-
   	// PORTB ^= (1 << 7); // Toggle the LED
 
 	if(pwm_right == 0) {
+		right_vel_sum = 0;
+		last_right_vel = 0;
+		right_current_avg = 0;
+		rightMotorPhase = NO_PHASE;
 		// select channel 13 to sample left current
-		currentMotRightChannel = 13;
-//		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
-//		PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
-//		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
-//		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
+		//currentMotRightChannel = 13;
+		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
+		PORTE &= ~(1 << 4) & ~(1 << 3);				// output to 0
+		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
+		//TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
 	}else if(pwm_right > 0) {   		// move forward
+		rightMotorPhase = ACTIVE_PHASE;
 		// select channel 13 to sample left current
 		currentMotRightChannel = 13;
-//		TCCR3A  &= ~(1 << COM3B1);		// disable OCB
-//		TIMSK3 &= ~(1 << OCIE3B);		// disable OCB interrupt
-//		PORTE &= ~(1 << 4);				// output to 0
-//		TCCR3A |= (1 << COM3A1);		// enable OCA
-//		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt
+		TCCR3A  &= ~(1 << COM3B1);		// disable OCB
+		TIMSK3 &= ~(1 << OCIE3B);		// disable OCB interrupt
+		PORTE &= ~(1 << 4);				// output to 0
+		TCCR3A |= (1 << COM3A1);		// enable OCA
+		TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt
 	} else if(pwm_right < 0) {      	// move backward
+		rightMotorPhase = ACTIVE_PHASE;
 		// select channel 12 to sample left current
 		currentMotRightChannel = 12;
-//		TCCR3A  &= ~(1 << COM3A1);		// disable OCA
-//		TIMSK3 &= ~(1 << OCIE3A);		// disable OCA interrupt
-//		PORTE &= ~(1 << 3);				// output to 0
-//		TCCR3A |= (1 << COM3B1);		// enable OCB
-//		TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
+		TCCR3A  &= ~(1 << COM3A1);		// disable OCA
+		TIMSK3 &= ~(1 << OCIE3A);		// disable OCA interrupt
+		PORTE &= ~(1 << 3);				// output to 0
+		TCCR3A |= (1 << COM3B1);		// enable OCB
+		TIMSK3 |= (1 << OCIE3B);		// enable OCB interrupt
 	}
 
 //	PORTB |= (1 << 6);
@@ -559,6 +556,8 @@ ISR(TIMER3_COMPA_vect) {
 	// select channel 12 to sample the right velocity
 	currentMotRightChannel = 12;
 
+	firstSampleRight = 1;
+
 //	PORTB |= (1 << 6);
 }
 
@@ -570,6 +569,8 @@ ISR(TIMER3_COMPB_vect) {
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 13 to sample the right velocity
 	currentMotRightChannel = 13;
+
+	firstSampleRight = 1;
 
 //	PORTB |= (1 << 6);
 }
@@ -1593,12 +1594,6 @@ int main(void) {
 			sendAdcValues = 0;
 			myTimeout = 0;
 			
-			//last_right_vel_sum = (unsigned int)(last_right_vel_sum/last_num_rvel_samples_avg);
-
-			//PORTB &= ~(1 << 6);
-			//last_left_vel_sum = (unsigned int)(last_left_vel_sum/last_num_lvel_samples_avg);
-			//PORTB |= (1 << 6);
-
 			usartTransmit(0xAA);
 			usartTransmit(0xAA);
 			for(i=0; i<24; i++) {
@@ -1616,31 +1611,11 @@ int main(void) {
 			// two possible cases cause the number of samples to be zero:
 			// - when the pwm is at its maximum (thus no passive phase)
 			// - a missing output compare match interrupt that indicates the start of the passive phase
-			if(last_num_rvel_samples_avg != 0) {
-				usartTransmit((unsigned char)((last_right_vel_sum/last_num_rvel_samples_avg)&0xFF));
-				usartTransmit((unsigned char)((last_right_vel_sum/last_num_rvel_samples_avg)>>8));
-			} else {
-				usartTransmit((unsigned char)((1023)&0xFF));	// probably we don't use the pwm to its maximum, so
-				usartTransmit((unsigned char)((1023)>>8));	// if the number of samples is 0 it means that the 
-				//usartTransmit((unsigned char)((0)&0xFF));		// interrupt was missed (...it is really possible?)
-				//usartTransmit((unsigned char)((0)>>8));
-			}
+			usartTransmit((unsigned char)(last_right_vel&0xFF));
+			usartTransmit((unsigned char)(last_right_vel>>8));
+			usartTransmit((unsigned char)(last_left_vel&0xFF));
+			usartTransmit((unsigned char)(last_left_vel>>8));
 
-			//usartTransmit((unsigned char)(last_num_rvel_samples_avg&0xFF));
-			//usartTransmit((unsigned char)(last_num_rvel_samples_avg>>8));
-
-			//usartTransmit((unsigned char)(last_num_lvel_samples_avg&0xFF));
-			//usartTransmit((unsigned char)(last_num_lvel_samples_avg>>8));
-						
-			if(last_num_lvel_samples_avg != 0) {
-				usartTransmit((unsigned char)((last_left_vel_sum/last_num_lvel_samples_avg)&0xFF));
-				usartTransmit((unsigned char)((last_left_vel_sum/last_num_lvel_samples_avg)>>8));
-			} else {
-				usartTransmit((unsigned char)((1023)&0xFF));
-				usartTransmit((unsigned char)((1023)>>8));
-				//usartTransmit((unsigned char)((0)&0xFF));
-				//usartTransmit((unsigned char)((0)>>8));
-			}
 			
 			readAccelXYZ();
 			usartTransmit(accX&0xFF);
@@ -1874,29 +1849,32 @@ int main(void) {
 
 		if(currentSelector == 0) {	// no control
 
-			if(start_control) {
-				pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
-				pwm_left_working = pwm_left_desired;
+			pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
+			pwm_left_working = pwm_left_desired;
 				
-				if(obstacleAvoidanceEnabled) {
-					//PORTB &= ~(1 << 7);
-					obstacleAvoidance();
-					//PORTB |= (1 << 7);				
-				}
-				
-				if(cliffAvoidanceEnabled) {
-					cliffAvoidance();
-				}
-				start_control = 0;
-				update_pwm = 1;
+			if(obstacleAvoidanceEnabled) {
+				//PORTB &= ~(1 << 7);
+				obstacleAvoidance();
+				//PORTB |= (1 << 7);				
 			}
+				
+			if(cliffAvoidanceEnabled) {
+				cliffAvoidance();
+			}
+			
+			update_pwm = 1;
 
 		} else if(currentSelector == 2) {		// speed control
 
-			if(start_control && left_vel_changed && right_vel_changed) {
+			if(pwm_left==0 || pwm_right==0) {
 				pwm_right_working = pwm_right_desired;
 				pwm_left_working = pwm_left_desired;
-				start_control = 0;
+				update_pwm = 1;
+			}
+			
+			if(left_vel_changed && right_vel_changed) {
+				pwm_right_working = pwm_right_desired;
+				pwm_left_working = pwm_left_desired;
 				left_vel_changed = 0;
 				right_vel_changed = 0;
 				//angle_changed = 0;
@@ -1918,23 +1896,17 @@ int main(void) {
 		}
 
 		if(compute_left_vel) {
-			if(last_num_lvel_samples_avg > 1) {
-				last_left_vel = (unsigned int)((last_left_vel_sum-last_left_vel_value)/(last_num_lvel_samples_avg-1));
-			} else {
-				last_left_vel = 0;
-			}
+			last_left_vel = left_vel_sum>>2;
 			left_vel_changed = 1;
 			compute_left_vel = 0;
+			left_vel_sum = 0;
 		}
 
 		if(compute_right_vel) {
-			if(last_num_rvel_samples_avg > 1) {
-				last_right_vel = (unsigned int)((last_right_vel_sum-last_right_vel_value)/(last_num_rvel_samples_avg-1));
-			} else {
-				last_right_vel = 0;
-			}	
+			last_right_vel = right_vel_sum>>2;
 			right_vel_changed = 1;
 			compute_right_vel = 0;
+			right_vel_sum = 0;
 		}
 
 		if(update_pwm) {
@@ -1944,14 +1916,14 @@ int main(void) {
 			pwm_right = pwm_right_working;
 
 			if(pwm_right >= 0) {
-				OCR3A = (int)pwm_right;
+				OCR3A = (unsigned int)pwm_right;
 			} else {
-				OCR3B = (int)(-pwm_right);
+				OCR3B = (unsigned int)(-pwm_right);
 			}
 			if(pwm_left >= 0) {
-				OCR4A = pwm_left;
+				OCR4A = (unsigned int)pwm_left;
 			} else {
-				OCR4B = -pwm_left;
+				OCR4B =(unsigned int)( -pwm_left);
 			}
 /*
 			if(pwm_left == 0) {

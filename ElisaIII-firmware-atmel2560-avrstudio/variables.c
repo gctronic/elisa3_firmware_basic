@@ -51,14 +51,8 @@ unsigned int last_right_current = 0;
 /************************/
 /*** SPEED CONTROLLER ***/
 /************************/
-unsigned int num_lvel_samples_avg = 0;				// current number of samples received for filtering (average) the left velocity value
-volatile unsigned int last_num_lvel_samples_avg = 0;
-unsigned int num_rvel_samples_avg = 0;				// current number of samples received for filtering (average) the right velocity value
-volatile unsigned int last_num_rvel_samples_avg = 0;
 unsigned int left_vel_sum = 0;						// sum of all the adc values (at the end they will be divided by the total number of samples received)
-volatile unsigned int last_left_vel_sum = 0;
 unsigned int right_vel_sum = 0;
-volatile unsigned int last_right_vel_sum = 0;
 unsigned int last_left_vel = 0;
 unsigned int last_right_vel = 0;
 signed long int max_pwm_right = MAX_MOTORS_PWM;		// if the period of the motors is changed at runtime, also the maximum pwm (60%) value
@@ -88,16 +82,13 @@ signed long int right_increment = 0;
 //signed int current_angle = 0;
 unsigned char compute_left_vel = 0;					// set at the beginning of the period to indicate that a new measure of the motor speed can be
 unsigned char compute_right_vel = 0;
-unsigned char start_control = 0;					// set at the beginning of the motors period to indicate that the controllers can be started
-													// using information coming from the previous cycle
 unsigned char left_vel_changed = 0;					// indicate that a new speed for the left motor is measured and ready to be used
 unsigned char right_vel_changed = 0;				// the same for the right motor
 signed long int pwm_right_working = 0;				// current temporary pwm used in the controllers
 signed long int pwm_left_working = 0;
 unsigned char update_pwm = 0;						// indicate that the controllers finished and thus the motors pwm can be updated
-unsigned char last_left_vel_value = 0;					// this is the last sampled value for the velocity; it's saved because this value could be wrong (sampled during active phase)
-unsigned char last_right_vel_value = 0;					// thus it is substracted from the sum when computing the average velocity
-unsigned int last_pwm = 0;							// last pwm witten to OCRnx registers
+unsigned char firstSampleRight = 1;
+unsigned char firstSampleLeft = 1;
 
 /***********/
 /*** NRF ***/

@@ -147,11 +147,13 @@
 /***********/
 #define ACTIVE_PHASE 0
 #define PASSIVE_PHASE 1
+#define NO_PHASE 2	// when pwm = 0
 #define SAVE_TO_PROX 0
 #define SAVE_TO_RIGHT_MOTOR_CURRENT 1
 #define SAVE_TO_RIGHT_MOTOR_VEL 2
 #define SAVE_TO_LEFT_MOTOR_CURRENT 3
 #define SAVE_TO_LEFT_MOTOR_VEL 4
+#define SKIP_SAMPLE 5
 
 /***********************/
 /*** CLIFF AVOIDANCE ***/
