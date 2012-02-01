@@ -6,5 +6,6 @@
 
 void initUsart();
 void usartTransmit(unsigned char data);
+void closeUsart();
 
 #endif

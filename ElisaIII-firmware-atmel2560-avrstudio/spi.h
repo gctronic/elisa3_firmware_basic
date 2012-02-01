@@ -48,6 +48,7 @@ void SPI_Write_Block (uint8_t * data, uint8_t len);
  */
 uint8_t SPI_Write_Byte (uint8_t data);
 
+void closeSPI();
 
 
 #endif /* SPI_H_ */

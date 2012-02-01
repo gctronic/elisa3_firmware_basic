@@ -2,6 +2,7 @@
 
 #include <avr\io.h>
 #include <avr\interrupt.h>
+#include <avr\sleep.h>
 #include <math.h>
 #include "constants.h"
 #include "ports_io.h"
@@ -43,18 +44,18 @@ extern unsigned int last_right_current;
 // speed controller
 extern unsigned int left_vel_sum;
 extern unsigned int right_vel_sum;
-extern signed long int pwm_right;
-extern signed long int pwm_left;
+extern signed int pwm_right;
+extern signed int pwm_left;
 extern unsigned char compute_left_vel;
 extern unsigned char compute_right_vel;
-extern signed long int pwm_right_desired;
-extern signed long int pwm_left_desired;
+extern signed int pwm_right_desired;
+extern signed int pwm_left_desired;
 extern unsigned char left_vel_changed;
 extern unsigned char right_vel_changed;
-extern unsigned int last_left_vel;
-extern unsigned int last_right_vel;
-extern signed long int pwm_right_working;
-extern signed long int pwm_left_working;
+extern signed int last_left_vel;
+extern signed int last_right_vel;
+extern signed int pwm_right_working;
+extern signed int pwm_left_working;
 extern unsigned char update_pwm;
 extern unsigned char firstSampleRight;
 extern unsigned char firstSampleLeft;
@@ -72,8 +73,8 @@ extern unsigned char blinkState;
 
 // nrf
 extern unsigned int dataLED[3];
-extern unsigned char speedl;
-extern unsigned char speedr;
+extern signed int speedl;
+extern signed int speedr;
 extern unsigned char rfData[PAYLOAD_SIZE];
 extern unsigned char ackPayload[16];
 extern unsigned char packetId;
@@ -106,6 +107,10 @@ extern unsigned char useAccel;
 extern signed int accOffsetXSum;
 extern signed int accOffsetYSum;
 extern signed int accOffsetZSum;
+extern unsigned char prev_position; 
+extern unsigned char curr_position;
+extern unsigned char times_in_same_pos;
+extern unsigned char orizzontal_position;
 
 // obstacle avoidance
 extern unsigned char obstacleAvoidanceEnabled;
@@ -126,6 +131,11 @@ FUSES = {
 };
 */
 
+void initAdc();
+void initPwm();
+void initI2C();
+
+
 unsigned int myAbs(int i) {
 	if(i < 0) {
 		return i*(-1);
@@ -134,7 +144,104 @@ unsigned int myAbs(int i) {
 	}
 }
 
-void usartTransmit(unsigned char data);
+void initPeripherals(void) {
+
+	cli();			// disable global interrupts (by default it should already be disabled)
+
+	initPortsIO();
+	initAdc();
+	initPwm();
+	initSPI();
+	mirf_init();
+	initUsart();
+	initI2C();
+	e_init_remote_control();
+
+	sei();			// enable global interrupts
+
+	
+}
+
+// used only for wake-up from sleep
+ISR(TIMER2_OVF_vect) {
+
+}
+
+void sleep(unsigned char seconds) {
+
+	unsigned int pause = seconds*30;	// the timer2 used to wake-up from sleep is configured to run at 30 Hz
+
+	// disable external interrupt because it uses the timer2 to interpret the tv
+	// remote signal and the timer2 must be free in order to be used for wake-up from sleep
+	PCICR &= ~(1 << PCIE1);			// disable interrupt from falling edge
+	PCMSK1 &= ~(1 << PCINT15);		
+
+	// disable adc
+	ADCSRA = 0x00;	// disable interrupt and turn off adc
+
+	// disable motors pwm
+	TCCR3A = 0x00;	// turn off timer
+	TCCR3B = 0x00;
+	TIMSK3 = 0x00;	// disable interrupt
+	TCCR4A = 0x00;
+	TCCR4B = 0x00;
+	TIMSK4 = 0x00;
+
+	// disable leds pwm
+	TCCR1A = 0x00;	// turn off timer
+	TCCR1B = 0x00;
+
+	// close communication channels
+	closeUsart();
+	closeSPI();
+	i2c_close();
+
+	// set port pins
+	initPortsIO();
+	//PORTB &= ~(1 << 5) & ~(1 << 6) & ~(1 << 7);
+	PORTC &= ~(1 << 7); // sleep pin
+	//PORTB &= ~(1 << 4);	// radio CE pin
+	PORTD = 0x00;	// I2C and uart pins to 0
+
+	// set timer2 for wake-up: 
+	// source clock = 8 MHz
+	// prescaler = 1/1024 => 7812.5 Hz
+	// max delay = 7812.5 / 256 = about 30 Hz (33 ms)
+	TIMSK2 = 0x01; //(1 << TOIE2);
+	TCCR2A &= ~(1 << WGM21); 	// mode 0 => normal mode
+	TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);	// 1/1024 prescaler
+
+	// set extendend standby mode and enable it
+	//SMCR |= (1 << SM2) | (1 << SM1) | (1 << SM0) | (1 << SE);	// extended standby
+	SMCR |= (1 << SM1) | (1 << SE);
+	//SMCR |= (1 << SE);	// idle mode
+
+	while(pause > 0) {	
+		// enter extended standby mode
+		//sleep_cpu();
+		__asm__("sleep");
+		pause--;
+//		PORTB ^= (1 << 6);
+	}
+
+	// disable power mode
+	//SMCR &= ~(1 << SE);
+	SMCR = 0x00;
+
+	// disable timer2 and its timer overflow interrupt
+	TCCR2B &= ~(1 << CS22) &~(1 << CS21) &~(1 << CS20);	// disable timer2
+	TIMSK2 = 0;					// disable all interrupt for timer2
+	TCCR2A |= (1 << WGM21); 	// mode 2 => CTC mode
+
+	pwm_red = 255;
+	pwm_green = 255;
+	pwm_blue = 255;
+	pwm_right = 0;
+	pwm_left = 0;
+	initPeripherals();
+
+}
+
 
 // Data shared between the ISR and main program must be both volatile 
 // and global in scope to avoid compiler optimizations that could lead to
@@ -148,8 +255,6 @@ void usartTransmit(unsigned char data);
 //      {
 //         MyValue_Local = MyValue_Global;
 //      } 
-
-
 
 
 void initAdc(void) {
@@ -211,11 +316,13 @@ ISR(ADC_vect) {
 
 		case SAVE_TO_RIGHT_MOTOR_VEL:
 			if(firstSampleRight > 0) {
-			right_vel_sum += value;
 				firstSampleRight++;
-				if(firstSampleRight==5) {
-					firstSampleRight = 0;
-					compute_right_vel = 1;
+				if(firstSampleRight > 4) {		// to skip undesired samples (3 samples skipped)
+					right_vel_sum += value;
+					if(firstSampleRight==8) {	// number of samples to take for the speed computation
+						firstSampleRight = 0;
+						compute_right_vel = 1;
+					}
 				}
 			}
 			break;
@@ -228,11 +335,13 @@ ISR(ADC_vect) {
 		case SAVE_TO_LEFT_MOTOR_VEL:
 			//PORTB ^= (1 << 7);
 			if(firstSampleLeft > 0) {
-			left_vel_sum += value;
 				firstSampleLeft++;
-				if(firstSampleLeft==5) {
-					firstSampleLeft = 0;
-					compute_left_vel = 1;
+				if(firstSampleLeft > 4) {
+					left_vel_sum += value;
+					if(firstSampleLeft==8) {
+						firstSampleLeft = 0;
+						compute_left_vel = 1;
+					}
 				}
 			}
 			break;
@@ -380,7 +489,7 @@ ISR(ADC_vect) {
 
 
 void initPwm() {
-
+/*
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
 	// Period freq = Fosc/TOP (max timer value) => TOP = Fosc/period freq
@@ -397,7 +506,7 @@ void initPwm() {
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
-
+*/
 	// Motor right timer3/pwm
 	// Timers clock input = Fosc = 8 MHz
 	// Period freq = Fosc/TOP (max timer value) => TOP = Fosc/period freq
@@ -439,10 +548,25 @@ ISR(TIMER4_OVF_vect) {
 //	PORTB &= ~(1 << 6);
 
 	if(pwm_left == 0) {
+		//firstSampleLeft = 0;
 		left_vel_sum = 0;
 		last_left_vel = 0;
 		left_current_avg = 0;
-		leftMotorPhase = NO_PHASE;
+
+		//leftMotorPhase = NO_PHASE;
+		//compute_left_vel = 1;
+
+		if(prev_pwm_left < 0) {
+			leftMotorPhase = PASSIVE_PHASE;
+			// select channel 14 to sample the left velocity
+			currentMotLeftChannel = 15;
+		} else {
+			leftMotorPhase = PASSIVE_PHASE;
+			// select channel 14 to sample the left velocity
+			currentMotLeftChannel = 14;		
+		}
+		firstSampleLeft = 1;
+
 		// select channel 15 to sample left current
 		//currentMotLeftChannel = 15;
 		TCCR4A  &= ~(1 << COM4A1) & ~(1 << COM4B1);	// disable OCA and OCB
@@ -450,6 +574,7 @@ ISR(TIMER4_OVF_vect) {
 		TIMSK4 &= ~(1 << OCIE4B) & ~(1 << OCIE4A);	// disable OCA and OCB interrupt
 		//TIMSK4 |= (1 << OCIE4A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
+		TIFR4 |= (1 << OCF4A) | (1 << OCF4B);
 	} else if(pwm_left > 0) {   		// move forward
 		leftMotorPhase = ACTIVE_PHASE;
 		// select channel 15 to sample left current
@@ -479,6 +604,10 @@ ISR(TIMER4_COMPA_vect) {
 
 //	PORTB &= ~(1 << 6);
 
+//	if(pwm_left == 0) {
+//		return;
+//	}
+
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 14 to sample the left velocity
 	currentMotLeftChannel = 14;
@@ -493,6 +622,10 @@ ISR(TIMER4_COMPA_vect) {
 ISR(TIMER4_COMPB_vect) {
 
 //	PORTB &= ~(1 << 6);
+
+//	if(pwm_left == 0) {
+//		return;
+//	}
 
 	leftMotorPhase = PASSIVE_PHASE;
 	// select channel 15 to sample the left velocity
@@ -512,10 +645,24 @@ ISR(TIMER3_OVF_vect) {
   	// PORTB ^= (1 << 7); // Toggle the LED
 
 	if(pwm_right == 0) {
+		//firstSampleRight = 0;
 		right_vel_sum = 0;
 		last_right_vel = 0;
 		right_current_avg = 0;
-		rightMotorPhase = NO_PHASE;
+		//rightMotorPhase = NO_PHASE;
+		//compute_right_vel = 1;
+
+		if(prev_pwm_right < 0) {
+			rightMotorPhase = PASSIVE_PHASE;
+			// select channel 12 to sample the right velocity
+			currentMotRightChannel = 13;
+		} else {
+			rightMotorPhase = PASSIVE_PHASE;
+			// select channel 12 to sample the right velocity
+			currentMotRightChannel = 12;
+		}
+		firstSampleRight = 1;
+
 		// select channel 13 to sample left current
 		//currentMotRightChannel = 13;
 		TCCR3A  &= ~(1 << COM3A1) & ~(1 << COM3B1);	// disable OCA and OCB
@@ -523,6 +670,7 @@ ISR(TIMER3_OVF_vect) {
 		TIMSK3 &= ~(1 << OCIE3B) & ~(1 << OCIE3A);	// disable OCA and OCB interrupt
 		//TIMSK3 |= (1 << OCIE3A);		// enable OCA interrupt => sampling of velocity is enabled even if 
 										// the pwm is turned off...is it correct??
+		TIFR3 |= (1 << OCF3A) | (1 << OCF3B);
 	}else if(pwm_right > 0) {   		// move forward
 		rightMotorPhase = ACTIVE_PHASE;
 		// select channel 13 to sample left current
@@ -550,7 +698,11 @@ ISR(TIMER3_OVF_vect) {
 // motor right forward
 ISR(TIMER3_COMPA_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 5);
+
+//	if(pwm_right == 0) {
+//		return;
+//	}
 
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 12 to sample the right velocity
@@ -558,13 +710,18 @@ ISR(TIMER3_COMPA_vect) {
 
 	firstSampleRight = 1;
 
-//	PORTB |= (1 << 6);
+//	PORTB |= (1 << 5);
+
 }
 
 // motor right backward
 ISR(TIMER3_COMPB_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	PORTB &= ~(1 << 5);
+
+	if(pwm_right == 0) {
+		return;
+	}
 
 	rightMotorPhase = PASSIVE_PHASE;
 	// select channel 13 to sample the right velocity
@@ -572,7 +729,7 @@ ISR(TIMER3_COMPB_vect) {
 
 	firstSampleRight = 1;
 
-//	PORTB |= (1 << 6);
+//	PORTB |= (1 << 5);
 }
 
 /*
@@ -603,7 +760,7 @@ ISR(TIMER1_COMPC_vect) {
 void readAccelXYZ() {
 
 	int i = 0;
-	unsigned char buff[6];
+	signed char buff[6];
 
 	if(useAccel == USE_MMAX7455L) {
 
@@ -621,33 +778,13 @@ void readAccelXYZ() {
 
 		if(startCalibration) {
 			// 10 bits valus in 2's complement
-			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-			accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+			accX = ((signed int)buff[1]<<8)|buff[0];    // X axis
+			accY = ((signed int)buff[3]<<8)|buff[2];    // Y axis
+			accZ = ((signed int)buff[5]<<8)|buff[4];    // Z axis
 		} else {
-			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
-			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
-			accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;    // Z axis
-			/*
-			if(accOffsetX > 0) {
-				accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;
-			} else {
-				accX = ((((int)buff[1]) << 8) | buff[0]) + ((-accOffsetX)&0x03FF);    // X axis
-			}
-			cli();
-			if((unsigned int)accOffsetY > 32767) {
-				accY = ((((signed int)buff[3]) << 8) | buff[2]) + ((-accOffsetY)&0x03FF);    // Y axis
-			} else {
-				accY = ((((unsigned int)buff[3])<<8) | (unsigned int)buff[2]) - accOffsetY;
-				accY = 0;
-			}
-			sei();
-			if(accOffsetZ > 0) {
-				accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;
-			} else {
-				accZ = ((((int)buff[5]) << 8) | buff[4]) + ((-accOffsetZ)&0x03FF);    // Z axis
-			}
-			*/
+			accX = (((signed int)buff[1]<<8)|buff[0])-accOffsetX;    // X axis
+			accY = (((signed int)buff[3]<<8)|buff[2])-accOffsetY;    // Y axis
+			accZ = (((signed int)buff[5]<<8)|buff[4])-accOffsetZ;    // Z axis
 		}
 
 	} else if(useAccel == USE_ADXL345) {	
@@ -665,13 +802,13 @@ void readAccelXYZ() {
 
 		if(startCalibration) {
 			// 10 bits valus in 2's complement
-			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
-			accZ = (((int)buff[5]) << 8) | buff[4];    // Z axis
+			accX = ((signed int)buff[1]<<8)|buff[0];    // X axis
+			accY = ((signed int)buff[3]<<8)|buff[2];    // Y axis
+			accZ = ((signed int)buff[5]<<8)|buff[4];    // Z axis
 		} else {
-			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
-			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
-			accZ = ((((int)buff[5]) << 8) | buff[4]) - accOffsetZ;    // Z axis
+			accX = (((signed int)buff[1]<<8)|buff[0])-accOffsetX;    // X axis
+			accY = (((signed int)buff[3]<<8)|buff[2])-accOffsetY;    // Y axis
+			accZ = (((signed int)buff[5]<<8)|buff[4])-accOffsetZ;    // Z axis
 		}
 
 	} else {
@@ -687,7 +824,7 @@ void readAccelXYZ() {
 void readAccelXY() {
 
 	int i = 0;
-	unsigned char buff[4];
+	signed char buff[4];
 
 
 	if(useAccel == USE_MMAX7455L) {
@@ -704,11 +841,11 @@ void readAccelXY() {
 		i2c_stop();									// set stop conditon = release bus
 
 		if(startCalibration) {
-			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+			accX = ((signed int)buff[1]<<8)|buff[0];    // X axis
+			accY = ((signed int)buff[3]<<8)|buff[2];    // Y axis
 		} else {
-			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
-			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+			accX = (((signed int)buff[1]<<8)|buff[0])-accOffsetX;    // X axis
+			accY = (((signed int)buff[3]<<8)|buff[2])-accOffsetY;    // Y axis
 		}
 
 /*
@@ -734,11 +871,11 @@ void readAccelXY() {
 		i2c_stop();									// set stop conditon = release bus
 
 		if(startCalibration) {
-			accX = (((int)buff[1]) << 8) | buff[0];    // X axis
-			accY = (((int)buff[3]) << 8) | buff[2];    // Y axis
+			accX = ((signed int)buff[1]<<8)|buff[0];    // X axis
+			accY = ((signed int)buff[3]<<8)|buff[2];    // Y axis
 		} else {
-			accX = ((((int)buff[1]) << 8) | buff[0]) - accOffsetX;    // X axis
-			accY = ((((int)buff[3]) << 8) | buff[2]) - accOffsetY;    // Y axis
+			accX = (((signed int)buff[1]<<8)|buff[0])-accOffsetX;    // X axis
+			accY = (((signed int)buff[3]<<8)|buff[2])-accOffsetY;    // Y axis
 		}
 
 	} else {
@@ -830,109 +967,6 @@ void initI2C() {
 
 }
 
-void calibrateAccelerometer() {
-
-	int j=0;
-	accOffsetX = 0;
-	accOffsetY = 0;
-	accOffsetZ = 0;
-
-	for(j=0; j<50; j++) {
-		readAccelXYZ();
-		accOffsetX += accX;
-		accOffsetY += accY;
-		accOffsetZ += accZ;
-	}
-	accOffsetX = accOffsetX/50;
-	accOffsetY = accOffsetY/50;
-	accOffsetZ = accOffsetZ/50;
-
-}
-
-void computeAngle() {
-
-	readAccelXY();
-/*
-	if(useAccel == USE_MMAX7455L) {
-		if(accX > 511) {
-			accX -= 1023;
-		}
-		if(accY > 511) {
-			accY -= 1023;
-		}
-		if(accZ > 511) {
-			accZ -= 1023;
-		}
-	} else if(useAccel == USE_ADXL345) {
-		accX = accX-accOffsetX;
-		accY = accY-accOffsetY;
-		//accZ = accZ-accOffsetZ;
-	}
-*/
-
-/*
-	if(accX < 0) {
-		absAccX = -accX;
-	} else {
-		absAccX = accX;
-	}
-	if(accY < 0) {
-		absAccY = -accY;
-	} else {
-		absAccY = accY;
-	}
-	if(accZ < 0) {
-		absAccZ = -accZ;
-	} else {
-		absAccZ = accZ;
-	}
-
-	if(abs_acc_z <= NULL_ANGLE_THRESHOLD && abs_acc_y <= NULL_ANGLE_THRESHOLD) {
-		curr_position = ORIZZONTAL_POS;
-	} else {
-		curr_position = VERTICAL_POS;
-	}
-
-	if(prev_position == curr_position) {
-		times_in_same_pos++;
-		if(times_in_same_pos >= SAME_POS_NUM) {
-			times_in_same_pos = 0;
-			orizzontal_position = curr_position;	// 1 = orizzontal, 0 = vertical
-		}
-	} else {
-		times_in_same_pos = 0;
-	}
-
-	prev_position = curr_position;	
-*/
-
-	currentAngle = (signed int)(atan2f((float)accX, (float)accY)*RAD_2_DEG);	//180.0/PI;	//x/y
-
-	//current_angle = current_angle*RAD_2_DEG;
-	if(currentAngle<0) {
-		currentAngle = 360+currentAngle;	// angles from 0 to 360
-	}
-
-}
-
-void initPeripherals(void) {
-
-	cli();			// disable global interrupts (by default it should already be disabled)
-
-	initPortsIO();
-	initAdc();
-	initPwm();
-	initSPI();
-	mirf_init();
-	initUsart();
-	initI2C();
-
-	sei();			// enable global interrupts
-
-	
-
-}
-
 void toggleBlueLed() {
 
 	blinkState = 1 - blinkState;
@@ -982,6 +1016,55 @@ void updateBlueLed(unsigned char value) {
 	}
 
 }
+
+void computeAngle() {
+
+	unsigned int abs_acc_z=abs(accZ);
+
+	if(abs_acc_z <= NULL_ANGLE_THRESHOLD) { // && abs_acc_y <= NULL_ANGLE_THRESHOLD) {
+		curr_position = ORIZZONTAL_POS;
+	} else {
+		curr_position = VERTICAL_POS;
+	}
+
+	if(prev_position == curr_position) {
+		times_in_same_pos++;
+		if(times_in_same_pos >= SAME_POS_NUM) {
+			times_in_same_pos = 0;
+			orizzontal_position = curr_position;	// 1 = orizzontal, 0 = vertical
+		}
+	} else {
+		times_in_same_pos = 0;
+	}
+
+	prev_position = curr_position;
+
+/*
+	if(orizzontal_position == ORIZZONTAL_POS) {
+		pwm_red = 0;
+		pwm_green = 0;
+		pwm_blue = 0;
+		updateRedLed(pwm_red);
+		updateGreenLed(pwm_green);
+		updateBlueLed(pwm_blue);		
+	} else {
+		pwm_red = 255;
+		pwm_green = 255;
+		pwm_blue = 255;
+		updateRedLed(pwm_red);
+		updateGreenLed(pwm_green);
+		updateBlueLed(pwm_blue);
+	}
+*/
+
+	currentAngle = (signed int)(atan2f((float)accX, (float)accY)*RAD_2_DEG);	//180.0/PI;	//x/y
+
+	if(currentAngle < 0) {
+		currentAngle = currentAngle + (signed int)360;	// angles from 0 to 360
+	}
+
+}
+
 
 void sendValues() {
 	myTimeout = 1;
@@ -1177,29 +1260,31 @@ void cliffAvoidance() {
 
 int main(void) {
 
-	//unsigned char debugData = 0xAA;
 	unsigned int i = 0;
 	choosePeripheral = 1;
 
 	initPeripherals();
 
-//PORTB &= ~(1 << 5);
-//	calibrateAccelerometer();
-//PORTB |= (1 << 5);
-
-
-	e_init_remote_control();
-
-	//usartTransmit(debugData);				
+	startCalibration = 1;
+	calibrationCycle = 0;
+/*
+	pwm_red = 0;
+	pwm_green = 0;
+	pwm_blue = 0;
+	updateRedLed(pwm_red);
+	updateGreenLed(pwm_green);
+	updateBlueLed(pwm_blue);				
+*/				
 
 	while(1) {
 
-		//PORTB ^= (1 << 6); // Toggle the green LED
+		PORTB ^= (1 << 6); // Toggle the green LED
 
 		currentSelector = getSelector();
 		//PORTB &= ~(1 << 6);
 		readAccelXYZ();
 		//PORTB |= (1 << 6);
+		computeAngle();
 
 		if(updateProx) {
 
@@ -1347,6 +1432,7 @@ int main(void) {
 */
 		if(delayCounter >= 20000) {
 			measBattery = 1;
+			//sleep(60);
 			/*
 			motorSpeed = 1 - motorSpeed;
 			if(motorSpeed) {
@@ -1392,22 +1478,24 @@ int main(void) {
 		} else if(calibrationCycle == CALIBRATION_CYCLES) {
 
 			for (i=0;i<12;i++) {
-				proximityOffset[i]=(unsigned int)((float)proximitySum[i]/(float)calibrationCycle);
+				//proximityOffset[i]=(unsigned int)((float)proximitySum[i]/(float)calibrationCycle);
+				proximityOffset[i] = proximitySum[i]>>4;
 			}
 
-			accOffsetX = (signed int)((float)accOffsetXSum/(float)calibrationCycle);				
-			accOffsetY = (signed int)(accOffsetYSum/calibrationCycle);
-			accOffsetZ = (signed int)((float)accOffsetZSum/(float)calibrationCycle);
+			accOffsetX = accOffsetXSum>>4;				
+			accOffsetY = accOffsetYSum>>4;
+			accOffsetZ = accOffsetZSum>>4;
 
 			startCalibration = 0;
 			calibrationCycle = 0;
-
+/*
 			pwm_red = 255;
 			pwm_green = 255;
 			pwm_blue = 255;
 			updateRedLed(pwm_red);
 			updateGreenLed(pwm_green);
 			updateBlueLed(pwm_blue);
+*/
 
 		}
 
@@ -1661,7 +1749,9 @@ int main(void) {
 			// this could lead to go to sleep involuntarily; in order to avoid this situation we define that the 
 			// sleep message should be completely zero, but the flag bit
 			if(rfData[0]==0 && rfData[1]==0 && rfData[2]==0 && rfData[3]==0b00001000 && rfData[4]==0 && rfData[5]==0) {
-				//sleep(ALARM_PAUSE_1_MIN);
+
+				sleep(60);
+
 			}
 
 			speedr = (rfData[4]&0x7F);	// cast the speed to be at most 127, thus the received speed are in the range 0..127 (usually 0..100),
@@ -1849,6 +1939,21 @@ int main(void) {
 
 		if(currentSelector == 0) {	// no control
 
+			// compute velocities even if they aren't used...
+			if(compute_left_vel) {
+				last_left_vel = left_vel_sum>>2;
+				left_vel_changed = 1;
+				compute_left_vel = 0;
+				left_vel_sum = 0;
+			}
+
+			if(compute_right_vel) {
+				last_right_vel = right_vel_sum>>2;
+				right_vel_changed = 1;
+				compute_right_vel = 0;
+				right_vel_sum = 0;
+			}
+
 			pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
 			pwm_left_working = pwm_left_desired;
 				
@@ -1866,12 +1971,106 @@ int main(void) {
 
 		} else if(currentSelector == 2) {		// speed control
 
+/*
 			if(pwm_left==0 || pwm_right==0) {
 				pwm_right_working = pwm_right_desired;
 				pwm_left_working = pwm_left_desired;
 				update_pwm = 1;
 			}
+*/
+
+/*
+			if(pwm_left==0) {
+				pwm_left_working = pwm_left_desired;
+				pwm_left = pwm_left_working;
+				if(pwm_left >= 0) {
+					OCR4A = (unsigned int)pwm_left;
+				} else {
+					OCR4B =(unsigned int)( -pwm_left);
+				}
+			}
 			
+			if(pwm_right==0) {
+				pwm_right_working = pwm_right_desired;
+				pwm_right = pwm_right_working;
+
+				if(pwm_right >= 0) {
+					OCR3A = (unsigned int)pwm_right;
+				} else {
+					OCR3B = (unsigned int)(-pwm_right);
+				}
+			}
+*/
+
+			if(compute_left_vel) {
+				last_left_vel = left_vel_sum>>2;
+				left_vel_changed = 1;
+				compute_left_vel = 0;
+				left_vel_sum = 0;
+			
+				pwm_left_working = pwm_left_desired;
+
+				//if(orizzontal_position == ORIZZONTAL_POS) {
+					//PORTB &= ~(1 << 5);
+					start_orizzontal_speed_control_left(&pwm_left_working);
+					//PORTB |= (1 << 5);
+				//} else {
+				//	PORTB &= ~(1 << 6);
+				//	start_vertical_speed_control_left(&pwm_left_working);
+				//	PORTB |= (1 << 6);
+				//}
+
+				pwm_left = pwm_left_working;
+
+				if(pwm_left >= 0) {
+					OCR4A = (unsigned int)pwm_left;
+				} else {
+					OCR4B =(unsigned int)( -pwm_left);
+				}
+
+				//if(pwm_left_working==0) {
+				//	PORTB &= ~(1 << 6);
+				//	pwm_left_working = 1;
+				//}
+
+				//update_pwm = 1;												
+			}
+
+			if(compute_right_vel) {
+				last_right_vel = right_vel_sum>>2;
+				right_vel_changed = 1;
+				compute_right_vel = 0;
+				right_vel_sum = 0;
+			
+				pwm_right_working = pwm_right_desired;
+
+				//if(orizzontal_position == ORIZZONTAL_POS) {
+					//PORTB &= ~(1 << 5);
+					start_orizzontal_speed_control_right(&pwm_right_working);
+					//PORTB |= (1 << 5);
+				//} else {
+				//	PORTB &= ~(1 << 6);
+				//	start_vertical_speed_control_right(&pwm_right_working);
+				//	PORTB |= (1 << 6);
+				//}
+	
+				pwm_right = pwm_right_working;
+	
+				if(pwm_right >= 0) {
+					OCR3A = (unsigned int)pwm_right;
+				} else {
+					OCR3B = (unsigned int)(-pwm_right);
+				}
+
+				//if(pwm_right_working==0) {
+				//	PORTB &= ~(1 << 5);
+				//	pwm_right_working = 1;
+				//}
+
+				//update_pwm = 1;
+			}
+
+/*
 			if(left_vel_changed && right_vel_changed) {
 				pwm_right_working = pwm_right_desired;
 				pwm_left_working = pwm_left_desired;
@@ -1881,9 +2080,9 @@ int main(void) {
 				//if(!orizzontal_position) {
 				//	start_vertical_speed_control(&pwm_left_working, &pwm_right_working);
 				//} else {
-					//PORTB &= ~(1 << 5);
+					PORTB &= ~(1 << 5);
 					start_orizzontal_speed_control(&pwm_left_working, &pwm_right_working);
-					//PORTB |= (1 << 5);
+					PORTB |= (1 << 5);
 				//}
 				//start_power_control(&pwm_left_working, &pwm_right_working);		// the values for the new pwm must be current limited by the controller just before update them
 				
@@ -1892,9 +2091,11 @@ int main(void) {
 				
 				update_pwm = 1;		
 			}
+*/
 
 		}
 
+/*
 		if(compute_left_vel) {
 			last_left_vel = left_vel_sum>>2;
 			left_vel_changed = 1;
@@ -1908,6 +2109,7 @@ int main(void) {
 			compute_right_vel = 0;
 			right_vel_sum = 0;
 		}
+*/
 
 		if(update_pwm) {
 

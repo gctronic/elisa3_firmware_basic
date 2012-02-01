@@ -42,6 +42,12 @@ void initSPI() {
 
 }
 
+void closeSPI() {
+
+	SPCR = 0x00;
+	SPSR = 0x00;
+}
+
 void SPI_ReadWrite_Block(uint8_t* data, uint8_t* buffer, uint8_t len) {
     uint8_t i;
     for (i = 0; i < len; i++) {

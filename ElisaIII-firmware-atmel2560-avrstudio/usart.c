@@ -4,8 +4,8 @@
 #include "usart.h"
 
 // speed controller
-extern signed long int pwm_right;
-extern signed long int pwm_left;
+extern signed int pwm_right;
+extern signed int pwm_left;
 
 // uart
 extern unsigned char peripheralChoice;
@@ -37,6 +37,14 @@ void initUsart() {
 	UCSR0B |= (1 << TXEN0) | (1 << RXEN0) | (1 << RXCIE0);	// enable uart0 transmitter and receiver; enable rx interrupt
 	
 	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);					// set frame format: 8data, no parity, 1 stop bit
+
+}
+
+void closeUsart() {
+
+	UCSR0A = 0x00;
+	UCSR0B = 0x00;
+	UCSR0C = 0x00;
 
 }
 

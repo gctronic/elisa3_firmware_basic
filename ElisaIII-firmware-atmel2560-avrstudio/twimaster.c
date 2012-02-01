@@ -33,6 +33,10 @@
 /* I2C clock in Hz */
 #define SCL_CLOCK  100000L
 
+void i2c_close() {
+	TWBR = 0x00;
+	TWCR = 0x00;
+}
 
 /*************************************************************************
  Initialization of the I2C bus interface. Need to be called only once

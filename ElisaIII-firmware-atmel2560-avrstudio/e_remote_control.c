@@ -40,12 +40,13 @@ extern unsigned char checkGlitch;
 extern unsigned char irEnabled;
 
 
+
 /*! \brief Initialise the IR receiver ports */
 void e_init_remote_control(void) { 	// initialisation for IR interruptions on PCINT1 (external interrupt)
 
 	PCICR |= (1 << PCIE1);		// enable interrupt on change of PCINT15:8 pins
 	PCMSK1 |= (1 << PCINT15);	// enable PCINT15
-	TCCR2A |= (1 << WGM01); 	// mode 2 => CTC mode
+	TCCR2A |= (1 << WGM21); 	// mode 2 => CTC mode
 
 }
 
@@ -104,117 +105,117 @@ unsigned char e_get_data(void) {
 
 ISR(TIMER2_COMPA_vect) {
 
-	static int i = -1;
+		static int i = -1;
 
-	//PORTB ^= (1 << 5);
+		//PORTB ^= (1 << 5);
 
-	TCCR2B &= ~(1 << CS22) &~(1 << CS21) &~(1 << CS20);	// disable timer2
+		TCCR2B &= ~(1 << CS22) &~(1 << CS21) &~(1 << CS20);	// disable timer2
 	
-	if(checkGlitch) {
-		if(REMOTE) {	// if high it is a glitch
-			PCICR |= (1 << PCIE1);		// enable external interrupt
-			PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
-			i = -1;			
-		} else {
-			checkGlitch = 0;
-			// activate the IR Receiver with a 2.1[ms] cycle value
-			// we set the resolution of the timer to be:
-			// 0.128 ms (prescaler 1/1024): 1/(8000000/1024) = 0.000128
-			// 0.032 ms (prescaler 1/256): 1/(8000000/256) = 0.000032
-			// we need 2 ms of delay:
-			// 2/0.128 = 15.6
-			//OCR2A = 16;
-			//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
-			// 2.1/0.032 = 64 => 2.048 ms
-			// but we already wait 0.416 us => 13, so 64-13=51
-			OCR2A = 51;
-			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-			TIMSK2 |= (1 << OCIE2A);
-
-		}
-	} else {
-
-
-		if (i == -1) { // start bit confirm  change timer period
-
-			if(REMOTE) {	//if high it is only a noise
-
+		if(checkGlitch) {
+			if(REMOTE) {	// if high it is a glitch
 				PCICR |= (1 << PCIE1);		// enable external interrupt
 				PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
-				i = -1;
-			
-				//PORTB |= (1 << 6);
-
-			} else {	   // read the check bit
-			
-				//cycle value is 0.6 to go to check bit[ms]
-				// we need a delay of 0.6 ms: 0.6 / 0.128 = 4.6
-				//OCR2A = 5;
+				i = -1;			
+			} else {
+				checkGlitch = 0;
+				// activate the IR Receiver with a 2.1[ms] cycle value
+				// we set the resolution of the timer to be:
+				// 0.128 ms (prescaler 1/1024): 1/(8000000/1024) = 0.000128
+				// 0.032 ms (prescaler 1/256): 1/(8000000/256) = 0.000032
+				// we need 2 ms of delay:
+				// 2/0.128 = 15.6
+				//OCR2A = 16;
 				//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
-				// 0.9/0.032 = 28 => 0.896
-				OCR2A = 28;
+				// 2.1/0.032 = 64 => 2.048 ms
+				// but we already wait 0.416 us => 13, so 64-13=51
+				OCR2A = 51;
 				TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-				TIMSK2 |= (1 << OCIE2A);									
+				TIMSK2 |= (1 << OCIE2A);
 
-				check_temp = address_temp = data_temp = 0;
-				i=0;
 			}
-		} else if (i == 1)	{ // check bit read and change timer period
+		} else {
 
-			check_temp = REMOTE;	   // read the check bit
-			//cycle value is 1.778[ms]
-			// we need a delay of 0.6 ms: 1.8 / 0.128 = 14
-			//OCR2A = 14;
-			//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
-			// 1.778/0.032 = 54 => 1.728
-			OCR2A = 54;
-			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-			TIMSK2 |= (1 << OCIE2A);
 
-		} else if ((i > 1) && (i < 7)) { // we read address
+			if (i == -1) { // start bit confirm  change timer period
+
+				if(REMOTE) {	//if high it is only a noise
+
+					PCICR |= (1 << PCIE1);		// enable external interrupt
+					PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
+					i = -1;
+			
+					//PORTB |= (1 << 6);
+
+				} else {	   // read the check bit
+			
+					//cycle value is 0.6 to go to check bit[ms]
+					// we need a delay of 0.6 ms: 0.6 / 0.128 = 4.6
+					//OCR2A = 5;
+					//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+					// 0.9/0.032 = 28 => 0.896
+					OCR2A = 28;
+					TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+					TIMSK2 |= (1 << OCIE2A);									
+
+					check_temp = address_temp = data_temp = 0;
+					i=0;
+				}
+			} else if (i == 1)	{ // check bit read and change timer period
+
+				check_temp = REMOTE;	   // read the check bit
+				//cycle value is 1.778[ms]
+				// we need a delay of 0.6 ms: 1.8 / 0.128 = 14
+				//OCR2A = 14;
+				//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+				// 1.778/0.032 = 54 => 1.728
+				OCR2A = 54;
+				TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+				TIMSK2 |= (1 << OCIE2A);
+
+			} else if ((i > 1) && (i < 7)) { // we read address
 		
-			//OCR2A = 14;
-			//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
-			// 1.778/0.032 = 54
-			OCR2A = 54;
-			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-			TIMSK2 |= (1 << OCIE2A);
+				//OCR2A = 14;
+				//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+				// 1.778/0.032 = 54
+				OCR2A = 54;
+				TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+				TIMSK2 |= (1 << OCIE2A);
 
-			unsigned char temp = REMOTE;
-			temp <<= 6-i;
-			address_temp += temp;
+				unsigned char temp = REMOTE;
+				temp <<= 6-i;
+				address_temp += temp;
 
-		} else if ((i > 6) && (i < 13 )) { // we read data
+			} else if ((i > 6) && (i < 13 )) { // we read data
 
-			//OCR2A = 14;
-			//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
-			// 1.778/0.032 = 54
-			OCR2A = 54;
-			TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
-			TIMSK2 |= (1 << OCIE2A);
+				//OCR2A = 14;
+				//TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);		// 1/1024 prescaler
+				// 1.778/0.032 = 54
+				OCR2A = 54;
+				TCCR2B |= (1 << CS22) | (1 << CS21);		// 1/256 prescaler
+				TIMSK2 |= (1 << OCIE2A);
 
-			unsigned char temp = REMOTE;
-			temp <<= 6+6-i;
-			data_temp += temp;
+				unsigned char temp = REMOTE;
+				temp <<= 6+6-i;
+				data_temp += temp;
 
-		} else if (i == 13) { // last bit read
+			} else if (i == 13) { // last bit read
+				
+				TIMSK2 = 0;					// disable all interrupt for timer2
+				PCICR |= (1 << PCIE1);		// enable interrupt
+				PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
 
-			PCICR |= (1 << PCIE1);		// enable interrupt
-			PCMSK1 |= (1 << PCINT15);	// clear interrupt flag
+				i = -1;
+				check = check_temp;
+				address = address_temp;
+				data_ir = data_temp;
+				command_received=1;
 
-			i = -1;
-			check = check_temp;
-			address = address_temp;
-			data_ir = data_temp;
-			command_received=1;
+				//PORTB |= (1 << 6);
+			} 
 
-			//PORTB |= (1 << 6);
-		} 
-
-	}
+		}
 	
-	if(i!=-1)
-		i++;
-
+		if(i!=-1)
+			i++;
 
 }

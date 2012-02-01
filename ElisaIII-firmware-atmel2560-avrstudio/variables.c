@@ -53,39 +53,41 @@ unsigned int last_right_current = 0;
 /************************/
 unsigned int left_vel_sum = 0;						// sum of all the adc values (at the end they will be divided by the total number of samples received)
 unsigned int right_vel_sum = 0;
-unsigned int last_left_vel = 0;
-unsigned int last_right_vel = 0;
+signed int last_left_vel = 0;
+signed int last_right_vel = 0;
 signed long int max_pwm_right = MAX_MOTORS_PWM;		// if the period of the motors is changed at runtime, also the maximum pwm (60%) value
 signed long int max_pwm_left = MAX_MOTORS_PWM;		// must be changed with these vars (the new values is period_motor_x/100*60)
-signed long int pwm_right = 0;						// value to set to the pwm register; this value is expressed in the range 0..PERIOD MOTORS
-signed long int pwm_left = 0;
+signed int pwm_right = 0;						// value to set to the pwm register; this value is expressed in the range 0..PERIOD MOTORS
+signed int pwm_left = 0;
+signed int prev_pwm_right = 0;
+signed int prev_pwm_left = 0;
 //signed long int pwm_right_working = 0;				// current temporary pwm used in the controllers
 //signed long int pwm_left_working = 0;
-signed long int pwm_right_desired = 0;				// the pwm given by a command through IR or RF
-signed long int pwm_left_desired = 0;				// this pwm is expressed in the range 0..MAX_MOTORS_PWM (1023 corresponds to 100% duty cycle)
-//unsigned int p_speed_control;						// PID parameters
+signed int pwm_right_desired = 0;				// the pwm given by a command through IR or RF
+signed int pwm_left_desired = 0;				// this pwm is expressed in the range 0..MAX_MOTORS_PWM (1023 corresponds to 100% duty cycle)
+//signed int p_speed_control = 25; //100;						// PID parameters
 //unsigned int d_speed_control;
-//unsigned int i_speed_control;
+//signed int i_speed_control = 2;
 //unsigned int i_limit_speed_control;				// maximum value for the I parameter
-//unsigned int k_ff_speed_control_left;
-//unsigned int k_ff_speed_control_right;
-signed long int pwm_right_speed_controller = 0;		// the pwm values after the speed controller adaptation
-signed long int pwm_left_speed_controller = 0;
-signed long int delta_left_speed = 0;
-signed long int delta_right_speed = 0;
-signed long int delta_left_speeds[2];
-signed long int delta_right_speeds[2];
-signed long int delta_left_speed_sum = 0;
-signed long int delta_right_speed_sum = 0;
-signed long int left_increment = 0;
-signed long int right_increment = 0;
+signed int k_ff_speed_control_left=INIT_KFF;
+signed int k_ff_speed_control_right=INIT_KFF;
+signed int pwm_right_speed_controller = 0;		// the pwm values after the speed controller adaptation
+signed int pwm_left_speed_controller = 0;
+signed int delta_left_speed = 0;
+signed int delta_right_speed = 0;
+signed int delta_left_speed_prev;
+signed int delta_left_speed_current;
+signed int delta_right_speed_prev;
+signed int delta_right_speed_current;
+signed int delta_left_speed_sum = 0;
+signed int delta_right_speed_sum = 0;
 //signed int current_angle = 0;
 unsigned char compute_left_vel = 0;					// set at the beginning of the period to indicate that a new measure of the motor speed can be
 unsigned char compute_right_vel = 0;
 unsigned char left_vel_changed = 0;					// indicate that a new speed for the left motor is measured and ready to be used
 unsigned char right_vel_changed = 0;				// the same for the right motor
-signed long int pwm_right_working = 0;				// current temporary pwm used in the controllers
-signed long int pwm_left_working = 0;
+signed int pwm_right_working = 0;				// current temporary pwm used in the controllers
+signed int pwm_left_working = 0;
 unsigned char update_pwm = 0;						// indicate that the controllers finished and thus the motors pwm can be updated
 unsigned char firstSampleRight = 1;
 unsigned char firstSampleLeft = 1;
@@ -94,7 +96,7 @@ unsigned char firstSampleLeft = 1;
 /*** NRF ***/
 /***********/
 unsigned int dataLED[3];							// array containing the value received through the radio
-unsigned char speedl=0, speedr=0;					// current speed for left and right motors received through the radio
+signed int speedl=0, speedr=0;					// current speed for left and right motors received through the radio
 unsigned char rfData[PAYLOAD_SIZE];					// data received through the radio
 unsigned char ackPayload[16];						// data to send back to the base-station
 unsigned char packetId = 3;
@@ -136,6 +138,9 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 signed int accOffsetXSum = 0;
 signed int accOffsetYSum = 0;
 signed int accOffsetZSum = 0;
+unsigned char prev_position = ORIZZONTAL_POS, curr_position = ORIZZONTAL_POS;				// 1=orizzontal, 0=vertical
+unsigned char times_in_same_pos = 0;
+unsigned char orizzontal_position = 1;							// indicate whether the robot is in vertical (=0) or orizzontal (=1) position
 
 /***************/
 /*** VARIOUS ***/

@@ -19,7 +19,7 @@
 #define ALARM_PAUSE_1_MIN 60u
 #endif
 #ifndef CALIBRATION_CYCLES
-#define CALIBRATION_CYCLES 15
+#define CALIBRATION_CYCLES 16
 #endif
 
 /***********/
@@ -40,11 +40,18 @@
 /*** SPEED CONTROLLER ***/
 /************************/
 #define MAX_MOTORS_PWM 614 //1023/100*60		// max value for the pwm registers of the motors; 60% of maximum
-#define P_ORIZZONTAL 100
+
+#define P_ORIZZONTAL 25 //100
 #define I_ORIZZONTAL 2
-#define D_ORIZZONTAL 10
-#define I_LIMIT_ORIZZONTAL 3200
-#define K_FF_ORIZZONTAL 120 			// optimized for low velocities //30
+#define D_ORIZZONTAL 3 //0x000A //10
+#define I_LIMIT_ORIZZONTAL 800 //3200
+//#define K_FF_ORIZZONTAL 0x0078 //120 			// optimized for low velocities //30
+
+#define P_VERTICAL 10 //40
+#define I_VERTICAL 3 //10
+#define D_VERTICAL 2 //5
+#define I_LIMIT_VERTICAL 800 //3200
+
 #define PERIOD_MOTORS_100HZ	40000			// old controller: We need a period time of 10 ms (100 Hz) => 0.01 * 4000000 = 40000
 #define MAX_PWM PERIOD_MOTORS_100HZ/100*60	// old controller: 60% of maximum
 
@@ -55,7 +62,7 @@
 #define PWM_THRESHOLD 		PERIOD_MOTORS_100HZ/100*20	// percentage of max velocity (motors period); values are between 0..PERIOD_MOTORS
 #endif
 #ifndef INIT_KFF
-#define INIT_KFF 150	// speed controller
+#define INIT_KFF 30 //150	// speed controller
 #endif
 
 /****************/
@@ -76,11 +83,7 @@
 #define DELTA_ANGLE_FACT MAX_PWM/180					// scale the error to be in the range 0..MAX_PWM
 #endif
 #ifndef NULL_ANGLE_THRESHOLD
-#ifdef _HARDWARE_V2_1
-	#define NULL_ANGLE_THRESHOLD 75
-#else
-	#define NULL_ANGLE_THRESHOLD 150
-#endif
+#define NULL_ANGLE_THRESHOLD 15
 #endif
 #ifndef SAME_POS_NUM
 #define SAME_POS_NUM 5
