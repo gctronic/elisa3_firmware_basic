@@ -28,7 +28,7 @@
 #define _MIRF_H_
 
 #include <avr/io.h>
-#include "constants.h"
+#include "variables.h"
 
 // Mirf settings
 #define mirf_CH         40

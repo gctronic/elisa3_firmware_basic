@@ -1,8 +1,8 @@
 
-#include "constants.h"
+#include "variables.h"
 
-#ifndef USART
-#define USART
+#ifndef USART_H
+#define USART_H
 
 void initUsart();
 void usartTransmit(unsigned char data);

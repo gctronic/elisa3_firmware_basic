@@ -39,43 +39,27 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 	// change the feedforward based on the current measured angle
 	if(currentAngle >= 270) {			// pointing down-right
 		if(*pwm_left > 0) {
-			//k_contr_speed = 150 - (360 - currentAngle);
-			//k_contr_speed_int = 300 - ((360 - currentAngle)*300/90);
-			//k_ff_speed_control_left = INIT_KFF - ((360 - currentAngle)*1.5);
 			k_ff_speed_control_left = INIT_KFF - ((360 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 - ((360 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_left = INIT_KFF + ((360 - currentAngle)*1.5);
+			k_ff_speed_control_left = INIT_KFF + ((360 - currentAngle)>>2);
 		}
 	} else if(currentAngle >= 180) {	// pointing down-left
 		if(*pwm_left > 0) {
-			//k_contr_speed = 150  + (180 - currentAngle);
-			//k_contr_speed_int = 300 + ((180 - currentAngle)*300/90);
-			//k_ff_speed_control_left = INIT_KFF + ((180 - currentAngle)*1.5);
 			k_ff_speed_control_left = INIT_KFF + ((180 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 + ((180 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_left = INIT_KFF - ((180 - currentAngle)*1.5);
+			k_ff_speed_control_left = INIT_KFF - ((180 - currentAngle)>>2);
 		}
 	} else if(currentAngle >= 90) {	// pointing up-left
 		if(*pwm_left > 0) {
-			//k_contr_speed = 150 + (180 - currentAngle);
-			//k_contr_speed_int = 300 + ((180 - currentAngle)*300/90);
-			//k_ff_speed_control_left = INIT_KFF + ((180 - currentAngle)*1.5);
 			k_ff_speed_control_left = INIT_KFF + ((180 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 + ((180 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_left = INIT_KFF - ((180 - currentAngle)*1.5);
+			k_ff_speed_control_left = INIT_KFF - ((180 - currentAngle)>>2);
 		}
 	} else {							// pointing up-right
 		if(*pwm_left > 0) {
-			//k_contr_speed = 150 + currentAngle;
-			//k_contr_speed_int = 300 + (currentAngle*300/90);
-			//k_ff_speed_control_left = INIT_KFF + (currentAngle*1.5);
 			k_ff_speed_control_left = INIT_KFF + (currentAngle>>2);
-			//k_contr_speed_int = picwatch_808*100 + (currentAngle*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_left = INIT_KFF - (currentAngle*1.5);
+			k_ff_speed_control_left = INIT_KFF - (currentAngle>>2);
 		}
 	}
 
@@ -113,12 +97,6 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 	// from 0 to 375
 	*pwm_left = ((signed int)pwm_left_speed_controller)>>4; //>>6;
 
-	if(*pwm_left > 0) {
-		*pwm_left += 30;
-	} else if(*pwm_left < 0) {
-		*pwm_left -= 30;
-	}
-
 	if (*pwm_left>(MAX_MOTORS_PWM/2)) *pwm_left=(MAX_MOTORS_PWM/2);
     if (*pwm_left<-(MAX_MOTORS_PWM/2)) *pwm_left=-(MAX_MOTORS_PWM/2);
 
@@ -138,43 +116,27 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 	// change the feedforward based on the current measured angle
 	if(currentAngle >= 270) {			// pointing down-right
 		if(*pwm_right > 0) {
-			//k_contr_speed = 150 - (360 - currentAngle);
-			//k_contr_speed_int = 300 - ((360 - currentAngle)*300/90);
-			//k_ff_speed_control_right = INIT_KFF - ((360 - currentAngle)*1.5);
 			k_ff_speed_control_right = INIT_KFF - ((360 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 - ((360 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_right = INIT_KFF + ((360 - currentAngle)*1.5);
+			k_ff_speed_control_right = INIT_KFF + ((360 - currentAngle)>>2);
 		}
 	} else if(currentAngle >= 180) {	// pointing down-left
 		if(*pwm_right > 0) {
-			//k_contr_speed = 150  + (180 - currentAngle);
-			//k_contr_speed_int = 300 + ((180 - currentAngle)*300/90);
-			//k_ff_speed_control_right = INIT_KFF + ((180 - currentAngle)*1.5);
 			k_ff_speed_control_right = INIT_KFF + ((180 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 + ((180 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_right = INIT_KFF - ((180 - currentAngle)*1.5);
+			k_ff_speed_control_right = INIT_KFF - ((180 - currentAngle)>>2);
 		}
 	} else if(currentAngle >= 90) {	// pointing up-left
 		if(*pwm_right > 0) {
-			//k_contr_speed = 150 + (180 - currentAngle);
-			//k_contr_speed_int = 300 + ((180 - currentAngle)*300/90);
-			//k_ff_speed_control_right = INIT_KFF + ((180 - currentAngle)*1.5);
 			k_ff_speed_control_right = INIT_KFF + ((180 - currentAngle)>>2);
-			//k_contr_speed_int = picwatch_808*100 + ((180 - currentAngle)*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_right = INIT_KFF - ((180 - currentAngle)*1.5);
+			k_ff_speed_control_right = INIT_KFF - ((180 - currentAngle)>>2);
 		}
 	} else {							// pointing up-right
 		if(*pwm_right > 0) {
-			//k_contr_speed = 150 + currentAngle;
-			//k_contr_speed_int = 300 + (currentAngle*300/90);
-			//k_ff_speed_control_right = INIT_KFF + (currentAngle*1.5);
 			k_ff_speed_control_right = INIT_KFF + (currentAngle>>2);
-			//k_contr_speed_int = picwatch_808*100 + (currentAngle*picwatch_808*100/90);
 		} else {
-			k_ff_speed_control_right = INIT_KFF - (currentAngle*1.5);
+			k_ff_speed_control_right = INIT_KFF - (currentAngle>>2);
 		}
 	}
 
@@ -209,11 +171,6 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 
 	//pwm_right_speed_controller = pwm_right_speed_controller*(MAX_MOTORS_PWM/2)/MAX_PWM;
 	*pwm_right = ((signed int)pwm_right_speed_controller)>>4; //>>6;
-	if(*pwm_right > 0) {
-		*pwm_right += 30;
-	} else if(*pwm_right < 0) {
-		*pwm_right -= 30;
-	}
 
 	if (*pwm_right>(MAX_MOTORS_PWM/2)) *pwm_right=(MAX_MOTORS_PWM/2);
     if (*pwm_right<-(MAX_MOTORS_PWM/2)) *pwm_right=-(MAX_MOTORS_PWM/2);
@@ -244,9 +201,9 @@ void start_orizzontal_speed_control_right(signed int *pwm_right) {
 	}
 
 	pwm_right_speed_controller = (signed int)((*pwm_right) << 3); //<< 5);
-	pwm_right_speed_controller += (signed int)(P_ORIZZONTAL * delta_right_speed_current);
+	pwm_right_speed_controller += (signed int)(delta_right_speed_current*P_ORIZZONTAL);
 	pwm_right_speed_controller -= (signed int)((delta_right_speed_current-delta_right_speed_prev)*D_ORIZZONTAL);
-	pwm_right_speed_controller += (signed int)(I_ORIZZONTAL*delta_right_speed_sum);
+	pwm_right_speed_controller += (signed int)(delta_right_speed_sum*I_ORIZZONTAL);
 
 	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	// avoid changing moving direction
 		pwm_right_speed_controller = 0;
@@ -295,9 +252,9 @@ void start_orizzontal_speed_control_left(signed int *pwm_left) {
 	}
 	    
 	pwm_left_speed_controller = (signed int)((*pwm_left) << 3); //<< 5);
-	pwm_left_speed_controller += (signed int)(P_ORIZZONTAL * delta_left_speed_current);
+	pwm_left_speed_controller += (signed int)(delta_left_speed_current*P_ORIZZONTAL);
 	pwm_left_speed_controller -= (signed int)((delta_left_speed_current-delta_left_speed_prev)*D_ORIZZONTAL);
-	pwm_left_speed_controller += (signed int)(I_ORIZZONTAL*delta_left_speed_sum);
+	pwm_left_speed_controller += (signed int)(delta_left_speed_sum*I_ORIZZONTAL);
 
 	if(pwm_left_speed_controller < 0 && *pwm_left >= 0) {
 		pwm_left_speed_controller = 0;

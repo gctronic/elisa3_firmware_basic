@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o spi.o mirf.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o 
+OBJECTS = main.o spi.o mirf.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o utility.o accelerometer.o adc.o motors.o behaviors.o leds.o sensors.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -71,6 +71,27 @@ twimaster.o: ../twimaster.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 usart.o: ../usart.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+utility.o: ../utility.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+accelerometer.o: ../accelerometer.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+adc.o: ../adc.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+motors.o: ../motors.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+behaviors.o: ../behaviors.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+leds.o: ../leds.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+sensors.o: ../sensors.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link

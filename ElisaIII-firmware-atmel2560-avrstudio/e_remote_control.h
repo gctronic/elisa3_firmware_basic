@@ -87,6 +87,8 @@ EPFL Ecole polytechnique federale de Lausanne http://www.epfl.ch
 
 #include <avr\io.h>
 #include <avr\interrupt.h>
+#include "variables.h"
+
 
 #ifndef _IR_REMOTE_CONTROLE
 #define _IR_REMOTE_CONTROLE
