@@ -51,6 +51,8 @@ unsigned int last_right_current = 0;
 /************************/
 /*** SPEED CONTROLLER ***/
 /************************/
+signed int pwm_right_desired_to_control = 0;				// the pwm given by a command through IR or RF
+signed int pwm_left_desired_to_control = 0;
 unsigned int left_vel_sum = 0;						// sum of all the adc values (at the end they will be divided by the total number of samples received)
 unsigned int right_vel_sum = 0;
 signed int last_left_vel = 0;
@@ -82,8 +84,8 @@ signed int delta_right_speed_current;
 signed int delta_left_speed_sum = 0;
 signed int delta_right_speed_sum = 0;
 //signed int current_angle = 0;
-unsigned char compute_left_vel = 0;					// set at the beginning of the period to indicate that a new measure of the motor speed can be
-unsigned char compute_right_vel = 0;
+unsigned char compute_left_vel = 1;					// set at the beginning of the period to indicate that a new measure of the motor speed can be
+unsigned char compute_right_vel = 1;
 unsigned char left_vel_changed = 0;					// indicate that a new speed for the left motor is measured and ready to be used
 unsigned char right_vel_changed = 0;				// the same for the right motor
 signed int pwm_right_working = 0;				// current temporary pwm used in the controllers
@@ -138,9 +140,9 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 signed int accOffsetXSum = 0;
 signed int accOffsetYSum = 0;
 signed int accOffsetZSum = 0;
-unsigned char prev_position = ORIZZONTAL_POS, curr_position = ORIZZONTAL_POS;				// 1=orizzontal, 0=vertical
-unsigned char times_in_same_pos = 0;
-unsigned char orizzontal_position = 1;							// indicate whether the robot is in vertical (=0) or orizzontal (=1) position
+unsigned char prevPosition=ORIZZONTAL_POS, currPosition=ORIZZONTAL_POS;				// 1=orizzontal, 0=vertical
+unsigned char timesInSamePos = 0;
+unsigned char robotPosition = 1;							// indicate whether the robot is in vertical (=0) or orizzontal (=1) position
 
 /***************/
 /*** VARIOUS ***/

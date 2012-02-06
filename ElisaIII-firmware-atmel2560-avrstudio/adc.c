@@ -22,9 +22,9 @@ void initAdc(void) {
 
 }
 
-ISR(ADC_vect) {	
+ISR(ADC_vect) {
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
-		
+
 //	PORTB &= ~(1 << 7);
 
 	delayCounter++;		// this variable is used to have basic delays based on the adc interrupt timing (one interrupt every 104 us)
@@ -57,6 +57,13 @@ ISR(ADC_vect) {
 
 		case SAVE_TO_RIGHT_MOTOR_VEL:
 			if(firstSampleRight > 0) {
+			    // sometimes it was noticed that the velocity is sampled even if the pwm
+			    // is in its active phase; as a workaround simply skip the samples in these
+			    // cases
+				if(((PINE & _BV(PE3))>>3) || ((PINE & _BV(PE4))>>4)) {  // if active phase for either forward or backward direction
+					//PORTB &= ~(1 << 5);
+					break;
+				}
 				firstSampleRight++;
 				if(firstSampleRight > 4) {		// to skip undesired samples (3 samples skipped)
 					right_vel_sum += value;
@@ -76,6 +83,10 @@ ISR(ADC_vect) {
 		case SAVE_TO_LEFT_MOTOR_VEL:
 			//PORTB ^= (1 << 7);
 			if(firstSampleLeft > 0) {
+				if(((PINH & _BV(PH3))>>3) || ((PINH & _BV(PH4))>>4)) {  // if active phase for either forward or backward direction
+					//PORTB &= ~(1 << 5);
+					break;
+				}
 				firstSampleLeft++;
 				if(firstSampleLeft > 4) {
 					left_vel_sum += value;
@@ -141,8 +152,8 @@ ISR(ADC_vect) {
 			break;
 
 		case 4:	// right motor
-			currentAdChannel = currentMotRightChannel;	
-			rightChannelPhase = rightMotorPhase;	
+			currentAdChannel = currentMotRightChannel;
+			rightChannelPhase = rightMotorPhase;
 			if(leftChannelPhase == ACTIVE_PHASE) {
 				adcSaveDataTo = SAVE_TO_LEFT_MOTOR_CURRENT;
 			} else if(leftChannelPhase == PASSIVE_PHASE) {
@@ -169,7 +180,7 @@ ISR(ADC_vect) {
 					#ifdef HW_REV_3_0
 					PORTJ = (1 << ((currentProx-16)>>1));	// pulse on
 					#endif
-					
+
 					#ifdef HW_REV_3_0_1
 					PORTJ &= ~(1 << ((currentProx-16)>>1));
 /*
@@ -181,7 +192,7 @@ ISR(ADC_vect) {
 						PORTJ = 0x0B;
 					} else if(currentProx==23) {
 						PORTJ = 0x07;
-					} 
+					}
 */
 					#endif
 
@@ -210,16 +221,19 @@ ISR(ADC_vect) {
 		#ifdef HW_REV_3_0
 		PORTJ &= 0xF0;
 		PORTA = 0x00;
+		//#warning "turn off pulse with 0 (hw rev 3.0)"
 		#endif
 
 		#ifdef HW_REV_3_0_1
 		PORTJ = 0xFF;
 		PORTA = 0x00;
+		//#warning "turn off pulse with 0 (hw rev 3.0.1)"
 		#endif
 
-		#ifdef HE_REV_3_1
+		#ifdef HW_REV_3_1
 		PORTJ = 0xFF;
 		PORTA = 0x00;
+		//#warning "turn off pulse with 1 (hw rev 3.1)"
 		#endif
 
 	}

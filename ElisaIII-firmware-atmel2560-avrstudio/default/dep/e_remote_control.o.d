@@ -13,7 +13,7 @@ e_remote_control.o: ../e_remote_control.c ../e_remote_control.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr\interrupt.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/io.h \
- ../variables.h ../constants.h
+ ../variables.h ../constants.h ../leds.h
 
 ../e_remote_control.h:
 
@@ -48,3 +48,5 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 ../variables.h:
 
 ../constants.h:
+
+../leds.h:

@@ -3,20 +3,10 @@
 /***************/
 /*** VARIOUS ***/
 /***************/
-#define PI 3.14159265
+#ifndef RAD_2_DEG
 #define RAD_2_DEG 57.2957796
-#ifndef USE_LEDS_IN_DEBUG
-#define USE_LEDS_IN_DEBUG 0
 #endif
-#ifndef ALARM_PAUSE_1_SEC
-#define ALARM_PAUSE_1_SEC 1u
-#endif
-#ifndef ALARM_PAUSE_10_SEC
-#define ALARM_PAUSE_10_SEC 10u
-#endif
-#ifndef ALARM_PAUSE_1_MIN
-#define ALARM_PAUSE_1_MIN 60u
-#endif
+
 #ifndef CALIBRATION_CYCLES
 #define CALIBRATION_CYCLES 16
 #endif
@@ -24,140 +14,251 @@
 /***********/
 /*** NRF ***/
 /***********/
-#define BIDIRECTIONAL
-#define USE_REDUCED_PACKET
-#define CHANGE_STATE 0x0
-#define CHANGE_RF 0x1
+#ifndef RF_ADDR
 #define RF_ADDR 3200			// used to define hardware revision
-#ifdef USE_REDUCED_PACKET
-	#define PAYLOAD_SIZE 6
-#else
-	#define PAYLOAD_SIZE 31
+#endif
+
+#ifndef PAYLOAD_SIZE
+#define PAYLOAD_SIZE 6
 #endif
 
 /************************/
 /*** SPEED CONTROLLER ***/
 /************************/
-#define MAX_MOTORS_PWM 1024 //614 //1023/100*60		// max value for the pwm registers of the motors; 60% of maximum
-#define P_ORIZZONTAL 25 //100
-#define I_ORIZZONTAL 2
-#define D_ORIZZONTAL 3 //0x000A //10
-#define I_LIMIT_ORIZZONTAL 1600 //3200
-//#define K_FF_ORIZZONTAL 0x0078 //120 			// optimized for low velocities //30
-
-#define P_VERTICAL 10 //40
-#define I_VERTICAL 3 //10
-#define D_VERTICAL 2 //5
-#define I_LIMIT_VERTICAL 1600 //3200
+#ifndef PERIOD_MOTORS_100HZ
 #define PERIOD_MOTORS_100HZ	40000			// old controller: We need a period time of 10 ms (100 Hz) => 0.01 * 4000000 = 40000
-#define MAX_PWM PERIOD_MOTORS_100HZ/100*60	// old controller: 60% of maximum
+#endif
 
-#ifndef MAX_MEAS_SPEED
-#define MAX_MEAS_SPEED 800								// measured speed at 60% duty cycle (free run)
+#ifndef MAX_PWM
+#define MAX_PWM PERIOD_MOTORS_100HZ/100*60	// old controller: 60% of maximum
 #endif
-#ifndef PWM_THRESHOLD
-#define PWM_THRESHOLD 		PERIOD_MOTORS_100HZ/100*20	// percentage of max velocity (motors period); values are between 0..PERIOD_MOTORS
+
+#ifndef MAX_MOTORS_PWM
+#define MAX_MOTORS_PWM 1024		// max value for the pwm registers of the motors; 50% of maximum is then used actually
 #endif
+
+// orizzontal speed controller
+#ifndef P_ORIZZONTAL
+#define P_ORIZZONTAL 25
+#endif
+
+#ifndef I_ORIZZONTAL
+#define I_ORIZZONTAL 2
+#endif
+
+#ifndef D_ORIZZONTAL
+#define D_ORIZZONTAL 3
+#endif
+
+#ifndef I_LIMIT_ORIZZONTAL
+#define I_LIMIT_ORIZZONTAL 1600
+#endif
+
+// vertical speed controller
+#ifndef P_VERTICAL
+#define P_VERTICAL 10
+#endif
+
+#ifndef I_VERTICAL
+#define I_VERTICAL 3
+#endif
+
+#ifndef D_VERTICAL
+#define D_VERTICAL 2
+#endif
+
+#ifndef I_LIMIT_VERTICAL
+#define I_LIMIT_VERTICAL 1600
+#endif
+
 #ifndef INIT_KFF
-#define INIT_KFF 25 //150	// speed controller
+#define INIT_KFF 25	
 #endif
 
 /****************/
 /*** RGB LEDS ***/
 /****************/
+#ifndef MAX_LEDS_PWM
 #define MAX_LEDS_PWM 255				// max value for the pwm registers of the leds
+#endif
 
 /*************************/
 /*** IR REMOTE CONTROL ***/
 /*************************/
+#ifndef STEP_MOTORS
 #define STEP_MOTORS 30					// step used to increase/decrease the pwm of the motors when receiving a command through TV remote
-										// 30/1024 = 2.9%
+#endif									// 30/1024 = 2.9%
 
 /*********************/
 /*** ACCELEROMETER ***/
 /*********************/
-#ifndef DELTA_ANGLE_FACT
-#define DELTA_ANGLE_FACT MAX_PWM/180					// scale the error to be in the range 0..MAX_PWM
+#ifndef VERTICAL_THRESHOLD
+#define VERTICAL_THRESHOLD 15
 #endif
-#ifndef NULL_ANGLE_THRESHOLD
-#define NULL_ANGLE_THRESHOLD 15
-#endif
+
 #ifndef SAME_POS_NUM
 #define SAME_POS_NUM 5
 #endif
+
 #ifndef VERTICAL_POS
 #define VERTICAL_POS 0
 #endif
+
 #ifndef ORIZZONTAL_POS
 #define ORIZZONTAL_POS 1
 #endif
+
 #ifndef MMA7455L_ADDR
 #define MMA7455L_ADDR (0x1D<<1)
 #endif
+
 #ifndef ADXL345_ADDR
 #define ADXL345_ADDR (0x53<<1)
 #endif
+
 #ifndef USE_MMAX7455L
 #define USE_MMAX7455L 0
 #endif
+
 #ifndef USE_ADXL345
 #define USE_ADXL345 1
 #endif
+
 #ifndef USE_NO_ACCEL
 #define USE_NO_ACCEL 2
-#endif
-
-/******************************/
-/*** CONSUMPTION CONTROLLER ***/
-/******************************/
-#ifndef CURRENT_LIM_UP
-#define CURRENT_LIM_UP 		60							// used to change the limit of the current consumption for a certain pwm/duty: limit = (CURRENT_LIM_UP-duty)/2
-#endif
-#ifndef MAX_CURRENT_MEAS									// this value was found with measures
-#define MAX_CURRENT_MEAS 	60							// max adc value measured when the motor is stopped
 #endif
 
 /*********************/
 /*** HARDWARE DEFS ***/
 /*********************/
 #if RF_ADDR >= 3201 && RF_ADDR <= 3203
-	#define HW_REV_3_0
+	#ifndef HW_REV_3_0
+		#define HW_REV_3_0
+		//#warning "Hardware revision 3.0"
+	#endif
 #endif
 #if RF_ADDR == 3200
-	#define HW_REV_3_0_1
+	#ifndef HW_REV_3_0_1
+		#define HW_REV_3_0_1
+		//#warning "Hardware revision 3.0.1"
+	#endif
 #endif
 #if RF_ADDR > 3203
-	#define HW_REV_3_1
+	#ifndef HW_REV_3_1
+		#define HW_REV_3_1
+		//#warning "Hardware revision 3.1"
+	#endif
 #endif
-#define SEL0 		(PINC & _BV(PC0))>>0
-#define SEL1 		(PINC & _BV(PC1))>>1
-#define SEL2 		(PINC & _BV(PC2))>>2
-#define SEL3 		(PINC & _BV(PC3))>>3
-//#define ACC_ADXL345
-#define ACC_MMA7455L
+
+#ifndef SEL0
+#define SEL0 (PINC & _BV(PC0))>>0
+#endif
+
+#ifndef SEL1
+#define SEL1 (PINC & _BV(PC1))>>1
+#endif
+
+#ifndef SEL2
+#define SEL2 (PINC & _BV(PC2))>>2
+#endif
+
+#ifndef SEL3
+#define SEL3 (PINC & _BV(PC3))>>3
+#endif
+
+#ifndef CHARGE_ON
 #define CHARGE_ON ((PINJ & _BV(PJ4))>>4)
+#endif
+
+#ifndef BUTTON0
 #define BUTTON0 ((PINJ & _BV(PJ5))>>5)
+#endif
+
+#ifndef LED_IR1_HIGH
 #define LED_IR1_HIGH (PORTC |= (1<<4))
+#endif
+
+#ifndef LED_IR1_LOW
 #define LED_IR1_LOW (PORTC &= ~(1<<4))
+#endif
+
+#ifndef LED_IR2_HIGH
 #define LED_IR2_HIGH (PORTC |= (1<<5))
+#endif
+ 
+#ifndef LED_IR2_LOW
 #define LED_IR2_LOW (PORTC &= ~(1<<5))
+#endif
+
+// the LED_X_ON/OFF macros works only if the leds port pins aren't
+// set in pwm mode
+#ifndef LED_RED_ON
+#define LED_RED_ON (PORTB |= (1<<5))
+#endif
+
+#ifndef LED_GREEN_ON
+#define LED_GREEN_ON (PORTB |= (1<<6))
+#endif
+
+#ifndef LED_BLUE_ON
+#define LED_BLUE_ON (PORTB |= (1<<7))
+#endif
+
+#ifndef LED_RED_OFF
+#define LED_RED_OFF (PORTB &= ~(1<<5))
+#endif
+
+#ifndef LED_GREEN_OFF
+#define LED_GREEN_OFF (PORTB &= ~(1<<6))
+#endif
+
+#ifndef LED_BLUE_OFF
+#define LED_BLUE_OFF (PORTB &= ~(1<<7))
+#endif
 
 /***********/
 /*** ADC ***/
 /***********/
+#ifndef ACTIVE_PHASE
 #define ACTIVE_PHASE 0
+#endif
+
+#ifndef PASSIVE_PHASE
 #define PASSIVE_PHASE 1
+#endif
+
+#ifndef NO_PHASE
 #define NO_PHASE 2	// when pwm = 0
+#endif
+
+#ifndef SAVE_TO_PROX
 #define SAVE_TO_PROX 0
+#endif
+
+#ifndef SAVE_TO_RIGHT_MOTOR_CURRENT
 #define SAVE_TO_RIGHT_MOTOR_CURRENT 1
+#endif
+
+#ifndef SAVE_TO_RIGHT_MOTOR_VEL
 #define SAVE_TO_RIGHT_MOTOR_VEL 2
+#endif
+
+#ifndef SAVE_TO_LEFT_MOTOR_CURRENT
 #define SAVE_TO_LEFT_MOTOR_CURRENT 3
+#endif
+
+#ifndef SAVE_TO_LEFT_MOTOR_VEL
 #define SAVE_TO_LEFT_MOTOR_VEL 4
+#endif
+
+#ifndef SKIP_SAMPLE
 #define SKIP_SAMPLE 5
+#endif
 
 /***************/
 /*** SENSORS ***/
 /***************/
+#ifndef PROX0_AMBIENT
 #define PROX0_AMBIENT 0
 #define PROX0_REFLECTED 1
 #define PROX1_AMBIENT 2
@@ -182,6 +283,7 @@
 #define GROUND2_REFLECTED 21
 #define GROUND3_AMBIENT 22
 #define GROUND3_REFLECTED 23
+#endif
 
 /***********************/
 /*** CLIFF AVOIDANCE ***/

@@ -10,7 +10,8 @@ ports_io.o: ../ports_io.c \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/common.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/version.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/fuse.h \
- c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h \
+ ../ports_io.h ../variables.h ../constants.h
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr\io.h:
 
@@ -35,3 +36,9 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/fuse.h:
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h:
+
+../ports_io.h:
+
+../variables.h:
+
+../constants.h:

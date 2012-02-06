@@ -88,8 +88,6 @@ void mirf_config()
 	// RX payload size; it isn't needed because the dynamic payload length is activated for ACK+PAYLOAD feature
     mirf_config_register(RX_PW_P0, PAYLOAD_SIZE);
 
-#ifdef BIDIRECTIONAL
-
 	// enable extra features
     mirf_CSN_lo;
     SPI_Write_Byte(NRF_ACTIVATE);
@@ -102,8 +100,6 @@ void mirf_config()
 	// enable payload with ACK and dynamic payload length
 	mirf_config_register(NRF_FEATURE, 0x06);
 		
-#endif
-
 	// power up; enable crc (2 bytes); prx; max_rt, tx_ds enabled
 	mirf_config_register(CONFIG, 0x0F);	
 

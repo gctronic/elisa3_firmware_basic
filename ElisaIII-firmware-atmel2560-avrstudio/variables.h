@@ -29,6 +29,8 @@ extern unsigned int last_left_current;
 extern unsigned int last_right_current;
 
 // speed controller
+extern signed int pwm_right_desired_to_control;
+extern signed int pwm_left_desired_to_control;
 extern unsigned int left_vel_sum;
 extern unsigned int right_vel_sum;
 extern signed int pwm_right;
@@ -81,6 +83,7 @@ extern unsigned char command_received;
 extern unsigned char colorState;
 extern unsigned char irEnabled;
 extern unsigned char behaviorState;
+extern unsigned char checkGlitch;
 
 // accelerometer
 extern int accelAddress;
@@ -96,10 +99,10 @@ extern unsigned char useAccel;
 extern signed int accOffsetXSum;
 extern signed int accOffsetYSum;
 extern signed int accOffsetZSum;
-extern unsigned char prev_position; 
-extern unsigned char curr_position;
-extern unsigned char times_in_same_pos;
-extern unsigned char orizzontal_position;
+extern unsigned char prevPosition; 
+extern unsigned char currPosition;
+extern unsigned char timesInSamePos;
+extern unsigned char robotPosition;
 
 // obstacle avoidance
 extern unsigned char obstacleAvoidanceEnabled;

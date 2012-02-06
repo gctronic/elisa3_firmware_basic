@@ -24,33 +24,6 @@ void initRGBleds() {
 
 }
 
-
-/*
-// LED RED
-ISR(TIMER1_COMPA_vect) {
-
-	// TIFR.OCF1A is cleared by hardware when executing the corresponding interrupt handling vector
-
-   PORTB ^= (1 << 0); // Toggle the LED
-
-}
-
-// LED GREEN
-ISR(TIMER1_COMPB_vect) {
-
-
-
-}
-
-// LED BLUE
-ISR(TIMER1_COMPC_vect) {
-
-
-
-}
-*/
-
-
 void toggleBlueLed() {
 
 	blinkState = 1 - blinkState;
