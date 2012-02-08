@@ -13,7 +13,7 @@ void initPortsIO(void) {
 	//PORTB &= ~(1 << 7);
 
 	DDRC = 0xF0;	// selector as input; IR leds as output; sens-enable, sleep as output
-	PORTC = 0xB0;	// sleep = 1, IR leds = 1
+	PORTC = 0xB0;	// sleep = 1 (no sleep), sense_enable=0, IR leds = 1
 
 	DDRD = 0xFC;	// all pins to output; when usart and i2c peripherals are activated they change the pins direction accordingly
 	PORTD = 0x03;	// default for unused pins is 0

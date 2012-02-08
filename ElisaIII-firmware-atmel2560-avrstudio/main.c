@@ -26,6 +26,9 @@ int main(void) {
 	updateBlueLed(pwm_blue);
 */
 
+	//PORTL = 0x00;
+	//PORTG &= ~(1 << 3);
+
 	while(1) {
 
 		//PORTB ^= (1 << 6); 	// toggle the green led
@@ -182,7 +185,8 @@ int main(void) {
 */
 		if(delayCounter >= 20000) {
 			measBattery = 1;
-			//sleep(60);
+			//sleep(20);
+			//delayCounter = 0;
 		}
 
 

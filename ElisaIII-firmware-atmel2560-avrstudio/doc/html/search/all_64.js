@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['d_5forizzontal',['D_ORIZZONTAL',['../constants_8h.html#a064dbb9c7ce9c89400e8e52ab26428da',1,'constants.h']]],
-  ['d_5fvertical',['D_VERTICAL',['../constants_8h.html#a5d686096a1310061717eba9166afd6cb',1,'constants.h']]],
   ['data_5fir',['data_ir',['../e__remote__control_8c.html#af3cea0713bd42d9cca57b04fcf1a8a13',1,'e_remote_control.c']]],
   ['dataled',['dataLED',['../variables_8c.html#a591fc8c686d067b70a54af597346a772',1,'dataLED():&#160;variables.c'],['../variables_8h.html#a591fc8c686d067b70a54af597346a772',1,'dataLED():&#160;variables.c']]],
   ['delaycounter',['delayCounter',['../variables_8c.html#acd26f2ffd2a39afcc6cc1eca8e623b41',1,'delayCounter():&#160;variables.c'],['../variables_8h.html#acd26f2ffd2a39afcc6cc1eca8e623b41',1,'delayCounter():&#160;variables.c']]],

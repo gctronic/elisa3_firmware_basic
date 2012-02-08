@@ -15,7 +15,7 @@
 /*** NRF ***/
 /***********/
 #ifndef RF_ADDR
-#define RF_ADDR 3200			// used to define hardware revision
+#define RF_ADDR 3204			// used to define hardware revision
 #endif
 
 #ifndef PAYLOAD_SIZE
@@ -172,6 +172,14 @@
 
 #ifndef BUTTON0
 #define BUTTON0 ((PINJ & _BV(PJ5))>>5)
+#endif
+
+#ifndef SENS_ENABLE_OFF
+#define SENS_ENABLE_OFF (PORTC &= ~(1 << 6))
+#endif
+
+#ifndef SENS_ENABLE_ON
+#define SENS_ENABLE_ON (PORTC |= (1 << 6))
 #endif
 
 #ifndef LED_IR1_HIGH

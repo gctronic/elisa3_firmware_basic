@@ -52,6 +52,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -93,27 +94,138 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">accelerometer.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Accelerometer module.  
-<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br/>
 <code>#include &lt;math.h&gt;</code><br/>
 <code>#include &quot;<a class="el" href="variables_8h_source.html">variables.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="twimaster_8h_source.html">twimaster.h</a>&quot;</code><br/>
 </div>
 <p><a href="accelerometer_8h_source.html">Go to the source code of this file.</a></p>
-<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Accelerometer module. </p>
-<dl class="author"><dt><b>Author:</b></dt><dd>Stefano Morgani &lt;<a href="mailto:stefano@gctronic.com">stefano@gctronic.com</a>&gt; </dd></dl>
-<dl class="version"><dt><b>Version:</b></dt><dd>1.0 </dd></dl>
-<dl class="date"><dt><b>Date:</b></dt><dd>01.02.12 </dd></dl>
-<dl class="copyright"><dt><b>Copyright:</b></dt><dd>GNU GPL v3</dd></dl>
-<p>The I2C communication is initialized to work with the accelerometer. There are functions to work with both the Freescale MMA7455 and the Analog Device ADXL345 accelerometers. </p>
-</div></div><!-- contents -->
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#a3d961b25677384479fcd0d413da8ef83">initAccelerometer</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Test which device is mounted on the robot and configure it.  <a href="#a3d961b25677384479fcd0d413da8ef83"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#afe99cfb7d3e16bf36cc5d29da66ce8bc">initADXL345</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution).  <a href="#afe99cfb7d3e16bf36cc5d29da66ce8bc"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#a00ac3777f39d082d583911fcedd3a302">initMMA7455L</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution).  <a href="#a00ac3777f39d082d583911fcedd3a302"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#a9c7a0d4e693d6dd1fef72e28353324a1">readAccelXY</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#ab3ef74e35beb0d06aefb2830ff49862d">readAccelXYZ</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8h.html#a12fc697a01e1d04b91df358a472b5b84">computeAngle</a> ()</td></tr>
+</table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a12fc697a01e1d04b91df358a472b5b84"></a><!-- doxytag: member="accelerometer.h::computeAngle" ref="a12fc697a01e1d04b91df358a472b5b84" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a12fc697a01e1d04b91df358a472b5b84">computeAngle</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3d961b25677384479fcd0d413da8ef83"></a><!-- doxytag: member="accelerometer.h::initAccelerometer" ref="a3d961b25677384479fcd0d413da8ef83" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a3d961b25677384479fcd0d413da8ef83">initAccelerometer</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Test which device is mounted on the robot and configure it. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="afe99cfb7d3e16bf36cc5d29da66ce8bc"></a><!-- doxytag: member="accelerometer.h::initADXL345" ref="afe99cfb7d3e16bf36cc5d29da66ce8bc" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="accelerometer3_8h.html#afe99cfb7d3e16bf36cc5d29da66ce8bc">initADXL345</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>1 in case of errors, 0 otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a00ac3777f39d082d583911fcedd3a302"></a><!-- doxytag: member="accelerometer.h::initMMA7455L" ref="a00ac3777f39d082d583911fcedd3a302" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="accelerometer3_8h.html#a00ac3777f39d082d583911fcedd3a302">initMMA7455L</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>1 in case of errors, 0 otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a9c7a0d4e693d6dd1fef72e28353324a1"></a><!-- doxytag: member="accelerometer.h::readAccelXY" ref="a9c7a0d4e693d6dd1fef72e28353324a1" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a9c7a0d4e693d6dd1fef72e28353324a1">readAccelXY</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab3ef74e35beb0d06aefb2830ff49862d"></a><!-- doxytag: member="accelerometer.h::readAccelXYZ" ref="ab3ef74e35beb0d06aefb2830ff49862d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#ab3ef74e35beb0d06aefb2830ff49862d">readAccelXYZ</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -133,7 +245,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="accelerometer_8h.html">accelerometer.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 1 2012 11:53:43 for Elisa3 by
+    <li class="footer">Generated on Tue Feb 7 2012 08:52:00 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

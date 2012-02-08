@@ -38,17 +38,21 @@ void sleep(unsigned char seconds) {
 	// remote signal and the timer2 must be free in order to be used for wake-up from sleep
 	PCICR &= ~(1 << PCIE1);			// disable interrupt from falling edge
 	PCMSK1 &= ~(1 << PCINT15);		
+	PCIFR |= (1 << PCIF1);			// clear interrupt flag
 
 	// disable adc
-	ADCSRA = 0x00;	// disable interrupt and turn off adc
+	ADCSRA = 0x00;					// disable interrupt and turn off adc
+	ADCSRA |= (1 << ADIF);			// clear interrupt flag
 
 	// disable motors pwm
 	TCCR3A = 0x00;	// turn off timer
 	TCCR3B = 0x00;
 	TIMSK3 = 0x00;	// disable interrupt
+	TIFR3 |= (1 << OCF3A) | (1 << OCF3B) | (1 << TOV3);	// clear output compares and timer overflow interrupt flags
 	TCCR4A = 0x00;
 	TCCR4B = 0x00;
 	TIMSK4 = 0x00;
+	TIFR4 |= (1 << OCF4A) | (1 << OCF4B) | (1 << TOV4);	// clear output compares and timer overflow interrupt flags
 
 	// disable leds pwm
 	TCCR1A = 0x00;	// turn off timer
@@ -61,10 +65,16 @@ void sleep(unsigned char seconds) {
 
 	// set port pins
 	initPortsIO();
-	//PORTB &= ~(1 << 5) & ~(1 << 6) & ~(1 << 7);
-	PORTC &= ~(1 << 7); // sleep pin
+	//PORTC &= ~(1 << 7); // sleep pin => not supported by microcontroller (adc voltage reference restrictions)
+
 	//PORTB &= ~(1 << 4);	// radio CE pin
-	PORTD = 0x00;	// I2C and uart pins to 0
+	//DDRD = 0xFF;
+	//PORTD = 0x00;	// I2C and uart pins to 0
+
+	// set extendend standby mode and enable it
+	SMCR |= (1 << SM2) | (1 << SM1) | (1 << SM0) | (1 << SE);	// extended standby
+	//SMCR |= (1 << SM1) | (1 << SE);	// power-down mode
+	//SMCR |= (1 << SE);	// idle mode
 
 	// set timer2 for wake-up: 
 	// source clock = 8 MHz
@@ -73,11 +83,6 @@ void sleep(unsigned char seconds) {
 	TIMSK2 = 0x01; //(1 << TOIE2);
 	TCCR2A &= ~(1 << WGM21); 	// mode 0 => normal mode
 	TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);	// 1/1024 prescaler
-
-	// set extendend standby mode and enable it
-	//SMCR |= (1 << SM2) | (1 << SM1) | (1 << SM0) | (1 << SE);	// extended standby
-	SMCR |= (1 << SM1) | (1 << SE);
-	//SMCR |= (1 << SE);	// idle mode
 
 	while(pause > 0) {	
 		// enter extended standby mode

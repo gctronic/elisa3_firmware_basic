@@ -3,7 +3,7 @@
 
 
 void initRGBleds() {
-/*
+
 	// LEDs timer1/pwm
 	// Timer1 clock input = Fosc = 8 MHz
 	// Period freq = Fosc/TOP (max timer value) => TOP = Fosc/period freq
@@ -20,7 +20,7 @@ void initRGBleds() {
 	//TCCR1A &= ~(1 << COM1A1) & ~(1 << COM1B1) & ~(1 << COM1C1);	// disable OCA, OCB, OCC to turn them off
 	//TIMSK1 |= (1 << OCIE1A); 	// Enable output compare match interrupt
 	//TIMSK1 |= (1 << TOIE1);	// Enable timer overflow interrupt
-*/
+
 
 }
 

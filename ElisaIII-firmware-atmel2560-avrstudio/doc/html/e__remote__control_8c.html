@@ -52,6 +52,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -101,29 +102,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="e__remote__control_8h_source.html">e_remote_control.h</a>&quot;</code><br/>
-<code>#include &lt;avr\io.h&gt;</code><br/>
-<code>#include &lt;avr\interrupt.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="leds_8h_source.html">leds.h</a>&quot;</code><br/>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a39261527e0c41b02844a3e997b127d71">e_init_remote_control</a> (void)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise the IR receiver ports.  <a href="#a39261527e0c41b02844a3e997b127d71"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#afe6035149a64d5f448fbda08e9d1b67f">ISR</a> (PCINT1_vect)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a5686c229bdef50123688ab6cb1404230">ISR</a> (TIMER2_COMPA_vect)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a226d95b54ae2733386c8f6d483b78a3e">e_get_check</a> (void)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the check bit.  <a href="#a226d95b54ae2733386c8f6d483b78a3e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a94b404f5de1c9130c01fb84f68e6c393">e_get_address</a> (void)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the adress of the commande.  <a href="#a94b404f5de1c9130c01fb84f68e6c393"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a538c70a5c0ea32d03634f74a53ed99ae">e_get_data</a> (void)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the data of the command.  <a href="#a538c70a5c0ea32d03634f74a53ed99ae"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a5686c229bdef50123688ab6cb1404230">ISR</a> (TIMER2_COMPA_vect)</td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a9ff470cb16fb31f83ca0b9192a33e402">address</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#af3cea0713bd42d9cca57b04fcf1a8a13">data_ir</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a00f286ba9f1a48026642814f02c994b0">check</a> = 2</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a848efaccfa3abf681a7583e2db972b49">command_received</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#aaa8bfff0cb9fc452509ba740424df94f">checkGlitch</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="e__remote__control_8c.html#a32ebeb87f3ebe57f5e8c96089a3d23e6">irEnabled</a></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a94b404f5de1c9130c01fb84f68e6c393"></a><!-- doxytag: member="e_remote_control.c::e_get_address" ref="a94b404f5de1c9130c01fb84f68e6c393" args="(void)" -->
@@ -266,51 +263,12 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aaa8bfff0cb9fc452509ba740424df94f"></a><!-- doxytag: member="e_remote_control.c::checkGlitch" ref="aaa8bfff0cb9fc452509ba740424df94f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char <a class="el" href="variables_8c.html#aaa8bfff0cb9fc452509ba740424df94f">checkGlitch</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a848efaccfa3abf681a7583e2db972b49"></a><!-- doxytag: member="e_remote_control.c::command_received" ref="a848efaccfa3abf681a7583e2db972b49" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char <a class="el" href="variables_8h.html#a848efaccfa3abf681a7583e2db972b49">command_received</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="af3cea0713bd42d9cca57b04fcf1a8a13"></a><!-- doxytag: member="e_remote_control.c::data_ir" ref="af3cea0713bd42d9cca57b04fcf1a8a13" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">unsigned char <a class="el" href="e__remote__control_8c.html#af3cea0713bd42d9cca57b04fcf1a8a13">data_ir</a> = 0</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a32ebeb87f3ebe57f5e8c96089a3d23e6"></a><!-- doxytag: member="e_remote_control.c::irEnabled" ref="a32ebeb87f3ebe57f5e8c96089a3d23e6" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char <a class="el" href="variables_8h.html#a32ebeb87f3ebe57f5e8c96089a3d23e6">irEnabled</a></td>
         </tr>
       </table>
 </div>
@@ -338,7 +296,7 @@ Variables</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="e__remote__control_8c.html">e_remote_control.c</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 1 2012 11:53:45 for Elisa3 by
+    <li class="footer">Generated on Tue Feb 7 2012 08:52:00 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

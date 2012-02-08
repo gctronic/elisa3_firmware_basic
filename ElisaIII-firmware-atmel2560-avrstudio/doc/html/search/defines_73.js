@@ -1,19 +1,9 @@
 var searchData=
 [
-  ['save_5fto_5fleft_5fmotor_5fcurrent',['SAVE_TO_LEFT_MOTOR_CURRENT',['../constants_8h.html#aa70057da0fefc087f373b0dd21889a7e',1,'constants.h']]],
-  ['save_5fto_5fleft_5fmotor_5fvel',['SAVE_TO_LEFT_MOTOR_VEL',['../constants_8h.html#a09819e52e9faa2ad571daf871305d9e3',1,'constants.h']]],
-  ['save_5fto_5fprox',['SAVE_TO_PROX',['../constants_8h.html#adc4b163286d1c51e124dff2a157933f1',1,'constants.h']]],
-  ['save_5fto_5fright_5fmotor_5fcurrent',['SAVE_TO_RIGHT_MOTOR_CURRENT',['../constants_8h.html#a95dcbadf398c180577c15d7242ce1c2e',1,'constants.h']]],
-  ['save_5fto_5fright_5fmotor_5fvel',['SAVE_TO_RIGHT_MOTOR_VEL',['../constants_8h.html#ab9a904827d826e0d457011a4e1b58249',1,'constants.h']]],
   ['sbi',['sbi',['../twimaster_8c.html#ac4a5536d9bf092116f88b94797ddc882',1,'twimaster.c']]],
   ['scl_5fclock',['SCL_CLOCK',['../twimaster_8c.html#a17ae80300a19853baae9dc086d18bb38',1,'twimaster.c']]],
-  ['sel0',['SEL0',['../constants_8h.html#aa3b532dc1dfcb8b6683540476e7589e9',1,'constants.h']]],
-  ['sel1',['SEL1',['../constants_8h.html#a7fc3ebaf23e24324e05c158644703067',1,'constants.h']]],
-  ['sel2',['SEL2',['../constants_8h.html#a3da7d4707ccd09a11639a8a1f657cd63',1,'constants.h']]],
-  ['sel3',['SEL3',['../constants_8h.html#ad9ebd33bd8b5adc7591ce71076340b7b',1,'constants.h']]],
   ['setup_5faw',['SETUP_AW',['../n_r_f24_l01_8h.html#af5ef355ba3eca336db1285cab353ddc2',1,'nRF24L01.h']]],
   ['setup_5fretr',['SETUP_RETR',['../n_r_f24_l01_8h.html#a2188309b3eceeae158dd64109cd919aa',1,'nRF24L01.h']]],
-  ['skip_5fsample',['SKIP_SAMPLE',['../constants_8h.html#abb748c6a2201f83f989417e2b95aaac0',1,'constants.h']]],
   ['spi_5fddr',['SPI_DDR',['../spi_8c.html#a8b07abe3c166558485851f24f2141dc9',1,'spi.c']]],
   ['spi_5fmiso',['SPI_MISO',['../spi_8c.html#ab142cc77dfa97010c9d2b616d0992b64',1,'spi.c']]],
   ['spi_5fmosi',['SPI_MOSI',['../spi_8c.html#a7dbebab5f7dd57885adccf6711b13592',1,'spi.c']]],
@@ -22,6 +12,5 @@ var searchData=
   ['spi_5fss',['SPI_SS',['../spi_8c.html#a81f0aae3c3a2adba06ac3b802b38915a',1,'spi.c']]],
   ['spi_5fwait',['SPI_WAIT',['../spi_8c.html#a017204f162223026f7b9fcaa52398cef',1,'spi.c']]],
   ['standby',['STANDBY',['../e__remote__control_8h.html#a42d8551dd3f10de6540de8a6fdf05a37',1,'e_remote_control.h']]],
-  ['status',['STATUS',['../n_r_f24_l01_8h.html#a59279bee44f34d08b3cbf3a89fb0d8d9',1,'nRF24L01.h']]],
-  ['step_5fmotors',['STEP_MOTORS',['../constants_8h.html#a42e5eab104c5098f1a5143dbe02eaca3',1,'constants.h']]]
+  ['status',['STATUS',['../n_r_f24_l01_8h.html#a59279bee44f34d08b3cbf3a89fb0d8d9',1,'nRF24L01.h']]]
 ];

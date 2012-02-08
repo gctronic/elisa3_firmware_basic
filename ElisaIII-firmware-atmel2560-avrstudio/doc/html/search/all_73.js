@@ -1,20 +1,12 @@
 var searchData=
 [
-  ['save_5fto_5fleft_5fmotor_5fcurrent',['SAVE_TO_LEFT_MOTOR_CURRENT',['../constants_8h.html#aa70057da0fefc087f373b0dd21889a7e',1,'constants.h']]],
-  ['save_5fto_5fleft_5fmotor_5fvel',['SAVE_TO_LEFT_MOTOR_VEL',['../constants_8h.html#a09819e52e9faa2ad571daf871305d9e3',1,'constants.h']]],
-  ['save_5fto_5fprox',['SAVE_TO_PROX',['../constants_8h.html#adc4b163286d1c51e124dff2a157933f1',1,'constants.h']]],
-  ['save_5fto_5fright_5fmotor_5fcurrent',['SAVE_TO_RIGHT_MOTOR_CURRENT',['../constants_8h.html#a95dcbadf398c180577c15d7242ce1c2e',1,'constants.h']]],
-  ['save_5fto_5fright_5fmotor_5fvel',['SAVE_TO_RIGHT_MOTOR_VEL',['../constants_8h.html#ab9a904827d826e0d457011a4e1b58249',1,'constants.h']]],
   ['sbi',['sbi',['../twimaster_8c.html#ac4a5536d9bf092116f88b94797ddc882',1,'twimaster.c']]],
   ['scl_5fclock',['SCL_CLOCK',['../twimaster_8c.html#a17ae80300a19853baae9dc086d18bb38',1,'twimaster.c']]],
-  ['sel0',['SEL0',['../constants_8h.html#aa3b532dc1dfcb8b6683540476e7589e9',1,'constants.h']]],
-  ['sel1',['SEL1',['../constants_8h.html#a7fc3ebaf23e24324e05c158644703067',1,'constants.h']]],
-  ['sel2',['SEL2',['../constants_8h.html#a3da7d4707ccd09a11639a8a1f657cd63',1,'constants.h']]],
-  ['sel3',['SEL3',['../constants_8h.html#ad9ebd33bd8b5adc7591ce71076340b7b',1,'constants.h']]],
   ['sendadcvalues',['sendAdcValues',['../usart_8c.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c'],['../variables_8c.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c'],['../variables_8h.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c']]],
+  ['sensors_2ec',['sensors.c',['../sensors_8c.html',1,'']]],
+  ['sensors_2eh',['sensors.h',['../sensors_8h.html',1,'']]],
   ['setup_5faw',['SETUP_AW',['../n_r_f24_l01_8h.html#af5ef355ba3eca336db1285cab353ddc2',1,'nRF24L01.h']]],
   ['setup_5fretr',['SETUP_RETR',['../n_r_f24_l01_8h.html#a2188309b3eceeae158dd64109cd919aa',1,'nRF24L01.h']]],
-  ['skip_5fsample',['SKIP_SAMPLE',['../constants_8h.html#abb748c6a2201f83f989417e2b95aaac0',1,'constants.h']]],
   ['sleep',['sleep',['../utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9',1,'utility.c']]],
   ['speed_5fcontrol_2ec',['speed_control.c',['../speed__control_8c.html',1,'']]],
   ['speed_5fcontrol_2eh',['speed_control.h',['../speed__control_8h.html',1,'']]],
@@ -38,6 +30,5 @@ var searchData=
   ['start_5fvertical_5fspeed_5fcontrol_5fleft',['start_vertical_speed_control_left',['../speed__control_8c.html#a57ab122fa578676fac1b9c48eb2c722f',1,'start_vertical_speed_control_left(signed int *pwm_left):&#160;speed_control.c'],['../speed__control_8h.html#a57ab122fa578676fac1b9c48eb2c722f',1,'start_vertical_speed_control_left(signed int *pwm_left):&#160;speed_control.c']]],
   ['start_5fvertical_5fspeed_5fcontrol_5fright',['start_vertical_speed_control_right',['../speed__control_8c.html#a16b850ed7820e0c1a62cf5f21a8efdbf',1,'start_vertical_speed_control_right(signed int *pwm_right):&#160;speed_control.c'],['../speed__control_8h.html#a16b850ed7820e0c1a62cf5f21a8efdbf',1,'start_vertical_speed_control_right(signed int *pwm_right):&#160;speed_control.c']]],
   ['startcalibration',['startCalibration',['../variables_8c.html#aac69bb11d34873c2410860817f4e1729',1,'startCalibration():&#160;variables.c'],['../variables_8h.html#aac69bb11d34873c2410860817f4e1729',1,'startCalibration():&#160;variables.c']]],
-  ['status',['STATUS',['../n_r_f24_l01_8h.html#a59279bee44f34d08b3cbf3a89fb0d8d9',1,'nRF24L01.h']]],
-  ['step_5fmotors',['STEP_MOTORS',['../constants_8h.html#a42e5eab104c5098f1a5143dbe02eaca3',1,'constants.h']]]
+  ['status',['STATUS',['../n_r_f24_l01_8h.html#a59279bee44f34d08b3cbf3a89fb0d8d9',1,'nRF24L01.h']]]
 ];

@@ -7,7 +7,6 @@
  *  Functions for using the AT90 as an SPI master.
  */
 
-#include "spi.h"
 
 #include "spi.h"
 #include <avr/io.h>

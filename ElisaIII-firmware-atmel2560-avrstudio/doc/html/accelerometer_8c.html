@@ -52,6 +52,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -106,7 +107,9 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#a3d961b25677384479fcd0d413da8ef83">initAccelerometer</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Test which device is mounted on the robot and configure it.  <a href="#a3d961b25677384479fcd0d413da8ef83"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#a00ac3777f39d082d583911fcedd3a302">initMMA7455L</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution).  <a href="#a00ac3777f39d082d583911fcedd3a302"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc">initADXL345</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution).  <a href="#afe99cfb7d3e16bf36cc5d29da66ce8bc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#a9c7a0d4e693d6dd1fef72e28353324a1">readAccelXY</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#ab3ef74e35beb0d06aefb2830ff49862d">readAccelXYZ</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="accelerometer_8c.html#a12fc697a01e1d04b91df358a472b5b84">computeAngle</a> ()</td></tr>
@@ -117,7 +120,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="accelerometer_8c.html#a12fc697a01e1d04b91df358a472b5b84">computeAngle</a> </td>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a12fc697a01e1d04b91df358a472b5b84">computeAngle</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -133,7 +136,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="accelerometer_8c.html#a3d961b25677384479fcd0d413da8ef83">initAccelerometer</a> </td>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a3d961b25677384479fcd0d413da8ef83">initAccelerometer</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -143,6 +146,7 @@ Functions</h2></td></tr>
 <div class="memdoc">
 
 <p>Test which device is mounted on the robot and configure it. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -151,7 +155,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned char <a class="el" href="accelerometer_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc">initADXL345</a> </td>
+          <td class="memname">unsigned char <a class="el" href="accelerometer3_8h.html#afe99cfb7d3e16bf36cc5d29da66ce8bc">initADXL345</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -159,6 +163,9 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>1 in case of errors, 0 otherwise. </dd></dl>
 
 </div>
 </div>
@@ -167,7 +174,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned char <a class="el" href="accelerometer_8c.html#a00ac3777f39d082d583911fcedd3a302">initMMA7455L</a> </td>
+          <td class="memname">unsigned char <a class="el" href="accelerometer3_8h.html#a00ac3777f39d082d583911fcedd3a302">initMMA7455L</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -176,6 +183,9 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>1 in case of errors, 0 otherwise. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a9c7a0d4e693d6dd1fef72e28353324a1"></a><!-- doxytag: member="accelerometer.c::readAccelXY" ref="a9c7a0d4e693d6dd1fef72e28353324a1" args="()" -->
@@ -183,7 +193,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="accelerometer_8c.html#a9c7a0d4e693d6dd1fef72e28353324a1">readAccelXY</a> </td>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#a9c7a0d4e693d6dd1fef72e28353324a1">readAccelXY</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -199,7 +209,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="accelerometer_8c.html#ab3ef74e35beb0d06aefb2830ff49862d">readAccelXYZ</a> </td>
+          <td class="memname">void <a class="el" href="accelerometer3_8h.html#ab3ef74e35beb0d06aefb2830ff49862d">readAccelXYZ</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -230,7 +240,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="accelerometer_8c.html">accelerometer.c</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 1 2012 11:53:43 for Elisa3 by
+    <li class="footer">Generated on Tue Feb 7 2012 08:51:59 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

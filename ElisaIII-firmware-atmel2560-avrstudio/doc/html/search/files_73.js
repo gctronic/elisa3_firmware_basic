@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['sensors_2ec',['sensors.c',['../sensors_8c.html',1,'']]],
+  ['sensors_2eh',['sensors.h',['../sensors_8h.html',1,'']]],
   ['speed_5fcontrol_2ec',['speed_control.c',['../speed__control_8c.html',1,'']]],
   ['speed_5fcontrol_2eh',['speed_control.h',['../speed__control_8h.html',1,'']]],
   ['spi_2ec',['spi.c',['../spi_8c.html',1,'']]],
