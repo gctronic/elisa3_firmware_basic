@@ -3,8 +3,13 @@
 
 
 void obstacleAvoidance() {
+
 	// obstacle avoidance using the 3 front proximity sensors
 
+
+/*
+	// new obstacle avoidance implementation => to test and correct!
+	//
 	//		forward
 	//
 	//			0
@@ -67,10 +72,12 @@ void obstacleAvoidance() {
 	if (pwm_left_working>(MAX_MOTORS_PWM/2)) pwm_left_working=(MAX_MOTORS_PWM/2);
 	if (pwm_right_working<-(MAX_MOTORS_PWM/2)) pwm_right_working=-(MAX_MOTORS_PWM/2);
 	if (pwm_left_working<-(MAX_MOTORS_PWM/2)) pwm_left_working=-(MAX_MOTORS_PWM/2);
-
+*/
 
 
 /*
+	// old obstacle avoidance implementation
+
 	signed int currentProxValue1=0, currentProxValue2=0, speedL=0, speedR=0;
 
 	if(speedr==0 || speedl==0) {
@@ -142,6 +149,8 @@ void obstacleAvoidance() {
 
 
 void cliffAvoidance() {
+
+	// the robot only stop when a cliff is detected
 
 	signed int g0=0, g1=0, g2=0, g3=0;
 

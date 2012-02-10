@@ -19,7 +19,7 @@
 #endif
 
 #ifndef PAYLOAD_SIZE
-#define PAYLOAD_SIZE 6
+#define PAYLOAD_SIZE 13
 #endif
 
 /************************/
@@ -174,6 +174,10 @@
 #define BUTTON0 ((PINJ & _BV(PJ5))>>5)
 #endif
 
+#ifndef CHARGE_STAT
+#define CHARGE_STAT ((PINJ & _BV(PJ7))>>7)
+#endif
+
 #ifndef SENS_ENABLE_OFF
 #define SENS_ENABLE_OFF (PORTC &= ~(1 << 6))
 #endif
@@ -222,6 +226,25 @@
 
 #ifndef LED_BLUE_OFF
 #define LED_BLUE_OFF (PORTB &= ~(1<<7))
+#endif
+
+#ifndef GREEN_LEDS
+#define GRREEN_LED0_ON (PORTL &= ~(1 << 0))
+#define GRREEN_LED1_ON (PORTL &= ~(1 << 1))
+#define GRREEN_LED2_ON (PORTL &= ~(1 << 2))
+#define GRREEN_LED3_ON (PORTG &= ~(1 << 3))
+#define GRREEN_LED4_ON (PORTL &= ~(1 << 4))
+#define GRREEN_LED5_ON (PORTL &= ~(1 << 5))
+#define GRREEN_LED6_ON (PORTL &= ~(1 << 6))
+#define GRREEN_LED7_ON (PORTL &= ~(1 << 7))
+#define GRREEN_LED0_OFF (PORTL |= (1 << 0))
+#define GRREEN_LED1_OFF (PORTL |= (1 << 1))
+#define GRREEN_LED2_OFF (PORTL |= (1 << 2))
+#define GRREEN_LED3_OFF (PORTG |= (1 << 3))
+#define GRREEN_LED4_OFF (PORTL |= (1 << 4))
+#define GRREEN_LED5_OFF (PORTL |= (1 << 5))
+#define GRREEN_LED6_OFF (PORTL |= (1 << 6))
+#define GRREEN_LED7_OFF (PORTL |= (1 << 7))
 #endif
 
 /***********/

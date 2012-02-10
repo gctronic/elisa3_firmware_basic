@@ -3,6 +3,8 @@
 
 void initPortsIO(void) {
 
+	MCUCR |= (1 << PUD);	// pull-up disable for all ports
+
 	DDRA = 0xFF;	// proximity pulses as output
 	PORTA = 0x00;	// proximity pulses turned off
 	

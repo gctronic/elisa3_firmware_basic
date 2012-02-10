@@ -572,7 +572,60 @@ int main(void) {
 				cliffAvoidanceEnabled = 0;
 			}
 
-			//desired_orientation = current_angle;
+			// handle small green leds
+			#ifdef HW_REV_3_1			
+
+				if(bit_is_set(rfData[6], 0) ) {
+					GRREEN_LED0_ON;
+				} else {
+					GRREEN_LED0_OFF;
+				}
+				
+				if(bit_is_set(rfData[6], 1) ) {
+					GRREEN_LED1_ON;
+				} else {
+					GRREEN_LED1_OFF;
+				}
+				
+				if(bit_is_set(rfData[6], 2) ) {
+					GRREEN_LED2_ON;
+				} else {
+					GRREEN_LED2_OFF;
+				}												
+
+				if(bit_is_set(rfData[6], 3) ) {
+					GRREEN_LED3_ON;
+				} else {
+					GRREEN_LED3_OFF;
+				}
+
+				if(bit_is_set(rfData[6], 4) ) {
+					GRREEN_LED4_ON;
+				} else {
+					GRREEN_LED4_OFF;
+				}
+
+				if(bit_is_set(rfData[6], 5) ) {
+					GRREEN_LED5_ON;
+				} else {
+					GRREEN_LED5_OFF;
+				}
+
+				if(bit_is_set(rfData[6], 6) ) {
+					GRREEN_LED6_ON;
+				} else {
+					GRREEN_LED6_OFF;
+				}
+
+				if(bit_is_set(rfData[6], 7) ) {
+					GRREEN_LED7_ON;
+				} else {
+					GRREEN_LED7_OFF;
+				}
+
+			#endif
+
+			// read and handle the remaining bytes of the payload (at the moment not used)
 
 
 			//packetId = (packetId+1)%256;
@@ -599,7 +652,11 @@ int main(void) {
 					ackPayload[12] = proximityResult[6]>>8;
 					ackPayload[13] = proximityResult[7]&0xFF;
 					ackPayload[14] = proximityResult[7]>>8;
-					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);
+					#ifdef HW_REV_3_1
+						ackPayload[15] = CHARGE_ON | (BUTTON0 << 1) | (CHARGE_STAT << 2);
+					#else
+						ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);
+					#endif
 					packetId = 4;
 					break;
 
