@@ -15,7 +15,7 @@
 /*** NRF ***/
 /***********/
 #ifndef RF_ADDR
-#define RF_ADDR 3204						// this number define the robot ID, used also as the robot
+#define RF_ADDR 3205						// this number define the robot ID, used also as the robot
 #endif										// RF address; from this number is then obtained the hardware revision
 
 #ifndef PAYLOAD_SIZE
@@ -208,28 +208,28 @@
 
 // the LED_X_ON/OFF macros works only if the leds port pins aren't
 // set in pwm mode
-#ifndef LED_RED_ON
-#define LED_RED_ON (PORTB |= (1<<5))
-#endif
-
-#ifndef LED_GREEN_ON
-#define LED_GREEN_ON (PORTB |= (1<<6))
-#endif
-
-#ifndef LED_BLUE_ON
-#define LED_BLUE_ON (PORTB |= (1<<7))
-#endif
-
 #ifndef LED_RED_OFF
-#define LED_RED_OFF (PORTB &= ~(1<<5))
+#define LED_RED_OFF (PORTB |= (1<<5))
 #endif
 
 #ifndef LED_GREEN_OFF
-#define LED_GREEN_OFF (PORTB &= ~(1<<6))
+#define LED_GREEN_OFF (PORTB |= (1<<6))
 #endif
 
 #ifndef LED_BLUE_OFF
-#define LED_BLUE_OFF (PORTB &= ~(1<<7))
+#define LED_BLUE_OFF (PORTB |= (1<<7))
+#endif
+
+#ifndef LED_RED_ON
+#define LED_RED_ON (PORTB &= ~(1<<5))
+#endif
+
+#ifndef LED_GREEN_ON
+#define LED_GREEN_ON (PORTB &= ~(1<<6))
+#endif
+
+#ifndef LED_BLUE_ON
+#define LED_BLUE_ON (PORTB &= ~(1<<7))
 #endif
 
 // small green leds handling macros
@@ -326,9 +326,8 @@
 /*** CLIFF AVOIDANCE ***/
 /***********************/
 #ifndef CLIFF_THR
-#define CLIFF_THR 490						// ground sensors threshold for detecting a cliff independently of the surface
-#endif										// because the sensors are calibrated to 512 (max difference to stop the robot 
-											// is 32)
+#define CLIFF_THR 420						// ground sensors threshold for detecting a cliff independently of the surface
+#endif										// since the ground sensors are calibrated to 512
 #ifndef LEFT_ROT
 #define LEFT_ROT  1
 #endif

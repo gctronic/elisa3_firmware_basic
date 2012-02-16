@@ -38,137 +38,6 @@ int main(void) {
 		readAccelXYZ();
 
 		computeAngle();
-
-		if(updateProx) {
-
-			updateProx = 0;
-			if(startCalibration) {
-
-				proximityResult[0] = proximityValue[0] - proximityValue[1];	// ambient - (ambient+reflected)
-				if(proximityResult[0] < 0) {
-					proximityResult[0] = 0;
-				}
-
-				proximityResult[1] = proximityValue[2] - proximityValue[3];	// ambient - (ambient+reflected)
-				if(proximityResult[1] < 0) {
-					proximityResult[1] = 0;
-				}
-
-				proximityResult[2] = proximityValue[4] - proximityValue[5];	// ambient - (ambient+reflected)
-				if(proximityResult[2] < 0) {
-					proximityResult[2] = 0;
-				}
-
-				proximityResult[3] = proximityValue[6] - proximityValue[7];	// ambient - (ambient+reflected)
-				if(proximityResult[3] < 0) {
-					proximityResult[3] = 0;
-				}
-
-				proximityResult[4] = proximityValue[8] - proximityValue[9];	// ambient - (ambient+reflected)
-				if(proximityResult[4] < 0) {
-					proximityResult[4] = 0;
-				}
-
-				proximityResult[5] = proximityValue[10] - proximityValue[11];	// ambient - (ambient+reflected)
-				if(proximityResult[5] < 0) {
-					proximityResult[5] = 0;
-				}
-
-				proximityResult[6] = proximityValue[12] - proximityValue[13];	// ambient - (ambient+reflected)
-				if(proximityResult[6] < 0) {
-					proximityResult[6] = 0;
-				}
-
-				proximityResult[7] = proximityValue[14] - proximityValue[15];	// ambient - (ambient+reflected)
-				if(proximityResult[7] < 0) {
-					proximityResult[7] = 0;
-				}
-
-				proximityResult[8] = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
-				if(proximityResult[8] < 0) {
-					proximityResult[8] = 0;
-				}
-
-				proximityResult[9] = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
-				if(proximityResult[9] < 0) {
-					proximityResult[9] = 0;
-				}
-
-				proximityResult[10] = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
-				if(proximityResult[10] < 0) {
-					proximityResult[10] = 0;
-				}
-
-				proximityResult[11] = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
-				if(proximityResult[11] < 0) {
-					proximityResult[11] = 0;
-				}
-
-			} else {
-
-				proximityResult[0] = proximityValue[0] - proximityValue[1] - proximityOffset[0];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[0] < 0) {
-					proximityResult[0] = 0;
-				}
-
-				proximityResult[1] = proximityValue[2] - proximityValue[3] - proximityOffset[1];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[1] < 0) {
-					proximityResult[1] = 0;
-				}
-
-				proximityResult[2] = proximityValue[4] - proximityValue[5] - proximityOffset[2];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[2] < 0) {
-					proximityResult[2] = 0;
-				}
-
-				proximityResult[3] = proximityValue[6] - proximityValue[7] - proximityOffset[3];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[3] < 0) {
-					proximityResult[3] = 0;
-				}
-
-				proximityResult[4] = proximityValue[8] - proximityValue[9] - proximityOffset[4];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[4] < 0) {
-					proximityResult[4] = 0;
-				}
-
-				proximityResult[5] = proximityValue[10] - proximityValue[11] - proximityOffset[5];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[5] < 0) {
-					proximityResult[5] = 0;
-				}
-
-				proximityResult[6] = proximityValue[12] - proximityValue[13] - proximityOffset[6];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[6] < 0) {
-					proximityResult[6] = 0;
-				}
-
-				proximityResult[7] = proximityValue[14] - proximityValue[15] - proximityOffset[7];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[7] < 0) {
-					proximityResult[7] = 0;
-				}
-
-				proximityResult[8] = proximityValue[16] - proximityValue[17] - proximityOffset[8];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[8] < 0) {
-					proximityResult[8] = 0;
-				}
-
-				proximityResult[9] = proximityValue[18] - proximityValue[19] - proximityOffset[9];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[9] < 0) {
-					proximityResult[9] = 0;
-				}
-
-				proximityResult[10] = proximityValue[20] - proximityValue[21] - proximityOffset[10];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[10] < 0) {
-					proximityResult[10] = 0;
-				}
-
-				proximityResult[11] = proximityValue[22] - proximityValue[23] - proximityOffset[11];	// ambient - (ambient+reflected) - offset
-				if(proximityResult[11] < 0) {
-					proximityResult[11] = 0;
-				}
-
-			}
-			proxUpdated = 1;
-		}
 /*
 		if(delayCounter%78 == 0) {
 			start_control = 1;
@@ -190,19 +59,26 @@ int main(void) {
 		}
 
 
-		if(startCalibration && calibrationCycle<CALIBRATION_CYCLES) {
+		if(startCalibration && calibrationCycle<=CALIBRATION_CYCLES) {
 
 			if(proxUpdated) {
 
 				proxUpdated = 0;
 
-				if(calibrationCycle==0) {
+				if(calibrationCycle==0) {		// reset all variables
 					for(i=0; i<12; i++) {
 						proximitySum[i] = 0;
+						proximityOffset[i] = 0;
 					}
 					accOffsetXSum = 0;
 					accOffsetYSum = 0;
 					accOffsetZSum = 0;
+
+					calibrationCycle++;
+
+					continue;					// the first time "proxUpdated" is set, all the proximity values saved in the array 
+												// "proximityResult" hasn't the offset reset to 0. so we start the actual calibration
+												// the next time
 				}
 
 				for (i=0;i<12;i++) {
@@ -219,10 +95,9 @@ int main(void) {
 
 			continue;
 
-		} else if(calibrationCycle == CALIBRATION_CYCLES) {
+		} else if(calibrationCycle > CALIBRATION_CYCLES) {
 
 			for(i=0;i<12;i++) {
-				//proximityOffset[i]=(unsigned int)((float)proximitySum[i]/(float)calibrationCycle);
 				proximityOffset[i] = proximitySum[i]>>4;
 			}
 
@@ -554,14 +429,16 @@ int main(void) {
 			}
 
 			if((rfData[3]&0b00010000)==0b00010000) {	// check the 5th bit to start calibration of all sensors
-				startCalibration = 1;
-				calibrationCycle = 0;
-				pwm_red = 0;
-				pwm_green = 0;
-				pwm_blue = 0;
-				updateRedLed(pwm_red);
-				updateGreenLed(pwm_green);
-				updateBlueLed(pwm_blue);
+				if(!startCalibration) {					// if not already calibrating the sensors
+					startCalibration = 1;
+					calibrationCycle = 0;
+					pwm_red = 0;
+					pwm_green = 0;
+					pwm_blue = 0;
+					updateRedLed(pwm_red);
+					updateGreenLed(pwm_green);
+					updateBlueLed(pwm_blue);
+				}
 			}
 
 			if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
@@ -747,35 +624,23 @@ int main(void) {
 				right_vel_sum = 0;
 			}
 
+
 			pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
 			pwm_left_working = pwm_left_desired;
-            pwm_left_desired_to_control = pwm_left_desired;
-            pwm_right_desired_to_control = pwm_right_desired;
+	        pwm_left_desired_to_control = pwm_left_desired;
+	        pwm_right_desired_to_control = pwm_right_desired;
 
 			if(obstacleAvoidanceEnabled) {
 				obstacleAvoidance();
 			}
 
-			if(cliffAvoidanceEnabled) {
-				if(cliffDetected()) {
-					pwm_right_working = 0;
-					pwm_left_working = 0;
-				}
-			}
-
 			update_pwm = 1;
+
 
 		} else if(currentSelector == 1) {		// only horizontal speed control
 
 			if(obstacleAvoidanceEnabled) {
 				obstacleAvoidance();
-			}
-
-			if(cliffAvoidanceEnabled) {
-				if(cliffDetected()) {
-					pwm_left_desired = 0;
-					pwm_right_desired = 0;
-				}
 			}
 
 			if(compute_left_vel) {
@@ -792,15 +657,6 @@ int main(void) {
 
 				pwm_left = pwm_left_working;
 
-				//if(pwm_left > 0) {
-				//	OCR4A = (unsigned int)pwm_left;
-				//} else if(pwm_left < 0) {
-				//	OCR4B =(unsigned int)( -pwm_left);
-				//} else {
-				//	OCR4A = 0;
-				//	OCR4B = 0;
-				//}
-
 				if(pwm_left > 0) {
 					OCR4A = (unsigned int)pwm_left;
 				} else if(pwm_left < 0) {
@@ -813,6 +669,7 @@ int main(void) {
 			}
 
 			if(compute_right_vel) {
+
 				last_right_vel = right_vel_sum>>2;
 				right_vel_changed = 1;
 				compute_right_vel = 0;
@@ -824,15 +681,6 @@ int main(void) {
 				start_horizontal_speed_control_right(&pwm_right_working);
 
 				pwm_right = pwm_right_working;
-
-				//if(pwm_right > 0) {
-				//	OCR3A = (unsigned int)pwm_right;
-				//} else if(pwm_right < 0) {
-				//	OCR3B = (unsigned int)(-pwm_right);
-				//} else {
-				//	OCR3A = 0;
-				//	OCR3B = 0;
-				//}
 
 				if(pwm_right > 0) {
 					OCR3A = (unsigned int)pwm_right;
@@ -847,49 +695,13 @@ int main(void) {
 
 		} else if(currentSelector == 2) {		// both speed control horizontal and vertical
 
-/*
-			if(pwm_left==0 || pwm_right==0) {
-				pwm_right_working = pwm_right_desired;
-				pwm_left_working = pwm_left_desired;
-				update_pwm = 1;
-			}
-*/
-
-/*
-			if(pwm_left==0) {
-				pwm_left_working = pwm_left_desired;
-				pwm_left = pwm_left_working;
-				if(pwm_left >= 0) {
-					OCR4A = (unsigned int)pwm_left;
-				} else {
-					OCR4B =(unsigned int)( -pwm_left);
-				}
-			}
-
-			if(pwm_right==0) {
-				pwm_right_working = pwm_right_desired;
-				pwm_right = pwm_right_working;
-
-				if(pwm_right >= 0) {
-					OCR3A = (unsigned int)pwm_right;
-				} else {
-					OCR3B = (unsigned int)(-pwm_right);
-				}
-			}
-*/
 
 			if(obstacleAvoidanceEnabled) {
 				obstacleAvoidance();
 			}
 
-			if(cliffAvoidanceEnabled) {
-				if(cliffDetected()) {
-					pwm_left_desired = 0;
-					pwm_right_desired = 0;
-				}
-			}
-
 			if(compute_left_vel) {
+
 				last_left_vel = left_vel_sum>>2;
 				left_vel_changed = 1;
 				compute_left_vel = 0;
@@ -918,13 +730,16 @@ int main(void) {
 					OCR4A = 0;
 					OCR4B = 0;
 				}
+
 			}
 
 			if(compute_right_vel) {
+
 				last_right_vel = right_vel_sum>>2;
 				right_vel_changed = 1;
 				compute_right_vel = 0;
 				right_vel_sum = 0;
+
 
 				pwm_right_working = pwm_right_desired;
 				pwm_right_desired_to_control = pwm_right_desired;
@@ -949,48 +764,11 @@ int main(void) {
 					OCR3A = 0;
 					OCR3B = 0;
 				}
+
 			}
 
-/*
-			if(left_vel_changed && right_vel_changed) {
-				pwm_right_working = pwm_right_desired;
-				pwm_left_working = pwm_left_desired;
-				left_vel_changed = 0;
-				right_vel_changed = 0;
-				//angle_changed = 0;
-				//if(!robotPosition) {
-				//	start_vertical_speed_control(&pwm_left_working, &pwm_right_working);
-				//} else {
-					PORTB &= ~(1 << 5);
-					start_horizontal_speed_control(&pwm_left_working, &pwm_right_working);
-					PORTB |= (1 << 5);
-				//}
-				//start_power_control(&pwm_left_working, &pwm_right_working);		// the values for the new pwm must be current limited by the controller just before update them
-
-				//pwm_right_working = pwm_right_desired;
-				//pwm_left_working = pwm_left_desired;
-
-				update_pwm = 1;
-			}
-*/
 
 		}
-
-/*
-		if(compute_left_vel) {
-			last_left_vel = left_vel_sum>>2;
-			left_vel_changed = 1;
-			compute_left_vel = 0;
-			left_vel_sum = 0;
-		}
-
-		if(compute_right_vel) {
-			last_right_vel = right_vel_sum>>2;
-			right_vel_changed = 1;
-			compute_right_vel = 0;
-			right_vel_sum = 0;
-		}
-*/
 
 		if(update_pwm) {
 

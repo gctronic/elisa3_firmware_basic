@@ -43,6 +43,12 @@ ISR(TIMER4_OVF_vect) {
 
 //	PORTB &= ~(1 << 6);
 
+	if(cliffDetectedFlag) {
+		pwm_left = 0;
+		OCR4A = 0;
+		OCR4B = 0;
+	}
+
 	left_current_avg = 0;
 
 	// set pins mode based on controller output
@@ -157,6 +163,12 @@ ISR(TIMER3_OVF_vect) {
 //	PORTB &= ~(1 << 6);
 
   	// PORTB ^= (1 << 7); // Toggle the LED
+
+	if(cliffDetectedFlag) {
+		pwm_right = 0;
+		OCR3A = 0;
+		OCR3B = 0;
+	}
 
 	right_current_avg = 0;
 

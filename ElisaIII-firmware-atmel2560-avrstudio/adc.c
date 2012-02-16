@@ -53,10 +53,41 @@ ISR(ADC_vect) {
 			} else {
 				proximityValue[currentProx] = value;	// even indexes contain ambient values; odd indexes contains "reflected" values
 			}
+
+			if(currentProx & 0x01) {
+				proximityResult[currentProx>>1] = proximityValue[currentProx-1] - proximityValue[currentProx] - proximityOffset[currentProx>>1];	// ambient - (ambient+reflected) - offset
+				if(proximityResult[currentProx>>1] < 0) {
+					proximityResult[currentProx>>1] = 0;
+				}
+
+				if(cliffAvoidanceEnabled) {
+					if(proximityResult[8]<CLIFF_THR || proximityResult[9]<CLIFF_THR || proximityResult[10]<CLIFF_THR || proximityResult[11]<CLIFF_THR) {
+						cliffDetectedFlag = 1;
+						//LED_RED_ON;			
+						// set resulting velocity to 0 and change the pwm registers directly to be able
+						// to stop as fast as possible (the next pwm cycle)
+						// left motor
+						pwm_left = 0;
+						OCR4A = 0;
+						OCR4B = 0;
+						// right motor
+						pwm_right = 0;
+						OCR3A = 0;
+						OCR3B = 0;
+					} else {
+						cliffDetectedFlag = 0;
+						//LED_RED_OFF;
+					}
+				} else {
+					cliffDetectedFlag = 0;
+				}
+
+			}
+
 			currentProx++;
 			if(currentProx > 23) {						// in total there are 8 proximity sensors and 4 ground sensors => 12 sensors
 				currentProx = 0;						// for each one there is a passive phase in which the ambient light is sampled,
-				updateProx = 1;							// and an active phase in which an IR pulse is turned on and the reflected light 
+				proxUpdated = 1;							// and an active phase in which an IR pulse is turned on and the reflected light 
 			}											// is sampled; thus 12 sensors x 2 phases = 24 samples
 			break;
 

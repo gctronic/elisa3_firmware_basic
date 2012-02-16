@@ -36,7 +36,6 @@ unsigned char leftChannelPhase = 0;					// left motor phase when the channel was
 unsigned int batteryLevel = 0;
 unsigned char measBattery = 0;
 signed int currentProxValue = 0;
-unsigned char updateProx = 0;
 unsigned long proximitySum[12] = {0};
 unsigned char proxUpdated = 0;
 
@@ -167,4 +166,6 @@ unsigned char cliffAvoidanceEnabled = 0;
 unsigned int minGroundValue = 0;
 unsigned int minGround = GROUND_LEFT;
 unsigned char prevRot = 0;
+unsigned char cliffDetectedFlag = 0;
+
 
