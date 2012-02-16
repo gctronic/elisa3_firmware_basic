@@ -221,9 +221,13 @@ int main(void) {
 
 		} else if(calibrationCycle == CALIBRATION_CYCLES) {
 
-			for (i=0;i<12;i++) {
+			for(i=0;i<12;i++) {
 				//proximityOffset[i]=(unsigned int)((float)proximitySum[i]/(float)calibrationCycle);
 				proximityOffset[i] = proximitySum[i]>>4;
+			}
+
+			for(i=8; i<12; i++) {
+				proximityOffset[i] -= 512;
 			}
 
 			accOffsetX = accOffsetXSum>>4;
@@ -245,7 +249,7 @@ int main(void) {
 
 		if(irEnabled) {
 
-			ir_move = e_get_data();
+			ir_move = ir_remote_get_data();
 
 			if(command_received) {
 
@@ -749,18 +753,30 @@ int main(void) {
             pwm_right_desired_to_control = pwm_right_desired;
 
 			if(obstacleAvoidanceEnabled) {
-				//PORTB &= ~(1 << 7);
 				obstacleAvoidance();
-				//PORTB |= (1 << 7);
 			}
 
 			if(cliffAvoidanceEnabled) {
-				cliffAvoidance();
+				if(cliffDetected()) {
+					pwm_right_working = 0;
+					pwm_left_working = 0;
+				}
 			}
 
 			update_pwm = 1;
 
-		} else if(currentSelector == 1) {		// only orizzontal speed control
+		} else if(currentSelector == 1) {		// only horizontal speed control
+
+			if(obstacleAvoidanceEnabled) {
+				obstacleAvoidance();
+			}
+
+			if(cliffAvoidanceEnabled) {
+				if(cliffDetected()) {
+					pwm_left_desired = 0;
+					pwm_right_desired = 0;
+				}
+			}
 
 			if(compute_left_vel) {
 
@@ -772,7 +788,7 @@ int main(void) {
 				pwm_left_working = pwm_left_desired;
 				pwm_left_desired_to_control = pwm_left_desired;
 
-				start_orizzontal_speed_control_left(&pwm_left_working);
+				start_horizontal_speed_control_left(&pwm_left_working);
 
 				pwm_left = pwm_left_working;
 
@@ -805,7 +821,7 @@ int main(void) {
 				pwm_right_working = pwm_right_desired;
 				pwm_right_desired_to_control = pwm_right_desired;
 
-				start_orizzontal_speed_control_right(&pwm_right_working);
+				start_horizontal_speed_control_right(&pwm_right_working);
 
 				pwm_right = pwm_right_working;
 
@@ -829,7 +845,7 @@ int main(void) {
 
 			}
 
-		} else if(currentSelector == 2) {		// both speed control orizzontal and vertical
+		} else if(currentSelector == 2) {		// both speed control horizontal and vertical
 
 /*
 			if(pwm_left==0 || pwm_right==0) {
@@ -862,6 +878,17 @@ int main(void) {
 			}
 */
 
+			if(obstacleAvoidanceEnabled) {
+				obstacleAvoidance();
+			}
+
+			if(cliffAvoidanceEnabled) {
+				if(cliffDetected()) {
+					pwm_left_desired = 0;
+					pwm_right_desired = 0;
+				}
+			}
+
 			if(compute_left_vel) {
 				last_left_vel = left_vel_sum>>2;
 				left_vel_changed = 1;
@@ -871,9 +898,9 @@ int main(void) {
 				pwm_left_working = pwm_left_desired;
 				pwm_left_desired_to_control = pwm_left_desired;
 
-				if(robotPosition == ORIZZONTAL_POS) {
+				if(robotPosition == HORIZONTAL_POS) {
 					//PORTB &= ~(1 << 5);
-					start_orizzontal_speed_control_left(&pwm_left_working);
+					start_horizontal_speed_control_left(&pwm_left_working);
 					//PORTB |= (1 << 5);
 				} else {
 					//PORTB &= ~(1 << 6);
@@ -902,9 +929,9 @@ int main(void) {
 				pwm_right_working = pwm_right_desired;
 				pwm_right_desired_to_control = pwm_right_desired;
 
-				if(robotPosition == ORIZZONTAL_POS) {
+				if(robotPosition == HORIZONTAL_POS) {
 					//PORTB &= ~(1 << 5);
-					start_orizzontal_speed_control_right(&pwm_right_working);
+					start_horizontal_speed_control_right(&pwm_right_working);
 					//PORTB |= (1 << 5);
 				} else {
 					//PORTB &= ~(1 << 6);
@@ -935,7 +962,7 @@ int main(void) {
 				//	start_vertical_speed_control(&pwm_left_working, &pwm_right_working);
 				//} else {
 					PORTB &= ~(1 << 5);
-					start_orizzontal_speed_control(&pwm_left_working, &pwm_right_working);
+					start_horizontal_speed_control(&pwm_left_working, &pwm_right_working);
 					PORTB |= (1 << 5);
 				//}
 				//start_power_control(&pwm_left_working, &pwm_right_working);		// the values for the new pwm must be current limited by the controller just before update them

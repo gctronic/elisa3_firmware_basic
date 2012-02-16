@@ -228,11 +228,11 @@ void computeAngle() {
 
 	unsigned int abs_acc_z=abs(accZ);
 
-	// check the robot position (orizzontal or vertical) based on the Z axes;
+	// check the robot motion plane (horizontal or vertical) based on the Z axes;
 	// this check (threshold) works only if the accelerometer is calibrated
 	// leaving the robot flat on the ground
 	if(abs_acc_z <= VERTICAL_THRESHOLD) {
-		currPosition = ORIZZONTAL_POS;
+		currPosition = HORIZONTAL_POS;
 	} else {
 		currPosition = VERTICAL_POS;
 	}

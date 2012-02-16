@@ -28,7 +28,7 @@ volatile unsigned int proximityValue[24] = {0};		// array containing the proximi
 													// 17		cliff0	active value
 													// ...
 int proximityResult[12] = {0};				// contains the values of the ambient - (ambient+reflected)
-unsigned int proximityOffset[12] = {0};				// contains the calibration values
+signed int proximityOffset[12] = {0};				// contains the calibration values
 unsigned char adcSaveDataTo = 0;					// indicate where to save the currently sampled channel
 unsigned char adcSamplingState = 0;					// indicate which channel to select
 unsigned char rightChannelPhase = 0;				// right motor phase when the channel was selected
@@ -140,9 +140,9 @@ signed int currentAngle = 0;							// current orientation of the robot extracted
 signed int accOffsetXSum = 0;
 signed int accOffsetYSum = 0;
 signed int accOffsetZSum = 0;
-unsigned char prevPosition=ORIZZONTAL_POS, currPosition=ORIZZONTAL_POS;				// 1=orizzontal, 0=vertical
+unsigned char prevPosition=HORIZONTAL_POS, currPosition=HORIZONTAL_POS;				// 1=horizontal, 0=vertical
 unsigned char timesInSamePos = 0;
-unsigned char robotPosition = 1;							// indicate whether the robot is in vertical (=0) or orizzontal (=1) position
+unsigned char robotPosition = 1;							// indicate whether the robot is in vertical (=0) or horizontal (=1) position
 
 /***************/
 /*** VARIOUS ***/

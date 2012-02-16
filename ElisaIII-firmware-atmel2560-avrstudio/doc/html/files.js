@@ -2,7 +2,6 @@ var files =
 [
     [ "accelerometer.c", "accelerometer_8c.html", "accelerometer_8c" ],
     [ "accelerometer.h", "accelerometer_8h.html", "accelerometer_8h" ],
-    [ "accelerometer3.h", "accelerometer3_8h.html", "accelerometer3_8h" ],
     [ "adc.c", "adc_8c.html", "adc_8c" ],
     [ "adc.h", "adc_8h.html", "adc_8h" ],
     [ "behaviors.c", "behaviors_8c.html", "behaviors_8c" ],
@@ -24,8 +23,8 @@ var files =
     [ "ports_io.h", "ports__io_8h.html", "ports__io_8h" ],
     [ "sensors.c", "sensors_8c.html", null ],
     [ "sensors.h", "sensors_8h.html", null ],
-    [ "speed_control.c", "speed__control_8c.html", "speed__control_8c" ],
-    [ "speed_control.h", "speed__control_8h.html", "speed__control_8h" ],
+    [ "SPEED_CONTROL.C", "_s_p_e_e_d___c_o_n_t_r_o_l_8_c.html", "_s_p_e_e_d___c_o_n_t_r_o_l_8_c" ],
+    [ "SPEED_CONTROL.H", "_s_p_e_e_d___c_o_n_t_r_o_l_8_h.html", "_s_p_e_e_d___c_o_n_t_r_o_l_8_h" ],
     [ "spi.c", "spi_8c.html", "spi_8c" ],
     [ "spi.h", "spi_8h.html", "spi_8h" ],
     [ "twimaster.c", "twimaster_8c.html", "twimaster_8c" ],
@@ -34,6 +33,6 @@ var files =
     [ "usart.h", "usart_8h.html", "usart_8h" ],
     [ "utility.c", "utility_8c.html", "utility_8c" ],
     [ "utility.h", "utility_8h.html", null ],
-    [ "variables.c", "variables_8c.html", "variables_8c" ],
+    [ "VARIABLES.C", "_v_a_r_i_a_b_l_e_s_8_c.html", "_v_a_r_i_a_b_l_e_s_8_c" ],
     [ "variables.h", "variables_8h.html", "variables_8h" ]
 ];

@@ -177,7 +177,7 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 
 }
 
-void start_orizzontal_speed_control_right(signed int *pwm_right) {
+void start_horizontal_speed_control_right(signed int *pwm_right) {
 
 	if(*pwm_right==0) {
 		delta_right_speed_sum = 0;
@@ -194,16 +194,16 @@ void start_orizzontal_speed_control_right(signed int *pwm_right) {
 	}
 	delta_right_speed_sum += delta_right_speed_current;
 
-	if(delta_right_speed_sum > I_LIMIT_ORIZZONTAL ) {
-		delta_right_speed_sum = I_LIMIT_ORIZZONTAL;
-	}else if(delta_right_speed_sum < -I_LIMIT_ORIZZONTAL) {
-		delta_right_speed_sum = -I_LIMIT_ORIZZONTAL;
+	if(delta_right_speed_sum > I_LIMIT_HORIZONTAL ) {
+		delta_right_speed_sum = I_LIMIT_HORIZONTAL;
+	}else if(delta_right_speed_sum < -I_LIMIT_HORIZONTAL) {
+		delta_right_speed_sum = -I_LIMIT_HORIZONTAL;
 	}
 
 	pwm_right_speed_controller = (signed int)((*pwm_right) << 3); //<< 5);
-	pwm_right_speed_controller += (signed int)(delta_right_speed_current*P_ORIZZONTAL);
-	pwm_right_speed_controller -= (signed int)((delta_right_speed_current-delta_right_speed_prev)*D_ORIZZONTAL);
-	pwm_right_speed_controller += (signed int)(delta_right_speed_sum*I_ORIZZONTAL);
+	pwm_right_speed_controller += (signed int)(delta_right_speed_current*P_HORIZONTAL);
+	pwm_right_speed_controller -= (signed int)((delta_right_speed_current-delta_right_speed_prev)*D_HORIZONTAL);
+	pwm_right_speed_controller += (signed int)(delta_right_speed_sum*I_HORIZONTAL);
 
 	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	// avoid changing moving direction
 		pwm_right_speed_controller = 0;
@@ -228,7 +228,7 @@ void start_orizzontal_speed_control_right(signed int *pwm_right) {
 
 }
 
-void start_orizzontal_speed_control_left(signed int *pwm_left) {
+void start_horizontal_speed_control_left(signed int *pwm_left) {
 
 	if(*pwm_left==0) {
 		delta_left_speed_sum = 0;
@@ -245,16 +245,16 @@ void start_orizzontal_speed_control_left(signed int *pwm_left) {
 	}
 	delta_left_speed_sum += delta_left_speed_current;
 
-	if(delta_left_speed_sum > I_LIMIT_ORIZZONTAL) {
-		delta_left_speed_sum = I_LIMIT_ORIZZONTAL;
-	} else if(delta_left_speed_sum < -I_LIMIT_ORIZZONTAL) {
-		delta_left_speed_sum = -I_LIMIT_ORIZZONTAL;
+	if(delta_left_speed_sum > I_LIMIT_HORIZONTAL) {
+		delta_left_speed_sum = I_LIMIT_HORIZONTAL;
+	} else if(delta_left_speed_sum < -I_LIMIT_HORIZONTAL) {
+		delta_left_speed_sum = -I_LIMIT_HORIZONTAL;
 	}
 	    
 	pwm_left_speed_controller = (signed int)((*pwm_left) << 3); //<< 5);
-	pwm_left_speed_controller += (signed int)(delta_left_speed_current*P_ORIZZONTAL);
-	pwm_left_speed_controller -= (signed int)((delta_left_speed_current-delta_left_speed_prev)*D_ORIZZONTAL);
-	pwm_left_speed_controller += (signed int)(delta_left_speed_sum*I_ORIZZONTAL);
+	pwm_left_speed_controller += (signed int)(delta_left_speed_current*P_HORIZONTAL);
+	pwm_left_speed_controller -= (signed int)((delta_left_speed_current-delta_left_speed_prev)*D_HORIZONTAL);
+	pwm_left_speed_controller += (signed int)(delta_left_speed_sum*I_HORIZONTAL);
 
 	if(pwm_left_speed_controller < 0 && *pwm_left >= 0) {
 		pwm_left_speed_controller = 0;

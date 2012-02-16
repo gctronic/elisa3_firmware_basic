@@ -4,12 +4,12 @@
 
 void obstacleAvoidance() {
 
-	// obstacle avoidance using the 3 front proximity sensors
-
-
-/*
-	// new obstacle avoidance implementation => to test and correct!
+	// TO TEST AND CORRECT!
+	// Obstacle avoidance using all the proximity sensors based on a simplified 
+	// force field method.
 	//
+	// General schema of the robot and related parameters:
+	// 
 	//		forward
 	//
 	//			0
@@ -22,7 +22,7 @@ void obstacleAvoidance() {
 	//		5		3
 	//			4
 	//
-	// The follwoing tables shows the weights (simplified respect to the trigonometry)
+	// The follwoing table shows the weights (simplified respect to the trigonometry)
 	// of all the proximity sensors for the resulting force:
 	//
 	//		0		1		2		3		4		5		6		7
@@ -30,41 +30,50 @@ void obstacleAvoidance() {
 	//	y	0		0.5		1		0.5		0		-0.5	-1		-0.5
 
 	signed int velX=0, velY=0;
-	unsigned int sumSensorsX=0, sumSensorsY=0;
+	signed int sumSensorsX=0, sumSensorsY=0;
 	signed int speedL=0, speedR=0;
 
+	speedL = speedl;	// save the speeds in temporary variables
+	speedR = speedr;
 
+	// speedr and speedl goes from 0 to 127 (usually 0..100), absolute value for both
+	// forward and backward directions; we need a negative value for backward direction
 	if(pwm_right_desired < 0) {
-		speedr = -speedr;
+		speedR = -speedR; 
 	}
 	if(pwm_left_desired < 0) {
-		speedl = - speedl;
+		speedL = -speedL;
 	}
 
-	velX = (speedr + speedl)/2;
-	velY = (speedr - speedl)/2;
+	// compute the velocity components
+	velX = (speedR + speedL)/2;
+	velY = (speedR - speedL)/2;
 
+	// sum the contribution of each sensor (based on the previous weights table)
 	sumSensorsX = -proximityResult[0] - proximityResult[1]/2 + proximityResult[3]/2 + proximityResult[4] + proximityResult[5]/2 - proximityResult[7]/2;
 	sumSensorsY = proximityResult[1]/2 + proximityResult[2] + proximityResult[3]/2 - proximityResult[5]/2 - proximityResult[6] - proximityResult[7]/2;
 
-	velX += sumSensorsX/4;
-	velY += sumSensorsY/4;
+	// modify the velocity components based on sensor values
+	velX += sumSensorsX;	//4
+	velY += sumSensorsY;	//4
 
+	// extract the left and right speeds from the velocity components
 	speedR = (velX + velY);
 	speedL = (velX - velY);
 
+	// set the pwm value that will be placed in the motors pwm
 	if(speedL < 0) {
 		speedL = -speedL;
-		pwm_left_working = -(speedL<<2);
+		pwm_left_working = -(speedL);	//<<2
 	} else {
-		pwm_left_working = speedL<<2;
+		pwm_left_working = speedL;		//<<2
 	}
 
 	if(speedR < 0) {
 		speedR = -speedR;
-		pwm_right_working = -(speedR<<2);
+		pwm_right_working = -(speedR);	//<<2
 	} else {
-		pwm_right_working = speedR<<2;
+		pwm_right_working = speedR;		//<<2
 	}
 
 
@@ -72,11 +81,10 @@ void obstacleAvoidance() {
 	if (pwm_left_working>(MAX_MOTORS_PWM/2)) pwm_left_working=(MAX_MOTORS_PWM/2);
 	if (pwm_right_working<-(MAX_MOTORS_PWM/2)) pwm_right_working=-(MAX_MOTORS_PWM/2);
 	if (pwm_left_working<-(MAX_MOTORS_PWM/2)) pwm_left_working=-(MAX_MOTORS_PWM/2);
-*/
 
 
 /*
-	// old obstacle avoidance implementation
+	// obstacle avoidance using the 3 front proximity sensors
 
 	signed int currentProxValue1=0, currentProxValue2=0, speedL=0, speedR=0;
 
@@ -148,31 +156,17 @@ void obstacleAvoidance() {
 }
 
 
-void cliffAvoidance() {
+char cliffDetected() {
 
-	// the robot only stop when a cliff is detected
+	// the robot stop itself when a cliff is detected
 
+/*
 	signed int g0=0, g1=0, g2=0, g3=0;
 
-	g0 = proximityValue[16] - proximityValue[17];	// ambient - (ambient+reflected)
-	if(g0 < 0) {
-		g0 = 0;
-	}
-
-	g1 = proximityValue[18] - proximityValue[19];	// ambient - (ambient+reflected)
-	if(g1 < 0) {
-		g1 = 0;
-	}
-
-	g2 = proximityValue[20] - proximityValue[21];	// ambient - (ambient+reflected)
-	if(g2 < 0) {
-		g2 = 0;
-	}
-
-	g3 = proximityValue[22] - proximityValue[23];	// ambient - (ambient+reflected)
-	if(g3 < 0) {
-		g3 = 0;
-	}
+	g0 = proximityResult[8];
+	g1 = proximityResult[9];
+	g2 = proximityResult[10];
+	g3 = proximityResult[11];
 
 	minGroundValue = g0;
 	minGround = GROUND_LEFT;
@@ -190,9 +184,18 @@ void cliffAvoidance() {
 	}
 
 	if(minGroundValue <= CLIFF_THR) {
-		pwm_right_working = 0;
-		pwm_left_working = 0;
+		return 1;
+	} else {
+		return 0;
 	}
+*/
+
+	if(proximityResult[8]<CLIFF_THR || proximityResult[9]<CLIFF_THR || proximityResult[10]<CLIFF_THR || proximityResult[11]<CLIFF_THR) {
+		return 1;
+	} else {
+		return 0;
+	}
+
 
 }
 

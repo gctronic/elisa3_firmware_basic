@@ -1,7 +1,6 @@
 var NAVTREE =
 [
   [ "Elisa3", "index.html", [
-    [ "Modules", "modules.html", "modules" ],
     [ "Data Structures", null, [
       [ "Data Structures", "annotated.html", "annotated" ],
       [ "Data Structure Index", "classes.html", null ],

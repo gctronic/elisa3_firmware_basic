@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -98,16 +97,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">behaviors.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="behaviors_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="preprocessor">#ifndef BEHAVIORS_H</span>
-<a name="l00004"></a>00004 <span class="preprocessor"></span><span class="preprocessor">#define BEHAVIORS_H</span>
-<a name="l00005"></a>00005 <span class="preprocessor"></span>
-<a name="l00006"></a>00006 <span class="keywordtype">void</span> <a class="code" href="behaviors_8c.html#abe46c826df3be744548fb954242ae776">obstacleAvoidance</a>();
-<a name="l00007"></a>00007 <span class="keywordtype">void</span> <a class="code" href="behaviors_8c.html#aeed3324ede3df96ef70327385ba3bdcc">cliffAvoidance</a>();
-<a name="l00008"></a>00008 
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 <span class="preprocessor">#endif</span>
+<a href="behaviors_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
+<a name="l00002"></a>00002 <span class="preprocessor">#ifndef BEHAVIORS_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span><span class="preprocessor">#define BEHAVIORS_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span>
+<a name="l00022"></a>00022 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00023"></a>00023 
+<a name="l00030"></a>00030 <span class="keywordtype">void</span> <a class="code" href="behaviors_8c.html#abe46c826df3be744548fb954242ae776" title="Obstacle avoidance behavior based on a simplified force field method. It works for both forward and b...">obstacleAvoidance</a>();
+<a name="l00031"></a>00031 
+<a name="l00040"></a>00040 <span class="keywordtype">void</span> <a class="code" href="behaviors_8c.html#aeed3324ede3df96ef70327385ba3bdcc" title="Cliff avoidance behavior simple implementation in which the robot is stopped when a cliff is detected...">cliffAvoidance</a>();
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -128,7 +129,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="behaviors_8h.html">behaviors.h</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 7 2012 08:51:58 for Elisa3 by
+    <li class="footer">Generated on Wed Feb 15 2012 10:27:00 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

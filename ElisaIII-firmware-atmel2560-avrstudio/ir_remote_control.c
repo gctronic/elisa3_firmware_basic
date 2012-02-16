@@ -1,13 +1,7 @@
 
-/*
-Taken from the e-puck library and adapted to work with Atmel microprocessor and 
-without "Agenda"; it uses Timer2 for timing the reading of the signal
-*/
+#include "ir_remote_control.h"
 
-#include "e_remote_control.h"
-#include "leds.h"
-
-/*------ internal variables ------*/
+// internal variables
 static unsigned char address_temp = 0;
 static unsigned char data_temp = 0;
 static unsigned char check_temp = 0;
@@ -15,9 +9,7 @@ unsigned char address = 0;
 unsigned char data_ir = 0;
 unsigned char check = 2;
 
-
-/*! \brief Initialise the IR receiver ports */
-void e_init_remote_control(void) { 	// initialisation for IR interruptions on PCINT1 (external interrupt)
+void init_ir_remote_control(void) { 	
 
 	PCICR |= (1 << PCIE1);			// enable interrupt on change of PCINT15:8 pins
 	PCMSK1 |= (1 << PCINT15);		// enable PCINT15
@@ -25,9 +17,10 @@ void e_init_remote_control(void) { 	// initialisation for IR interruptions on PC
 
 }
 
+// external interrupt service routine
 ISR(PCINT1_vect) {
 
-	if(irEnabled) {		// if the robot is configured to accept TV remote commands
+	if(irEnabled) {						// if the robot is configured to accept TV remote commands
 
 		if(bit_is_clear(PINJ, 6)) {		// the interrupt is generated at every pin state change; we only look
 										// for the falling edge
@@ -157,26 +150,15 @@ ISR(TIMER2_COMPA_vect) {
 
 }
 
-
-/** \brief Read the check bit
- * \return	check	check bit of the signal
- */
-unsigned char e_get_check(void) {
+unsigned char ir_remote_get_check(void) {
 	return check;
 }
 
-/** \brief Read the adress of the commande
- * \return	adress	adress part of the signal
- */
-unsigned char e_get_address(void) {
+unsigned char ir_remote_get_address(void) {
 	return address;
 }
 
-/** \brief Read the data of the command
- * \return	data	data part of the signal
- */
-unsigned char e_get_data(void) {
+unsigned char ir_remote_get_data(void) {
 	return data_ir;
 }
-
 

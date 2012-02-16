@@ -108,7 +108,7 @@ ISR(ADC_vect) {
 			break;
 
 		case SKIP_SAMPLE:								// this case isn't used anymore; it was used to avoid sampling the motors velocity
-			break;										// when the desired speed was zero. Now the speed is always sampled independently of the 
+			break;										// when the desired speed was zero. Now the speed is always sampled independently 
 														// of the desired velocity.
 	}			
 
@@ -180,13 +180,9 @@ ISR(ADC_vect) {
 
 			// turn on the IR pulses for the proximities only in their active phases
 			if(currentProx & 0x01) {
-				if(currentProx < 16) {	// pulse for proximity and ground sensors are placed in different ports
-					//if(currentProx==14 && measBattery==1) {	// channel 7 is shared for both prox7 and battery sampling
-					//	measBattery=2;
-					//	SENS_ENABLE_ON;
-					//} else {
-						PORTA = (1 << (currentProx>>1));	// pulse on
-					//}
+				if(currentProx < 16) {	// pulse for proximity and ground sensors are placed in different ports;
+										// PORTA for proximity sensors, PORTJ for ground sensors
+					PORTA = (1 << (currentProx>>1));	// pulse on
 				} else {
 					#ifdef HW_REV_3_0
 					PORTJ = (1 << ((currentProx-16)>>1));	// pulse on

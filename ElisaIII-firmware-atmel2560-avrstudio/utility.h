@@ -10,7 +10,7 @@
 #include "mirf.h"
 #include "usart.h"
 #include "accelerometer.h"
-#include "e_remote_control.h"
+#include "ir_remote_control.h"
 
 
 #ifndef UTILITY_H

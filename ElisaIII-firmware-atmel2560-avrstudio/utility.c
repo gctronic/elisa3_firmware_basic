@@ -18,7 +18,7 @@ void initPeripherals(void) {
 	mirf_init();
 	initUsart();
 	initAccelerometer();
-	e_init_remote_control();
+	init_ir_remote_control();
 
 	sei();			// enable global interrupts
 

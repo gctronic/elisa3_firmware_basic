@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = main.o spi.o mirf.o e_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o utility.o accelerometer.o adc.o motors.o behaviors.o leds.o sensors.o 
+OBJECTS = main.o spi.o mirf.o ir_remote_control.o speed_control.o variables.o ports_io.o twimaster.o usart.o utility.o accelerometer.o adc.o motors.o behaviors.o leds.o sensors.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -55,7 +55,7 @@ spi.o: ../spi.c
 mirf.o: ../mirf.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
-e_remote_control.o: ../e_remote_control.c
+ir_remote_control.o: ../ir_remote_control.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 speed_control.o: ../speed_control.c
