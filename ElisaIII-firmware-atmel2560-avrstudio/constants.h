@@ -347,3 +347,21 @@
 #define GROUND_LEFT 3						// for easier code comprehension
 #endif
 
+/**************************/
+/*** OBSTACLE AVOIDANCE ***/
+/**************************/
+#ifndef PHASE1
+#define PHASE1 60
+#endif
+#ifndef PHASE2
+#define PHASE2 120
+#endif
+#ifndef PHASE3
+#define PHASE3 180
+#endif
+#ifndef NOISE_THR
+#define NOISE_THR 20
+#endif
+
+
+

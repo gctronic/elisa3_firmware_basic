@@ -59,6 +59,39 @@ ISR(ADC_vect) {
 				if(proximityResult[currentProx>>1] < 0) {
 					proximityResult[currentProx>>1] = 0;
 				}
+				if(proximityResult[currentProx>>1] > 1024) {
+					proximityResult[currentProx>>1] = 1024;
+				}
+
+				// linearization of the proximity values: the values of the proximity will range from 
+				// 0 to 255 after linearization and decrease linearly with distance.
+				// The linearization of the proximity values is done using four linear functions:
+				// 1) from 0 to PHASE1: y = x (where x = proximity value9
+				// 2) from PHASE1 to PHASE2: y = x/2 + 30
+				// 3) from PHASE2 to PHASE3: y = x/4 + 75
+				// 4) from PHASE3 upwards: y = x/8 + 127.5
+				// The linearized values are used for the obstacles avoidance.
+				if(currentProx < 16) {	// only for proximity (not ground sensors)
+					
+					if(proximityResult[currentProx>>1] < PHASE1) {
+
+						proximityResultLinear[currentProx>>1] = proximityResult[currentProx>>1];
+
+					} else if(((proximityResult[currentProx>>1]+60)>>1) < PHASE2) {
+				
+						proximityResultLinear[currentProx>>1] = ((proximityResult[currentProx>>1]-60)>>1) + PHASE1;
+
+					} else if(((proximityResult[currentProx>>1]+300)>>2) < PHASE3) {
+
+						proximityResultLinear[currentProx>>1] = ((proximityResult[currentProx>>1]-180)>>2) + PHASE2;
+
+					} else {
+
+						proximityResultLinear[currentProx>>1] = ((proximityResult[currentProx>>1]-420)>>3) + PHASE3;
+						
+					}
+
+				}
 
 				if(cliffAvoidanceEnabled) {
 					if(proximityResult[8]<CLIFF_THR || proximityResult[9]<CLIFF_THR || proximityResult[10]<CLIFF_THR || proximityResult[11]<CLIFF_THR) {

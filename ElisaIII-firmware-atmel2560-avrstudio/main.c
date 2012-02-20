@@ -8,6 +8,7 @@
 #include "nRF24L01.h"
 #include "behaviors.h"
 
+
 int main(void) {
 
 	unsigned int i = 0;
@@ -147,8 +148,8 @@ int main(void) {
 						}
 						pwm_right_desired += STEP_MOTORS;
 						pwm_left_desired += STEP_MOTORS;
-		                if (pwm_right_desired > MAX_MOTORS_PWM) pwm_right_desired = MAX_MOTORS_PWM;
-	    	            if (pwm_left_desired > MAX_MOTORS_PWM) pwm_left_desired = MAX_MOTORS_PWM;
+		                if (pwm_right_desired > (MAX_MOTORS_PWM/2)) pwm_right_desired = (MAX_MOTORS_PWM/2);
+	    	            if (pwm_left_desired > (MAX_MOTORS_PWM/2)) pwm_left_desired = (MAX_MOTORS_PWM/2);
 	               		break;
 
 					case 8:	// both motors backward
@@ -160,44 +161,44 @@ int main(void) {
 						}
 						pwm_right_desired -= STEP_MOTORS;
 						pwm_left_desired -= STEP_MOTORS;
-		                if (pwm_right_desired < -MAX_MOTORS_PWM) pwm_right_desired = -MAX_MOTORS_PWM;
-	    	            if (pwm_left_desired < -MAX_MOTORS_PWM) pwm_left_desired = -MAX_MOTORS_PWM;
+		                if (pwm_right_desired < -(MAX_MOTORS_PWM/2)) pwm_right_desired = -(MAX_MOTORS_PWM/2);
+	    	            if (pwm_left_desired < -(MAX_MOTORS_PWM/2)) pwm_left_desired = -(MAX_MOTORS_PWM/2);
 	                  	break;
 
 					case 6:	// both motors right
 					case 47:
 						pwm_right_desired -= STEP_MOTORS;
 						pwm_left_desired += STEP_MOTORS;
-	                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
-	                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
+	                	if (pwm_right_desired<-(MAX_MOTORS_PWM/2)) pwm_right_desired=-(MAX_MOTORS_PWM/2);
+	                	if (pwm_left_desired>(MAX_MOTORS_PWM/2)) pwm_left_desired=(MAX_MOTORS_PWM/2);
 						break;
 
 					case 4:	// both motors left
 					case 46:
 						pwm_right_desired += STEP_MOTORS;
 						pwm_left_desired -= STEP_MOTORS;
-		                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
-	    	            if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
+		                if (pwm_right_desired>(MAX_MOTORS_PWM/2)) pwm_right_desired=(MAX_MOTORS_PWM/2);
+	    	            if (pwm_left_desired<-(MAX_MOTORS_PWM/2)) pwm_left_desired=-(MAX_MOTORS_PWM/2);
 						break;
 
 					case 3:	// left motor forward
 						pwm_left_desired += STEP_MOTORS;
-	                	if (pwm_left_desired>MAX_MOTORS_PWM) pwm_left_desired=MAX_MOTORS_PWM;
+	                	if (pwm_left_desired>(MAX_MOTORS_PWM/2)) pwm_left_desired=(MAX_MOTORS_PWM/2);
 						break;
 
 					case 1:	// right motor forward
 						pwm_right_desired += STEP_MOTORS;
-		                if (pwm_right_desired>MAX_MOTORS_PWM) pwm_right_desired=MAX_MOTORS_PWM;
+		                if (pwm_right_desired>(MAX_MOTORS_PWM/2)) pwm_right_desired=(MAX_MOTORS_PWM/2);
 						break;
 
 					case 9:	// left motor backward
 						pwm_left_desired -= STEP_MOTORS;
-	            	    if (pwm_left_desired<-MAX_MOTORS_PWM) pwm_left_desired=-MAX_MOTORS_PWM;
+	            	    if (pwm_left_desired<-(MAX_MOTORS_PWM/2)) pwm_left_desired=-(MAX_MOTORS_PWM/2);
 						break;
 
 					case 7:	// right motor backward
 						pwm_right_desired -= STEP_MOTORS;
-	                	if (pwm_right_desired<-MAX_MOTORS_PWM) pwm_right_desired=-MAX_MOTORS_PWM;
+	                	if (pwm_right_desired<-(MAX_MOTORS_PWM/2)) pwm_right_desired=-(MAX_MOTORS_PWM/2);
 						break;
 
 	               	case 0:	// colors
@@ -627,12 +628,11 @@ int main(void) {
 
 			pwm_right_working = pwm_right_desired;	// pwm in the range 0..MAX_PWM_MOTORS
 			pwm_left_working = pwm_left_desired;
-	        pwm_left_desired_to_control = pwm_left_desired;
-	        pwm_right_desired_to_control = pwm_right_desired;
-
 			if(obstacleAvoidanceEnabled) {
-				obstacleAvoidance();
+				obstacleAvoidance(&pwm_left_working, &pwm_right_working);
 			}
+	        pwm_left_desired_to_control = pwm_left_working;
+	        pwm_right_desired_to_control = pwm_right_working;
 
 			update_pwm = 1;
 
@@ -695,10 +695,13 @@ int main(void) {
 
 		} else if(currentSelector == 2) {		// both speed control horizontal and vertical
 
-
+			pwm_left_working = pwm_left_desired;
+			pwm_right_working = pwm_right_desired;
 			if(obstacleAvoidanceEnabled) {
-				obstacleAvoidance();
+				obstacleAvoidance(&pwm_left_working, &pwm_right_working);
 			}
+			pwm_left_desired_to_control = pwm_left_working;
+			pwm_right_desired_to_control = pwm_right_working;
 
 			if(compute_left_vel) {
 
@@ -706,9 +709,6 @@ int main(void) {
 				left_vel_changed = 1;
 				compute_left_vel = 0;
 				left_vel_sum = 0;
-
-				pwm_left_working = pwm_left_desired;
-				pwm_left_desired_to_control = pwm_left_desired;
 
 				if(robotPosition == HORIZONTAL_POS) {
 					//PORTB &= ~(1 << 5);
@@ -739,10 +739,6 @@ int main(void) {
 				right_vel_changed = 1;
 				compute_right_vel = 0;
 				right_vel_sum = 0;
-
-
-				pwm_right_working = pwm_right_desired;
-				pwm_right_desired_to_control = pwm_right_desired;
 
 				if(robotPosition == HORIZONTAL_POS) {
 					//PORTB &= ~(1 << 5);

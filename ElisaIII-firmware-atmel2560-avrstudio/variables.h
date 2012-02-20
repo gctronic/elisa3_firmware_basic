@@ -17,6 +17,7 @@ extern unsigned int batteryLevel;
 extern unsigned char measBattery;
 extern signed int currentProxValue;
 extern int proximityResult[12];
+extern int proximityResultLinear[8];
 extern signed int proximityOffset[12];
 extern unsigned long proximitySum[12];
 extern unsigned char proxUpdated;

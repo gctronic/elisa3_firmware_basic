@@ -38,6 +38,7 @@ unsigned char measBattery = 0;
 signed int currentProxValue = 0;
 unsigned long proximitySum[12] = {0};
 unsigned char proxUpdated = 0;
+int proximityResultLinear[8] = {0};
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
