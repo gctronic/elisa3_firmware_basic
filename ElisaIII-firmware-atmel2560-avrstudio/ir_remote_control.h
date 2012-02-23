@@ -48,4 +48,12 @@ unsigned char ir_remote_get_address(void);
  */
 unsigned char ir_remote_get_data(void);
 
+/**
+ * \brief Interpret the commands received through TV remote control in case 
+ * it is enabled.
+ * \return none
+ */
+void handleIRRemoteCommands();
+
+
 #endif

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['timesinsamepos',['timesInSamePos',['../_v_a_r_i_a_b_l_e_s_8_c.html#a8beb179e52892494ff4051a07703ee21',1,'timesInSamePos():&#160;VARIABLES.C'],['../variables_8h.html#a8beb179e52892494ff4051a07703ee21',1,'timesInSamePos():&#160;VARIABLES.C']]],
+  ['timesinsamepos',['timesInSamePos',['../variables_8c.html#a8beb179e52892494ff4051a07703ee21',1,'timesInSamePos():&#160;variables.c'],['../variables_8h.html#a8beb179e52892494ff4051a07703ee21',1,'timesInSamePos():&#160;variables.c']]],
   ['toggleblueled',['toggleBlueLed',['../leds_8c.html#aff69ee78aa6ba7b09f89bd0680bbda22',1,'toggleBlueLed():&#160;leds.c'],['../leds_8h.html#aff69ee78aa6ba7b09f89bd0680bbda22',1,'toggleBlueLed():&#160;leds.c']]],
   ['twimaster_2ec',['twimaster.c',['../twimaster_8c.html',1,'']]],
   ['twimaster_2eh',['twimaster.h',['../twimaster_8h.html',1,'']]],

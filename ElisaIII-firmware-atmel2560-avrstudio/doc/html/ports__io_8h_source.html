@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -98,14 +97,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="ports__io_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00003"></a>00003 
-<a name="l00004"></a>00004 <span class="preprocessor">#ifndef PORTS_IO_H</span>
-<a name="l00005"></a>00005 <span class="preprocessor"></span><span class="preprocessor">#define PORTS_IO_H</span>
-<a name="l00006"></a>00006 <span class="preprocessor"></span>
-<a name="l00007"></a>00007 <span class="keywordtype">void</span> <a class="code" href="ports__io_8c.html#a049b2089a180383ce95c966e2b85c5fa">initPortsIO</a>();
-<a name="l00008"></a>00008 
-<a name="l00009"></a>00009 <span class="preprocessor">#endif</span>
+<a name="l00002"></a>00002 <span class="preprocessor">#ifndef PORTS_IO_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span><span class="preprocessor">#define PORTS_IO_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span>
+<a name="l00019"></a>00019 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00020"></a>00020 <span class="preprocessor">#include &lt;avr\io.h&gt;</span>
+<a name="l00021"></a>00021 
+<a name="l00022"></a>00022 
+<a name="l00028"></a>00028 <span class="keywordtype">void</span> <a class="code" href="ports__io_8c.html#a049b2089a180383ce95c966e2b85c5fa" title="Set pins direction and their initial state based on hardware revision. Unused pins are set to output ...">initPortsIO</a>();
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -113,7 +114,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -126,7 +127,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="ports__io_8h.html">ports_io.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:04 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -102,6 +101,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock"><code>#include &lt;avr/io.h&gt;</code><br/>
 <code>#include &quot;<a class="el" href="variables_8h_source.html">variables.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="leds_8h_source.html">leds.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensors_8h_source.html">sensors.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="utility_8h_source.html">utility.h</a>&quot;</code><br/>
 </div>
 <p><a href="mirf_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -129,6 +131,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#aa080fd5703fd298c641f684d8d806392">flush_rx_fifo</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#a97e38a1b97f3ccd23fae567bc0cb99aa">writeAckPayload</a> (unsigned char *data, unsigned char size)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#ae0a005d5875fc1869bbe028ab900d12f">flushTxFifo</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#a8cfe88fad1863193840e1ef18336002c">handleRFCommands</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#a5d5e84dcab565368222cea7bc0011393">mirf_config_register</a> (uint8_t reg, uint8_t value)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#a2ec1cb46658dbf6175d5f3578518275d">mirf_read_register</a> (uint8_t reg, uint8_t *value, uint8_t len)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mirf_8h.html#a2e57e77443c90138e05be4139822e6e9">mirf_write_register</a> (uint8_t reg, uint8_t *value, uint8_t len)</td></tr>
@@ -274,6 +277,22 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">void <a class="el" href="mirf_8h.html#ae0a005d5875fc1869bbe028ab900d12f">flushTxFifo</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8cfe88fad1863193840e1ef18336002c"></a><!-- doxytag: member="mirf.h::handleRFCommands" ref="a8cfe88fad1863193840e1ef18336002c" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="mirf_8h.html#a8cfe88fad1863193840e1ef18336002c">handleRFCommands</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -553,7 +572,7 @@ Functions</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -566,7 +585,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="mirf_8h.html">mirf.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:06 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:51 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -22,7 +22,7 @@ void obstacleAvoidance(signed int *pwmLeft, signed int *pwmRight) {
 	//			4
 	//
 	// The follwoing table shows the weights (simplified respect to the trigonometry)
-	// of all the proximity sensors for the resulting force:
+	// of all the proximity sensors for the resulting repulsive force:
 	//
 	//		0		1		2		3		4		5		6		7
 	//	x	-1		-0.5	0		0.5		1		0.5		0		-0.5
@@ -72,7 +72,7 @@ void obstacleAvoidance(signed int *pwmLeft, signed int *pwmRight) {
 
 char cliffDetected() {
 
-	// the robot stop itself when a cliff is detected
+	// tell whether a cliff is detected or not
 	if(proximityResult[8]<CLIFF_THR || proximityResult[9]<CLIFF_THR || proximityResult[10]<CLIFF_THR || proximityResult[11]<CLIFF_THR) {
 		return 1;
 	} else {

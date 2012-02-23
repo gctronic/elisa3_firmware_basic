@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -104,9 +103,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a0ffa7c8d7f4215d9e90121483d930880">getSelector</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current selector postion.  <a href="#a0ffa7c8d7f4215d9e90121483d930880"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#ad52efe852713596ee88dd17a247b490d">initPeripherals</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize all the port pins and peripherals calling their "init" functions.  <a href="#ad52efe852713596ee88dd17a247b490d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a7cfcbe42bd266750aeb6e5d71e5ea479">ISR</a> (TIMER2_OVF_vect)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9">sleep</a> (unsigned char seconds)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Let the roboot go in extended standby mode.  <a href="#a56f15343edf0a13c026f52e527d3d3c9"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a0ffa7c8d7f4215d9e90121483d930880"></a><!-- doxytag: member="utility.c::getSelector" ref="a0ffa7c8d7f4215d9e90121483d930880" args="()" -->
@@ -114,7 +116,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned char <a class="el" href="utility_8c.html#a0ffa7c8d7f4215d9e90121483d930880">getSelector</a> </td>
+          <td class="memname">unsigned char <a class="el" href="utility_8h.html#a0ffa7c8d7f4215d9e90121483d930880">getSelector</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -123,6 +125,9 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Return the current selector postion. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>byte representing the selector postion (0..15). </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="ad52efe852713596ee88dd17a247b490d"></a><!-- doxytag: member="utility.c::initPeripherals" ref="ad52efe852713596ee88dd17a247b490d" args="(void)" -->
@@ -130,15 +135,17 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="utility_8c.html#ad52efe852713596ee88dd17a247b490d">initPeripherals</a> </td>
+          <td class="memname">void <a class="el" href="utility_8h.html#a5f40c46f6d8dc290c485a55613b5a7cb">initPeripherals</a> </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Initialize all the port pins and peripherals calling their "init" functions. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -164,7 +171,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9">sleep</a> </td>
+          <td class="memname">void <a class="el" href="utility_8h.html#a56f15343edf0a13c026f52e527d3d3c9">sleep</a> </td>
           <td>(</td>
           <td class="paramtype">unsigned char&#160;</td>
           <td class="paramname"><em>seconds</em></td><td>)</td>
@@ -173,6 +180,15 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Let the roboot go in extended standby mode. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seconds</td><td>number of seconds to stay in sleep </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -183,7 +199,7 @@ Functions</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -196,7 +212,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="utility_8c.html">utility.c</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:11 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:54 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

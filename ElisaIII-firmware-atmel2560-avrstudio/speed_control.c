@@ -1,22 +1,6 @@
 
 #include "speed_control.h"
 
-//--external variables--//
-extern signed int last_left_vel;
-extern signed int last_right_vel;
-extern signed long int max_pwm_right;
-extern signed long int max_pwm_left;
-extern signed int pwm_right_speed_controller;
-extern signed int pwm_left_speed_controller;
-extern signed int delta_left_speed_prev;
-extern signed int delta_left_speed_current;
-extern signed int delta_right_speed_prev;
-extern signed int delta_right_speed_current;
-extern signed int delta_left_speed_sum;
-extern signed int delta_right_speed_sum;
-extern signed int currentAngle;
-extern signed int k_ff_speed_control_left;
-extern signed int k_ff_speed_control_right;
 
 void init_speed_control() {
 	//p_speed_control = 40;
@@ -28,9 +12,11 @@ void init_speed_control() {
 }
 
 void start_vertical_speed_control_left(signed int *pwm_left) {
-
+	
+	// the input paramter is the current desired speed, expressed in the pwm range (-512..512).
+	
 	if(*pwm_left==0) {
-		delta_left_speed_sum = 0;
+		delta_left_speed_sum = 0;		// reset the sum of the error for the I parameter
 		delta_left_speed_current = 0;
 		delta_left_speed_prev = 0;
 		return;
@@ -49,7 +35,7 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 		} else {
 			k_ff_speed_control_left = INIT_KFF - ((180 - currentAngle)>>2);
 		}
-	} else if(currentAngle >= 90) {	// pointing up-left
+	} else if(currentAngle >= 90) {		// pointing up-left
 		if(*pwm_left > 0) {
 			k_ff_speed_control_left = INIT_KFF + ((180 - currentAngle)>>2);
 		} else {
@@ -63,12 +49,14 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 		}
 	}
 
+	// compute the current error between the desired and measured speed
 	delta_left_speed_prev = delta_left_speed_current; 
 	if(*pwm_left >= 0) {
 		delta_left_speed_current = (*pwm_left) - last_left_vel; 
 	} else {
 		delta_left_speed_current = (*pwm_left) + last_left_vel; 
 	}
+	// sum the error
 	delta_left_speed_sum += delta_left_speed_current;
 
 	if(delta_left_speed_sum > I_LIMIT_VERTICAL) {
@@ -77,11 +65,13 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 		delta_left_speed_sum = -I_LIMIT_VERTICAL;
 	}
 	    
-	pwm_left_speed_controller = (signed int)(k_ff_speed_control_left*(*pwm_left)); //((*pwm_left) << 3); //<< 5);
+	// pwm out = feed forward * desired speed + P * current error - D * (current error - previous error) + I * error sum
+	pwm_left_speed_controller = (signed int)(k_ff_speed_control_left*(*pwm_left));
 	pwm_left_speed_controller += (signed int)(P_VERTICAL * delta_left_speed_current);
 	pwm_left_speed_controller -= (signed int)((delta_left_speed_current-delta_left_speed_prev)*D_VERTICAL);
 	pwm_left_speed_controller += (signed int)(I_VERTICAL*delta_left_speed_sum);
 
+	// avoid to change motion direction
 	if(pwm_left_speed_controller < 0 && *pwm_left >= 0) {
 		pwm_left_speed_controller = 0;
 	}
@@ -92,10 +82,9 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 	if (pwm_left_speed_controller>MAX_PWM) pwm_left_speed_controller=MAX_PWM;
 	if (pwm_left_speed_controller<-MAX_PWM) pwm_left_speed_controller=-MAX_PWM;
 
-	//pwm_left_speed_controller = pwm_left_speed_controller*(MAX_MOTORS_PWM/2)/MAX_PWM;
-	// since the pwm_left_speed_controller goes from 0 to 24000 then the pwm_left goes
-	// from 0 to 375
-	*pwm_left = ((signed int)pwm_left_speed_controller)>>4; //>>6;
+	// since the pwm_left_speed_controller goes from -24000 to 24000 then the pwm_left 
+	// has to be scaled to remain in the range -512..512
+	*pwm_left = ((signed int)pwm_left_speed_controller)>>4;
 
 	if (*pwm_left>(MAX_MOTORS_PWM/2)) *pwm_left=(MAX_MOTORS_PWM/2);
     if (*pwm_left<-(MAX_MOTORS_PWM/2)) *pwm_left=-(MAX_MOTORS_PWM/2);
@@ -106,8 +95,10 @@ void start_vertical_speed_control_left(signed int *pwm_left) {
 
 void start_vertical_speed_control_right(signed int *pwm_right) {
 
+	// the input paramter is the current desired speed, expressed in the pwm range (-512..512).
+
 	if(*pwm_right==0) {
-		delta_right_speed_sum = 0;
+		delta_right_speed_sum = 0;		// reset the sum of the error for the I parameter
 		delta_right_speed_current = 0;
 		delta_right_speed_prev = 0;
 		return;
@@ -126,7 +117,7 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 		} else {
 			k_ff_speed_control_right = INIT_KFF - ((180 - currentAngle)>>2);
 		}
-	} else if(currentAngle >= 90) {	// pointing up-left
+	} else if(currentAngle >= 90) {		// pointing up-left
 		if(*pwm_right > 0) {
 			k_ff_speed_control_right = INIT_KFF + ((180 - currentAngle)>>2);
 		} else {
@@ -140,12 +131,14 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 		}
 	}
 
+	// compute the current error between the desired and measured speed
 	delta_right_speed_prev = delta_right_speed_current;
 	if(*pwm_right >= 0) {
 		delta_right_speed_current = (*pwm_right) - last_right_vel;
 	} else {
 		delta_right_speed_current = (*pwm_right) + last_right_vel;
 	}
+	// sum the errors
 	delta_right_speed_sum += delta_right_speed_current;
 
 	if(delta_right_speed_sum > I_LIMIT_VERTICAL ) {
@@ -154,12 +147,14 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 		delta_right_speed_sum = -I_LIMIT_VERTICAL;
 	}
 
+	// pwm out = feed forward * desired speed + P * current error - D * (current error - previous error) + I * error sum
 	pwm_right_speed_controller = (signed int)(k_ff_speed_control_right*(*pwm_right)); //(signed int)((*pwm_right) << 3); //<< 5);
 	pwm_right_speed_controller += (signed int)(P_VERTICAL * delta_right_speed_current);
 	pwm_right_speed_controller -= (signed int)((delta_right_speed_current-delta_right_speed_prev)*D_VERTICAL);
 	pwm_right_speed_controller += (signed int)(I_VERTICAL*delta_right_speed_sum);
 
-	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	// avoid changing moving direction
+	// avoid changing motion direction
+	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	
 		pwm_right_speed_controller = 0;
 	}
 	if(pwm_right_speed_controller > 0 && *pwm_right < 0 ) {
@@ -169,8 +164,9 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 	if (pwm_right_speed_controller>MAX_PWM) pwm_right_speed_controller=MAX_PWM;
 	if (pwm_right_speed_controller<-MAX_PWM) pwm_right_speed_controller=-MAX_PWM;
 
-	//pwm_right_speed_controller = pwm_right_speed_controller*(MAX_MOTORS_PWM/2)/MAX_PWM;
-	*pwm_right = ((signed int)pwm_right_speed_controller)>>4; //>>6;
+	// since the pwm_left_speed_controller goes from -24000 to 24000 then the pwm_left 
+	// has to be scaled to remain in the range -512..512
+	*pwm_right = ((signed int)pwm_right_speed_controller)>>4;
 
 	if (*pwm_right>(MAX_MOTORS_PWM/2)) *pwm_right=(MAX_MOTORS_PWM/2);
     if (*pwm_right<-(MAX_MOTORS_PWM/2)) *pwm_right=-(MAX_MOTORS_PWM/2);
@@ -179,19 +175,23 @@ void start_vertical_speed_control_right(signed int *pwm_right) {
 
 void start_horizontal_speed_control_right(signed int *pwm_right) {
 
+	// the input paramter is the current desired speed, expressed in the pwm range (-512..512).
+
 	if(*pwm_right==0) {
-		delta_right_speed_sum = 0;
+		delta_right_speed_sum = 0;		// reset the sum of the error for the I parameter
 		delta_right_speed_current = 0;
 		delta_right_speed_prev = 0;
 		return;
 	}
 
+	// compute the current error between the desired and measured speed
 	delta_right_speed_prev = delta_right_speed_current;
 	if(*pwm_right >= 0) {
 		delta_right_speed_current = (*pwm_right) - last_right_vel;
 	} else {
 		delta_right_speed_current = (*pwm_right) + last_right_vel;
 	}
+	// sum the errors
 	delta_right_speed_sum += delta_right_speed_current;
 
 	if(delta_right_speed_sum > I_LIMIT_HORIZONTAL ) {
@@ -200,12 +200,15 @@ void start_horizontal_speed_control_right(signed int *pwm_right) {
 		delta_right_speed_sum = -I_LIMIT_HORIZONTAL;
 	}
 
-	pwm_right_speed_controller = (signed int)((*pwm_right) << 3); //<< 5);
+	// pwm out = feed forward * desired speed + P * current error - D * (current error - previous error) + I * error sum
+	// in this case feed forward = 8
+	pwm_right_speed_controller = (signed int)((*pwm_right) << 3);
 	pwm_right_speed_controller += (signed int)(delta_right_speed_current*P_HORIZONTAL);
 	pwm_right_speed_controller -= (signed int)((delta_right_speed_current-delta_right_speed_prev)*D_HORIZONTAL);
 	pwm_right_speed_controller += (signed int)(delta_right_speed_sum*I_HORIZONTAL);
 
-	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	// avoid changing moving direction
+	// avoid changing motion direction
+	if(pwm_right_speed_controller < 0 && *pwm_right >= 0) {	
 		pwm_right_speed_controller = 0;
 	}
 	if(pwm_right_speed_controller > 0 && *pwm_right < 0 ) {
@@ -215,8 +218,11 @@ void start_horizontal_speed_control_right(signed int *pwm_right) {
 	if (pwm_right_speed_controller>MAX_PWM) pwm_right_speed_controller=MAX_PWM;
 	if (pwm_right_speed_controller<-MAX_PWM) pwm_right_speed_controller=-MAX_PWM;
 
-	//pwm_right_speed_controller = pwm_right_speed_controller*(MAX_MOTORS_PWM/2)/MAX_PWM;
-	*pwm_right = ((signed int)pwm_right_speed_controller)>>4; //>>6;
+	// since the pwm_left_speed_controller goes from -24000 to 24000 then the pwm_left 
+	// has to be scaled to remain in the range -512..512
+	*pwm_right = ((signed int)pwm_right_speed_controller)>>4;
+
+	// the feed forward is composed by the previous scale factor (x8) and by an offset
 	if(*pwm_right > 0) {
 		*pwm_right += 30;
 	} else if(*pwm_right < 0) {
@@ -230,19 +236,23 @@ void start_horizontal_speed_control_right(signed int *pwm_right) {
 
 void start_horizontal_speed_control_left(signed int *pwm_left) {
 
+	// the input paramter is the current desired speed, expressed in the pwm range (-512..512).
+
 	if(*pwm_left==0) {
-		delta_left_speed_sum = 0;
+		delta_left_speed_sum = 0;		// reset the sum of the error for the I parameter
 		delta_left_speed_current = 0;
 		delta_left_speed_prev = 0;
 		return;
 	}
 
+	// compute the current error between the desired and measured speed
 	delta_left_speed_prev = delta_left_speed_current; 
 	if(*pwm_left >= 0) {
 		delta_left_speed_current = (*pwm_left) - last_left_vel; 
 	} else {
 		delta_left_speed_current = (*pwm_left) + last_left_vel; 
 	}
+	// sum the errors
 	delta_left_speed_sum += delta_left_speed_current;
 
 	if(delta_left_speed_sum > I_LIMIT_HORIZONTAL) {
@@ -251,11 +261,14 @@ void start_horizontal_speed_control_left(signed int *pwm_left) {
 		delta_left_speed_sum = -I_LIMIT_HORIZONTAL;
 	}
 	    
-	pwm_left_speed_controller = (signed int)((*pwm_left) << 3); //<< 5);
+	// pwm out = feed forward * desired speed + P * current error - D * (current error - previous error) + I * error sum
+	// in this case feed forward = 8
+	pwm_left_speed_controller = (signed int)((*pwm_left) << 3);
 	pwm_left_speed_controller += (signed int)(delta_left_speed_current*P_HORIZONTAL);
 	pwm_left_speed_controller -= (signed int)((delta_left_speed_current-delta_left_speed_prev)*D_HORIZONTAL);
 	pwm_left_speed_controller += (signed int)(delta_left_speed_sum*I_HORIZONTAL);
 
+	// avoid changing motion direction
 	if(pwm_left_speed_controller < 0 && *pwm_left >= 0) {
 		pwm_left_speed_controller = 0;
 	}
@@ -266,10 +279,11 @@ void start_horizontal_speed_control_left(signed int *pwm_left) {
 	if (pwm_left_speed_controller>MAX_PWM) pwm_left_speed_controller=MAX_PWM;
 	if (pwm_left_speed_controller<-MAX_PWM) pwm_left_speed_controller=-MAX_PWM;
 
-	//pwm_left_speed_controller = pwm_left_speed_controller*(MAX_MOTORS_PWM/2)/MAX_PWM;
-	// since the pwm_left_speed_controller goes from 0 to 24000 then the pwm_left goes
-	// from 0 to 375
-	*pwm_left = ((signed int)pwm_left_speed_controller)>>4; //>>6;
+	// since the pwm_left_speed_controller goes from -24000 to 24000 then the pwm_left 
+	// has to be scaled to remain in the range -512..512
+	*pwm_left = ((signed int)pwm_left_speed_controller)>>4;
+
+	// the feed forward is composed by the previous scale factor (x8) and by an offset
 	if(*pwm_left > 0) {
 		*pwm_left += 30;
 	} else if(*pwm_left < 0) {

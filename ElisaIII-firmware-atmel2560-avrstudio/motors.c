@@ -41,7 +41,7 @@ void initMotors() {
 // Motor left
 ISR(TIMER4_OVF_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	LED_GREEN_ON;
 
 	if(cliffDetectedFlag) {
 		pwm_left = 0;
@@ -115,14 +115,14 @@ ISR(TIMER4_OVF_vect) {
 	}
 */
 
-//	PORTB |= (1 << 6);
+//	LED_GREEN_OFF;
 
 }
 
 // motor left forward
 ISR(TIMER4_COMPA_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	LED_GREEN_ON;
 
 //	if(pwm_left == 0) {
 //		return;
@@ -134,14 +134,14 @@ ISR(TIMER4_COMPA_vect) {
 
 	firstSampleLeft = 1;
 
-//	PORTB |= (1 << 6);
+//	LED_GREEN_OFF;
 
 }
 
 // motor left backward
 ISR(TIMER4_COMPB_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	LED_GREEN_ON;
 
 //	if(pwm_left == 0) {
 //		return;
@@ -153,14 +153,14 @@ ISR(TIMER4_COMPB_vect) {
 
 	firstSampleLeft = 1;
 
-//	PORTB |= (1 << 6);
+//	LED_GREEN_OFF;
 
 }
 
 // Motor right
 ISR(TIMER3_OVF_vect) {
 
-//	PORTB &= ~(1 << 6);
+//	LED_GREEN_ON;
 
   	// PORTB ^= (1 << 7); // Toggle the LED
 
@@ -229,14 +229,14 @@ ISR(TIMER3_OVF_vect) {
 		currentMotRightChannel = 12;
 	}
 */
-//	PORTB |= (1 << 6);
+//	LED_GREEN_OFF;
 
 }
 
 // motor right forward
 ISR(TIMER3_COMPA_vect) {
 
-//	PORTB &= ~(1 << 5);
+//	LED_RED_ON;
 
 //	if(pwm_right == 0) {
 //		return;
@@ -248,14 +248,14 @@ ISR(TIMER3_COMPA_vect) {
 
 	firstSampleRight = 1;
 
-//	PORTB |= (1 << 5);
+//	LED_RED_OFF;
 
 }
 
 // motor right backward
 ISR(TIMER3_COMPB_vect) {
 
-//	PORTB &= ~(1 << 5);
+//	LED_RED_ON;
 
 //	if(pwm_right == 0) {
 //		return;
@@ -267,5 +267,5 @@ ISR(TIMER3_COMPB_vect) {
 
 	firstSampleRight = 1;
 
-//	PORTB |= (1 << 5);
+//	LED_RED_OFF;
 }

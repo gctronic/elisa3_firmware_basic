@@ -11,6 +11,7 @@ var mirf_8h =
     [ "mirf_PAYLOAD", "mirf_8h.html#ac72fefc5b09f825cedaa545dbd93b323", null ],
     [ "flush_rx_fifo", "mirf_8h.html#aa080fd5703fd298c641f684d8d806392", null ],
     [ "flushTxFifo", "mirf_8h.html#ae0a005d5875fc1869bbe028ab900d12f", null ],
+    [ "handleRFCommands", "mirf_8h.html#a8cfe88fad1863193840e1ef18336002c", null ],
     [ "mirf_config", "mirf_8h.html#aa6ad63edd063386a12847814d633afd4", null ],
     [ "mirf_config_register", "mirf_8h.html#a5d5e84dcab565368222cea7bc0011393", null ],
     [ "mirf_data_ready", "mirf_8h.html#a13853a5c6d8ce91eafe92a76abc2b287", null ],

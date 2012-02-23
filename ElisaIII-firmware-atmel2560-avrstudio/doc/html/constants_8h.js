@@ -16,5 +16,10 @@ var constants_8h =
     [ "GRREEN_LED6_ON", "constants_8h.html#a7a14d6c4bcfc764d2f1bdd8920944cc8", null ],
     [ "GRREEN_LED7_OFF", "constants_8h.html#a31b83684831aac70e6a07c8a5ba68dba", null ],
     [ "GRREEN_LED7_ON", "constants_8h.html#adaf444d8326ddabe0e19aad98cc93cd8", null ],
-    [ "HORIZONTAL_POS", "constants_8h.html#aa8421bdeb80011df284ec8d41c2b322a", null ]
+    [ "HORIZONTAL_POS", "constants_8h.html#aa8421bdeb80011df284ec8d41c2b322a", null ],
+    [ "PAUSE_100_MSEC", "constants_8h.html#a1e2f7427709f4b075deef46aae377dcd", null ],
+    [ "PAUSE_10_MSEC", "constants_8h.html#a6eef3276b4b74ac2be6c2069370e97c2", null ],
+    [ "PAUSE_1_MSEC", "constants_8h.html#acf98101fd13b4e7488072f6639c75292", null ],
+    [ "PAUSE_1_SEC", "constants_8h.html#a8dace3f83d27e5b95f55697077f0d8c3", null ],
+    [ "PAUSE_2_SEC", "constants_8h.html#ad22b4ab180030cae5c45d1fbb8003426", null ]
 ];

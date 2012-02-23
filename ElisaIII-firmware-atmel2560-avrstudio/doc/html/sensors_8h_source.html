@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -97,17 +96,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">sensors.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="sensors_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00002"></a>00002 <span class="preprocessor">#include &lt;avr\io.h&gt;</span>
-<a name="l00003"></a>00003 <span class="preprocessor">#include &lt;avr\interrupt.h&gt;</span>
-<a name="l00004"></a>00004 
-<a name="l00005"></a>00005 <span class="preprocessor">#ifndef SENSORS_H</span>
-<a name="l00006"></a>00006 <span class="preprocessor"></span><span class="preprocessor">#define SENSORS_H</span>
-<a name="l00007"></a>00007 <span class="preprocessor"></span>
-<a name="l00008"></a>00008 
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 <span class="preprocessor">#endif</span>
-<a name="l00011"></a>00011 <span class="preprocessor"></span>
+<a href="sensors_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
+<a name="l00002"></a>00002 <span class="preprocessor">#ifndef SENSORS_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span><span class="preprocessor">#define SENSORS_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span>
+<a name="l00005"></a>00005 
+<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00024"></a>00024 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00025"></a>00025 <span class="preprocessor">#include &lt;avr\io.h&gt;</span>
+<a name="l00026"></a>00026 <span class="preprocessor">#include &quot;<a class="code" href="leds_8h.html" title="Leds module.">leds.h</a>&quot;</span>
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="twimaster_8h.html">twimaster.h</a>&quot;</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00036"></a>00036 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a11b381faabbecc0143d11cf09e955462" title="Calibrate all the sensors (proximity, ground and accelerometer). Pay attention for the robot to be po...">calibrateSensors</a>();
+<a name="l00037"></a>00037 
+<a name="l00042"></a>00042 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a3d961b25677384479fcd0d413da8ef83" title="Test which device is mounted on the robot and configure it.">initAccelerometer</a>();
+<a name="l00043"></a>00043 
+<a name="l00049"></a>00049 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc" title="Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution).">initADXL345</a>();
+<a name="l00050"></a>00050 
+<a name="l00056"></a>00056 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#a00ac3777f39d082d583911fcedd3a302" title="Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution).">initMMA7455L</a>();
+<a name="l00057"></a>00057 
+<a name="l00063"></a>00063 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a9c7a0d4e693d6dd1fef72e28353324a1" title="Request the X and Y values (10 bit data, 2&#39;s complement) and save them in their respective global var...">readAccelXY</a>();
+<a name="l00064"></a>00064 
+<a name="l00070"></a>00070 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#ab3ef74e35beb0d06aefb2830ff49862d" title="Request the X, Y and Z values (10 bit data, 2&#39;s complement) and save them in their respective global ...">readAccelXYZ</a>();
+<a name="l00071"></a>00071 
+<a name="l00081"></a>00081 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a12fc697a01e1d04b91df358a472b5b84" title="Compute the angle of the robot using the X and Y axes; the resulting angle is saved in the global var...">computeAngle</a>();
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 <span class="preprocessor">#endif</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -115,7 +132,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -128,7 +145,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="sensors_8h.html">sensors.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:04 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -10,6 +10,5 @@ var searchData=
   ['mirf_5fconfig',['mirf_CONFIG',['../mirf_8h.html#af6b9651c5fe45bd6b8189e46b087b08b',1,'mirf.h']]],
   ['mirf_5fcsn_5fhi',['mirf_CSN_hi',['../mirf_8h.html#ac350c778b5c7d78d7e9236217cc1d262',1,'mirf.h']]],
   ['mirf_5fcsn_5flo',['mirf_CSN_lo',['../mirf_8h.html#a13fd978ca6234fd2a131566b507be8a3',1,'mirf.h']]],
-  ['mirf_5fpayload',['mirf_PAYLOAD',['../mirf_8h.html#ac72fefc5b09f825cedaa545dbd93b323',1,'mirf.h']]],
-  ['mute',['MUTE',['../e__remote__control_8h.html#a1f61941701e0251593e01aec567e6ceb',1,'e_remote_control.h']]]
+  ['mirf_5fpayload',['mirf_PAYLOAD',['../mirf_8h.html#ac72fefc5b09f825cedaa545dbd93b323',1,'mirf.h']]]
 ];

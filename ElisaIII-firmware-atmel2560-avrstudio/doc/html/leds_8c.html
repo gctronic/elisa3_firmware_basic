@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -104,10 +103,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leds_8c.html#ad38f8d7062d715eb3751beb853c98562">initRGBleds</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the timer1/pwm registers to work at about 30 KHz.  <a href="#ad38f8d7062d715eb3751beb853c98562"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leds_8c.html#aff69ee78aa6ba7b09f89bd0680bbda22">toggleBlueLed</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggle the state of the blue led.  <a href="#aff69ee78aa6ba7b09f89bd0680bbda22"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leds_8c.html#a63e72cccdecbe5de4d442d6314f0b443">updateRedLed</a> (unsigned char value)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the value of the red led accordingly to the received argument. The function is used every time a radio/tv remote command is received.  <a href="#a63e72cccdecbe5de4d442d6314f0b443"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leds_8c.html#abaff9571f81de4f23e1852fa582d15df">updateGreenLed</a> (unsigned char value)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the value of the green led accordingly to the received argument. The function is used every time a radio/tv remote command is received.  <a href="#abaff9571f81de4f23e1852fa582d15df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="leds_8c.html#a680ef64642d1615849ae105e862ba97d">updateBlueLed</a> (unsigned char value)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the value of the blue led accordingly to the received argument. The function is used every time a radio/tv remote command is received.  <a href="#a680ef64642d1615849ae105e862ba97d"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ad38f8d7062d715eb3751beb853c98562"></a><!-- doxytag: member="leds.c::initRGBleds" ref="ad38f8d7062d715eb3751beb853c98562" args="()" -->
@@ -124,6 +128,9 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Configure the timer1/pwm registers to work at about 30 KHz. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="aff69ee78aa6ba7b09f89bd0680bbda22"></a><!-- doxytag: member="leds.c::toggleBlueLed" ref="aff69ee78aa6ba7b09f89bd0680bbda22" args="()" -->
@@ -139,6 +146,9 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Toggle the state of the blue led. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -157,6 +167,15 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Update the value of the blue led accordingly to the received argument. The function is used every time a radio/tv remote command is received. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>led luminosity (duty cycle); from 0 (max power on) to 255 (off) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="abaff9571f81de4f23e1852fa582d15df"></a><!-- doxytag: member="leds.c::updateGreenLed" ref="abaff9571f81de4f23e1852fa582d15df" args="(unsigned char value)" -->
@@ -173,6 +192,15 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Update the value of the green led accordingly to the received argument. The function is used every time a radio/tv remote command is received. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>led luminosity (duty cycle); from 0 (max power on) to 255 (off) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -191,6 +219,15 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Update the value of the red led accordingly to the received argument. The function is used every time a radio/tv remote command is received. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>led luminosity (duty cycle); from 0 (max power on) to 255 (off) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
 </div>
 </div>
 </div><!-- contents -->
@@ -200,7 +237,7 @@ Functions</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -213,7 +250,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="leds_8c.html">leds.c</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:06 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:50 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

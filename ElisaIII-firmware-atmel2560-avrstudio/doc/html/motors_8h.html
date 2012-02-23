@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -99,6 +98,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">motors.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Motors module.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="variables_8h_source.html">variables.h</a>&quot;</code><br/>
 <code>#include &lt;avr\io.h&gt;</code><br/>
 <code>#include &lt;avr\interrupt.h&gt;</code><br/>
@@ -108,8 +110,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#a984b662dbcf5b55b90fc02e2f866a206">initMotors</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the timer3 and timer4 registers to work at about 122 Hz.  <a href="#a984b662dbcf5b55b90fc02e2f866a206"></a><br/></td></tr>
 </table>
-<hr/><h2>Function Documentation</h2>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Motors module. </p>
+<dl class="author"><dt><b>Author:</b></dt><dd>Stefano Morgani &lt;<a href="mailto:stefano@gctronic.com">stefano@gctronic.com</a>&gt; </dd></dl>
+<dl class="version"><dt><b>Version:</b></dt><dd>1.0 </dd></dl>
+<dl class="date"><dt><b>Date:</b></dt><dd>01.02.12 </dd></dl>
+<dl class="copyright"><dt><b>Copyright:</b></dt><dd>GNU GPL v3</dd></dl>
+<p>The motors are handled with two timers: timer3 for right motor and timer4 for left motor. Two independent timers are needed because the timer will reset when the output compare register matches the timer value. The settings for the two timers are the same; the related pwm frequency is 122 Hz and the duty cycle define the motors speed. In order to measure the consumption and speed of the motors respectively in the active and passive phase of the pwm, two interrupts per timer are generated: one at the beginning of the cycle (timer overflow) and another one when when the output compare matches (beginning of passive phase). </p>
+</div><hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a984b662dbcf5b55b90fc02e2f866a206"></a><!-- doxytag: member="motors.h::initMotors" ref="a984b662dbcf5b55b90fc02e2f866a206" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -124,6 +134,9 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Configure the timer3 and timer4 registers to work at about 122 Hz. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
 </div>
 </div>
 </div><!-- contents -->
@@ -133,7 +146,7 @@ Functions</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -146,7 +159,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="motors_8h.html">motors.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:06 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:51 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

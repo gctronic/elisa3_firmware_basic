@@ -52,8 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -98,18 +96,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">speed_control.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="speed__control_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="preprocessor">#ifndef SPEED_CONTROL_H</span>
-<a name="l00004"></a>00004 <span class="preprocessor"></span><span class="preprocessor">#define SPEED_CONTROL_H</span>
-<a name="l00005"></a>00005 <span class="preprocessor"></span>
-<a name="l00006"></a>00006 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a57ab122fa578676fac1b9c48eb2c722f">start_vertical_speed_control_left</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="usart_8c.html#a4e83735e34bb6f16744472cc444e2ba0">pwm_left</a>);
-<a name="l00007"></a>00007 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a16b850ed7820e0c1a62cf5f21a8efdbf">start_vertical_speed_control_right</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="usart_8c.html#aa60ff17349a4bebe507fd4cc4e7a258b">pwm_right</a>);
-<a name="l00008"></a>00008 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a4a747a3c8b4a971428e6a827180a404d">start_orizzontal_speed_control_left</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="usart_8c.html#a4e83735e34bb6f16744472cc444e2ba0">pwm_left</a>);
-<a name="l00009"></a>00009 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a6c07ffab90e97d8485ad462fefb31229">start_orizzontal_speed_control_right</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="usart_8c.html#aa60ff17349a4bebe507fd4cc4e7a258b">pwm_right</a>);
-<a name="l00010"></a>00010 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#af732d3eb933d96ad21b57c908c861aaf">init_speed_control</a>();
-<a name="l00011"></a>00011 
-<a name="l00012"></a>00012 <span class="preprocessor">#endif</span>
+<a href="speed__control_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
+<a name="l00002"></a>00002 <span class="preprocessor">#ifndef SPEED_CONTROL_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span><span class="preprocessor">#define SPEED_CONTROL_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span>
+<a name="l00005"></a>00005 
+<a name="l00026"></a>00026 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00033"></a>00033 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#af732d3eb933d96ad21b57c908c861aaf" title="Initialize the speed controller parameters. Actually not used.">init_speed_control</a>();
+<a name="l00034"></a>00034 
+<a name="l00040"></a>00040 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a57ab122fa578676fac1b9c48eb2c722f" title="Control the speed of the left motor in a vertical wall.">start_vertical_speed_control_left</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="variables_8c.html#a4e83735e34bb6f16744472cc444e2ba0">pwm_left</a>);
+<a name="l00041"></a>00041 
+<a name="l00047"></a>00047 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a16b850ed7820e0c1a62cf5f21a8efdbf" title="Control the speed of the right motor in a vertical wall.">start_vertical_speed_control_right</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="variables_8c.html#aa60ff17349a4bebe507fd4cc4e7a258b">pwm_right</a>);
+<a name="l00048"></a>00048 
+<a name="l00054"></a>00054 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a48378f347d3e36bae189adf480eae0f1" title="Control the speed of the left motor in a flat surface.">start_horizontal_speed_control_left</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="variables_8c.html#a4e83735e34bb6f16744472cc444e2ba0">pwm_left</a>);
+<a name="l00055"></a>00055 
+<a name="l00061"></a>00061 <span class="keywordtype">void</span> <a class="code" href="speed__control_8c.html#a15ee29380238ff0aba3c9f399af043ec" title="Control the speed of the right motor in a flat surface.">start_horizontal_speed_control_right</a>(<span class="keywordtype">signed</span> <span class="keywordtype">int</span> *<a class="code" href="variables_8c.html#aa60ff17349a4bebe507fd4cc4e7a258b">pwm_right</a>);
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -117,7 +122,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -130,7 +135,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="speed__control_8h.html">speed_control.h</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 7 2012 08:51:59 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

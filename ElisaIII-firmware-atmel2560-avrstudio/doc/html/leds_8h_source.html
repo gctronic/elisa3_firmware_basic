@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -97,19 +96,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">leds.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="leds_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="preprocessor">#ifndef LEDS_H</span>
-<a name="l00004"></a>00004 <span class="preprocessor"></span><span class="preprocessor">#define LEDS_H</span>
-<a name="l00005"></a>00005 <span class="preprocessor"></span>
-<a name="l00006"></a>00006 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#ad38f8d7062d715eb3751beb853c98562">initRGBleds</a>();
-<a name="l00007"></a>00007 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#aff69ee78aa6ba7b09f89bd0680bbda22">toggleBlueLed</a>();
-<a name="l00008"></a>00008 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#a63e72cccdecbe5de4d442d6314f0b443">updateRedLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
-<a name="l00009"></a>00009 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#abaff9571f81de4f23e1852fa582d15df">updateGreenLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
-<a name="l00010"></a>00010 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#a680ef64642d1615849ae105e862ba97d">updateBlueLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
-<a name="l00011"></a>00011 
-<a name="l00012"></a>00012 <span class="preprocessor">#endif</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
+<a href="leds_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#ifndef LEDS_H</span>
+<a name="l00002"></a>00002 <span class="preprocessor"></span><span class="preprocessor">#define LEDS_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span>
+<a name="l00004"></a>00004 
+<a name="l00021"></a>00021 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00022"></a>00022 
+<a name="l00027"></a>00027 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#ad38f8d7062d715eb3751beb853c98562" title="Configure the timer1/pwm registers to work at about 30 KHz.">initRGBleds</a>();
+<a name="l00028"></a>00028 
+<a name="l00033"></a>00033 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#aff69ee78aa6ba7b09f89bd0680bbda22" title="Toggle the state of the blue led.">toggleBlueLed</a>();
+<a name="l00034"></a>00034 
+<a name="l00041"></a>00041 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#a63e72cccdecbe5de4d442d6314f0b443" title="Update the value of the red led accordingly to the received argument. The function is used every time...">updateRedLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
+<a name="l00042"></a>00042 
+<a name="l00049"></a>00049 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#abaff9571f81de4f23e1852fa582d15df" title="Update the value of the green led accordingly to the received argument. The function is used every ti...">updateGreenLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
+<a name="l00050"></a>00050 
+<a name="l00057"></a>00057 <span class="keywordtype">void</span> <a class="code" href="leds_8c.html#a680ef64642d1615849ae105e862ba97d" title="Update the value of the blue led accordingly to the received argument. The function is used every tim...">updateBlueLed</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> value);
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059 <span class="preprocessor">#endif</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -117,7 +121,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -130,7 +134,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="leds_8h.html">leds.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:04 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

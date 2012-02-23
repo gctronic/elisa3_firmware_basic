@@ -3,18 +3,16 @@
 #define BEHAVIORS_H
 
 /**
- * \file adc.h
- * \brief Adc module
+ * \file behaviors.h
+ * \brief Behaviors module
  * \author Stefano Morgani <stefano@gctronic.com>
  * \version 1.0
  * \date 01.02.12
  * \copyright GNU GPL v3
 
- The adc peripheral is initialized to work in free running mode, raising an interrupt at
- each conversion completion. Within the interrupt service routine the value is saved in its
- correct position and the next channel to sample is selected.
- This is the biggest interrupt in the project and it's used also as the base time for timed 
- processes/funtions (resolution 104 us).
+This module contains two basic low level behaviors: obstacle and cliff avoidance. Obstacle avoidance is 
+accomplished using the 8 proximity sensors placed around the robot, whereas the cliff avoidance is based 
+on the 4 ground sensors values.
 
 */
 
@@ -31,12 +29,14 @@
 void obstacleAvoidance();
 
 /**
- * \brief Cliff avoidance behavior simple implementation in which the robot is stopped when 
- * a cliff is detected with the ground sensors. The threshold used to detect a cliff is extracted
- * from a situation in which the robot is moving in a white surface; in others surfaces the thershold
- * has to be calibrated. The function need to be called before the speed controller and with a 
- * cadency of at least 122 Hz (motors pwm frequency).
- * \return none
+ * \brief Cliff avoidance simple implementation in which the robot can be stopped when 
+ * a cliff is detected with the ground sensors. The robot has to be calibrated in the surface 
+ * in which it is moving in order for the behavior to work. The function need to be called before 
+ * the speed controller and with a cadency of at least 122 Hz (motors pwm frequency).
+ * THE FUNCTION IS DEPRECATED: the behavior is directly inserted in the ADC interrupt service routine,
+ * thus this function is no more needed and should not be called anymore.
+ * \retval 0 cliff not detected
+ * \retval 1 cliff detected
  */
 char cliffDetected();
 

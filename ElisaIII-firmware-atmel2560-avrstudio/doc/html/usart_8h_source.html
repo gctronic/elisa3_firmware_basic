@@ -52,7 +52,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -98,16 +97,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="usart_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
-<a name="l00003"></a>00003 
-<a name="l00004"></a>00004 <span class="preprocessor">#ifndef USART_H</span>
-<a name="l00005"></a>00005 <span class="preprocessor"></span><span class="preprocessor">#define USART_H</span>
-<a name="l00006"></a>00006 <span class="preprocessor"></span>
-<a name="l00007"></a>00007 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a3be0a3ae0a030251bf3707978f1295aa">initUsart</a>();
-<a name="l00008"></a>00008 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a496efa5d85d2baac3c67092a33e2af35">usartTransmit</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> data);
-<a name="l00009"></a>00009 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a8a5f07a72467236ce8d7aeeedbf0657d">closeUsart</a>();
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#endif</span>
+<a name="l00002"></a>00002 <span class="preprocessor">#ifndef USART_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span><span class="preprocessor">#define USART_H</span>
+<a name="l00004"></a>00004 <span class="preprocessor"></span>
+<a name="l00005"></a>00005 
+<a name="l00020"></a>00020 <span class="preprocessor">#include &quot;<a class="code" href="variables_8h.html">variables.h</a>&quot;</span>
+<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;avr\io.h&gt;</span>
+<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;avr\interrupt.h&gt;</span>
+<a name="l00023"></a>00023 
+<a name="l00024"></a>00024 
+<a name="l00030"></a>00030 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a3be0a3ae0a030251bf3707978f1295aa" title="Configure the usart registers to work at 57600 baud (8-bit data, no parity, 1 stop bit)...">initUsart</a>();
+<a name="l00031"></a>00031 
+<a name="l00037"></a>00037 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a496efa5d85d2baac3c67092a33e2af35" title="Transfer one byte of data; it&#39;s blocking (wait until the buffer is empty).">usartTransmit</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> data);
+<a name="l00038"></a>00038 
+<a name="l00043"></a>00043 <span class="keywordtype">void</span> <a class="code" href="usart_8c.html#a8a5f07a72467236ce8d7aeeedbf0657d" title="Close the usart peripheral and disable all interrupts.">closeUsart</a>();
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -115,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -128,7 +133,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="usart_8h.html">usart.h</a>      </li>
 
-    <li class="footer">Generated on Wed Feb 15 2012 10:27:04 for Elisa3 by
+    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -270,3 +270,247 @@ void flushTxFifo() {
 
 }
 
+void handleRFCommands() {
+
+	unsigned int i=0;
+
+	if(mirf_data_ready()) {
+
+		// clear irq status
+		mirf_config_register(STATUS, 0x70);
+
+		mirf_get_data(rfData);
+		flush_rx_fifo();
+
+		//usartTransmit(rfData[0]);
+
+
+		//if((data[3]&0b00001000)==0b00001000) {	// check the 4th bit to sleep
+		// it was noticed that some robots sometimes "think" to receive something and the data read are wrong,
+		// this could lead to go to sleep involuntarily; in order to avoid this situation we define that the
+		// sleep message should be completely zero, but the flag bit
+		if(rfData[0]==0 && rfData[1]==0 && rfData[2]==0 && rfData[3]==0b00001000 && rfData[4]==0 && rfData[5]==0) {
+
+			sleep(60);
+
+		}
+
+		speedr = (rfData[4]&0x7F);	// cast the speed to be at most 127, thus the received speed are in the range 0..127 (usually 0..100),
+		speedl = (rfData[5]&0x7F);	// the received speed is then shifted by 3 (x8) in order to have a speed more or less
+									// in the same range of the measured speed that is 0..800.
+									// In order to have greater resolution at lower speed we shift the speed only by 2 (x4),
+									// this means that the range is more or less 0..400.
+
+
+		if((rfData[4]&0x80)==0x80) {			// motor right forward
+			pwm_right_desired = speedr<<2;				// scale the speed received (0..100) to be in the range 0..400
+		} else {								// backward
+			pwm_right_desired = -(speedr<<2);
+		}
+
+		if((rfData[5]&0x80)==0x80) {			// motor left forward
+			pwm_left_desired = speedl<<2;
+		} else {								// backward
+			pwm_left_desired = -(speedl<<2);
+		}
+
+		if (pwm_right_desired>(MAX_MOTORS_PWM/2)) pwm_right_desired=(MAX_MOTORS_PWM/2);
+		if (pwm_left_desired>(MAX_MOTORS_PWM/2)) pwm_left_desired=(MAX_MOTORS_PWM/2);
+		if (pwm_right_desired<-(MAX_MOTORS_PWM/2)) pwm_right_desired=-(MAX_MOTORS_PWM/2);
+		if (pwm_left_desired<-(MAX_MOTORS_PWM/2)) pwm_left_desired=-(MAX_MOTORS_PWM/2);
+
+
+		for(i=0; i<3; i++) {
+			dataLED[i]=rfData[i]&0xFF;
+		}
+		pwm_red = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[0]&0xFF)/100;
+		pwm_blue = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[1]&0xFF)/100;
+		pwm_green = MAX_LEDS_PWM-MAX_LEDS_PWM*(dataLED[2]&0xFF)/100;
+		updateRedLed(pwm_red);
+		updateGreenLed(pwm_green);
+		updateBlueLed(pwm_blue);
+
+
+		if((rfData[3]&0b00000001)==0b00000001) {	// turn on back IR
+			LED_IR1_LOW;
+		} else {
+			LED_IR1_HIGH;
+		}
+
+		if((rfData[3]&0b00000010)==0b00000010) {	// turn on front IRs
+			LED_IR2_LOW;
+		} else {
+			LED_IR2_HIGH;
+		}
+
+		if((rfData[3]&0b00000100)==0b00000100) {	// check the 3rd bit to enable/disable the IR receiving
+			irEnabled = 1;
+		} else {
+			irEnabled = 0;
+		}
+
+		if((rfData[3]&0b00010000)==0b00010000) {	// check the 5th bit to start calibration of all sensors
+			calibrateSensors();
+		}
+
+		if((rfData[3]&0b01000000)==0b01000000) {	// check the seventh bit to enable/disable obstacle avoidance
+			obstacleAvoidanceEnabled = 1;
+		} else {
+			obstacleAvoidanceEnabled = 0;
+		}
+
+		if((rfData[3]&0b10000000)==0b10000000) {	// check the eight bit to enable/disable obstacle avoidance
+			cliffAvoidanceEnabled = 1;
+		} else {
+			cliffAvoidanceEnabled = 0;
+		}
+
+		// handle small green leds
+		#ifdef HW_REV_3_1			
+
+			if(bit_is_set(rfData[6], 0) ) {
+				GRREEN_LED0_ON;
+			} else {
+				GRREEN_LED0_OFF;
+			}
+				
+			if(bit_is_set(rfData[6], 1) ) {
+				GRREEN_LED1_ON;
+			} else {
+				GRREEN_LED1_OFF;
+			}
+				
+			if(bit_is_set(rfData[6], 2) ) {
+				GRREEN_LED2_ON;
+			} else {
+				GRREEN_LED2_OFF;
+			}												
+
+			if(bit_is_set(rfData[6], 3) ) {
+				GRREEN_LED3_ON;
+			} else {
+				GRREEN_LED3_OFF;
+			}
+
+			if(bit_is_set(rfData[6], 4) ) {
+				GRREEN_LED4_ON;
+			} else {
+				GRREEN_LED4_OFF;
+			}
+
+			if(bit_is_set(rfData[6], 5) ) {
+				GRREEN_LED5_ON;
+			} else {
+				GRREEN_LED5_OFF;
+			}
+
+			if(bit_is_set(rfData[6], 6) ) {
+				GRREEN_LED6_ON;
+			} else {
+				GRREEN_LED6_OFF;
+			}
+
+			if(bit_is_set(rfData[6], 7) ) {
+				GRREEN_LED7_ON;
+			} else {
+				GRREEN_LED7_OFF;
+			}
+
+		#endif
+
+		// read and handle the remaining bytes of the payload (at the moment not used)
+
+		// write back the ack payload
+		ackPayload[0] = packetId&0xFF;
+
+		switch(packetId) {
+			case 3:
+				ackPayload[1] = proximityResult[0]&0xFF;
+				ackPayload[2] = proximityResult[0]>>8;
+				ackPayload[3] = proximityResult[1]&0xFF;
+				ackPayload[4] = proximityResult[1]>>8;
+				ackPayload[5] = proximityResult[2]&0xFF;
+				ackPayload[6] = proximityResult[2]>>8;
+				ackPayload[7] = proximityResult[3]&0xFF;
+				ackPayload[8] = proximityResult[3]>>8;
+				ackPayload[9] = proximityResult[5]&0xFF;
+				ackPayload[10] = proximityResult[5]>>8;
+				ackPayload[11] = proximityResult[6]&0xFF;
+				ackPayload[12] = proximityResult[6]>>8;
+				ackPayload[13] = proximityResult[7]&0xFF;
+				ackPayload[14] = proximityResult[7]>>8;
+				#ifdef HW_REV_3_1
+					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1) | (CHARGE_STAT << 2);
+				#else
+					ackPayload[15] = CHARGE_ON | (BUTTON0 << 1);
+				#endif
+				packetId = 4;
+				break;
+
+			case 4:
+				ackPayload[1] = proximityResult[4]&0xFF;
+				ackPayload[2] = proximityResult[4]>>8;
+				ackPayload[3] = proximityResult[8]&0xFF;
+				ackPayload[4] = proximityResult[8]>>8;
+				ackPayload[5] = proximityResult[9]&0xFF;
+				ackPayload[6] = proximityResult[9]>>8;
+				ackPayload[7] = proximityResult[10]&0xFF;
+				ackPayload[8] = proximityResult[10]>>8;
+				ackPayload[9] = proximityResult[11]&0xFF;
+				ackPayload[10] = proximityResult[11]>>8;
+				ackPayload[11] = accX&0xFF;	//((-accOffsetY)&0x03FF)
+				ackPayload[12] = accX>>8;
+				ackPayload[13] = accY&0xFF;
+				ackPayload[14] = accY>>8;
+				ackPayload[15] = irCommand;
+				packetId = 5;
+				break;
+
+			case 5:
+				ackPayload[1] = proximityValue[0]&0xFF;
+				ackPayload[2] = proximityValue[0]>>8;
+				ackPayload[3] = proximityValue[2]&0xFF;
+				ackPayload[4] = proximityValue[2]>>8;
+				ackPayload[5] = proximityValue[4]&0xFF;
+				ackPayload[6] = proximityValue[4]>>8;
+				ackPayload[7] = proximityValue[6]&0xFF;
+				ackPayload[8] = proximityValue[6]>>8;
+				ackPayload[9] = proximityValue[10]&0xFF;
+				ackPayload[10] = proximityValue[10]>>8;
+				ackPayload[11] = proximityValue[12]&0xFF;
+				ackPayload[12] = proximityValue[12]>>8;
+				ackPayload[13] = proximityValue[14]&0xFF;
+				ackPayload[14] = proximityValue[14]>>8;
+				ackPayload[15] = currentSelector;
+				packetId = 6;
+				break;
+
+			case 6:
+				ackPayload[1] = proximityValue[8]&0xFF;
+				ackPayload[2] = proximityValue[8]>>8;
+				ackPayload[3] = proximityValue[16]&0xFF;
+				ackPayload[4] = proximityValue[16]>>8;
+				ackPayload[5] = proximityValue[18]&0xFF;
+				ackPayload[6] = proximityValue[18]>>8;
+				ackPayload[7] = proximityValue[20]&0xFF;
+				ackPayload[8] = proximityValue[20]>>8;
+				ackPayload[9] = proximityValue[22]&0xFF;
+				ackPayload[10] = proximityValue[22]>>8;
+				ackPayload[11] = accZ&0xFF;
+				ackPayload[12] = accZ>>8;
+				ackPayload[13] = batteryLevel&0xFF;
+				ackPayload[14] = batteryLevel>>8;
+				ackPayload[15] = 0;
+				packetId = 3;
+				break;
+
+		}
+
+		writeAckPayload(ackPayload, 16);
+
+	}
+
+}
+
+
+

@@ -162,3 +162,184 @@ unsigned char ir_remote_get_data(void) {
 	return data_ir;
 }
 
+void handleIRRemoteCommands() {
+
+	if(irEnabled) {
+
+		irCommand = ir_remote_get_data();
+
+		if(command_received) {
+
+			command_received = 0;
+
+			switch(irCommand) {
+				// sometimes there are two cases for the same command because two different
+				// remote controls are used; one of this do not contain "numbers"
+				case 5:	// stop motors
+				case 51:
+					pwm_right_desired = 0;
+					pwm_left_desired = 0;
+					break;
+
+				case 2:	// both motors forward
+				case 31:
+					if(pwm_right_desired > pwm_left_desired) {
+						pwm_left_desired = pwm_right_desired;
+					} else {
+						pwm_right_desired = pwm_left_desired;
+					}
+					pwm_right_desired += STEP_MOTORS;
+					pwm_left_desired += STEP_MOTORS;
+	                if (pwm_right_desired > (MAX_MOTORS_PWM/2)) pwm_right_desired = (MAX_MOTORS_PWM/2);
+    	            if (pwm_left_desired > (MAX_MOTORS_PWM/2)) pwm_left_desired = (MAX_MOTORS_PWM/2);
+               		break;
+
+				case 8:	// both motors backward
+				case 30:
+					if(pwm_right_desired < pwm_left) {
+						pwm_left_desired  = pwm_right_desired;
+					} else {
+						pwm_right_desired = pwm_left_desired;
+					}
+					pwm_right_desired -= STEP_MOTORS;
+					pwm_left_desired -= STEP_MOTORS;
+	                if (pwm_right_desired < -(MAX_MOTORS_PWM/2)) pwm_right_desired = -(MAX_MOTORS_PWM/2);
+    	            if (pwm_left_desired < -(MAX_MOTORS_PWM/2)) pwm_left_desired = -(MAX_MOTORS_PWM/2);
+                  	break;
+
+				case 6:	// both motors right
+				case 47:
+					pwm_right_desired -= STEP_MOTORS;
+					pwm_left_desired += STEP_MOTORS;
+                	if (pwm_right_desired<-(MAX_MOTORS_PWM/2)) pwm_right_desired=-(MAX_MOTORS_PWM/2);
+                	if (pwm_left_desired>(MAX_MOTORS_PWM/2)) pwm_left_desired=(MAX_MOTORS_PWM/2);
+					break;
+
+				case 4:	// both motors left
+				case 46:
+					pwm_right_desired += STEP_MOTORS;
+					pwm_left_desired -= STEP_MOTORS;
+	                if (pwm_right_desired>(MAX_MOTORS_PWM/2)) pwm_right_desired=(MAX_MOTORS_PWM/2);
+	   	            if (pwm_left_desired<-(MAX_MOTORS_PWM/2)) pwm_left_desired=-(MAX_MOTORS_PWM/2);
+					break;
+
+				case 3:	// left motor forward
+					pwm_left_desired += STEP_MOTORS;
+	               	if (pwm_left_desired>(MAX_MOTORS_PWM/2)) pwm_left_desired=(MAX_MOTORS_PWM/2);
+					break;
+
+				case 1:	// right motor forward
+					pwm_right_desired += STEP_MOTORS;
+	                if (pwm_right_desired>(MAX_MOTORS_PWM/2)) pwm_right_desired=(MAX_MOTORS_PWM/2);
+					break;
+
+				case 9:	// left motor backward
+					pwm_left_desired -= STEP_MOTORS;
+	           	    if (pwm_left_desired<-(MAX_MOTORS_PWM/2)) pwm_left_desired=-(MAX_MOTORS_PWM/2);
+					break;
+
+				case 7:	// right motor backward
+					pwm_right_desired -= STEP_MOTORS;
+	               	if (pwm_right_desired<-(MAX_MOTORS_PWM/2)) pwm_right_desired=-(MAX_MOTORS_PWM/2);
+					break;
+
+	           	case 0:	// colors
+				case 50:
+					colorState = (colorState+1)%5;
+
+					if(colorState==0) {			// turn on blue and off all IRs
+						LED_IR1_HIGH;
+						LED_IR2_HIGH;
+						pwm_blue = 0;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = MAX_LEDS_PWM;
+					} else if(colorState==1) {	// turn on green
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = 0;
+						pwm_red = MAX_LEDS_PWM;
+					} else if(colorState==2) {	// turn on red and on all IRs
+						LED_IR1_LOW;
+						LED_IR2_LOW;
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = 0;
+					} else if(colorState==3) {	// turn on white
+						pwm_blue = 0;
+						pwm_green = 0;
+						pwm_red = 0;
+					} else if(colorState==4) {	// turn off all leds
+						pwm_blue = MAX_LEDS_PWM;
+						pwm_green = MAX_LEDS_PWM;
+						pwm_red = MAX_LEDS_PWM;
+					}
+
+					updateRedLed(pwm_red);
+					updateGreenLed(pwm_green);
+					updateBlueLed(pwm_blue);
+
+	               	break;
+
+				case 16:	// volume +
+					obstacleAvoidanceEnabled = 1;
+					break;
+
+				case 17:	// volume -
+					obstacleAvoidanceEnabled = 0;
+					break;
+
+				case 32:	// program +
+					cliffAvoidanceEnabled = 1;
+					break;
+
+				case 33:	// program -
+					cliffAvoidanceEnabled = 0;
+					break;
+
+				case 52:	// av/tv button
+					behaviorState = (behaviorState+1)%4;
+					switch(behaviorState) {
+						case 0:
+							obstacleAvoidanceEnabled = 0;
+							cliffAvoidanceEnabled = 0;
+							break;
+						case 1:
+							obstacleAvoidanceEnabled = 1;
+							cliffAvoidanceEnabled = 0;
+							break;
+						case 2:
+							obstacleAvoidanceEnabled = 0;
+							cliffAvoidanceEnabled = 1;
+							break;
+						case 3:
+							obstacleAvoidanceEnabled = 1;
+							cliffAvoidanceEnabled = 1;
+							break;
+
+					}
+					break;
+	    
+		       	default:
+	               	break;
+
+			}	// switch
+
+			// convert pwm deisred in absolute speed (0 to 100)
+			if(pwm_right_desired >= 0) {
+				speedr = pwm_right_desired >> 2;
+			} else {
+				speedr = (-pwm_right_desired) >> 2;
+			}
+			if(pwm_left_desired >= 0) {
+				speedl = pwm_left_desired >> 2;
+			} else {
+				speedl = (-pwm_left_desired) >> 2;
+			}
+
+		}	// ir command received
+
+	}	// ir enabled check
+
+
+}
+
+

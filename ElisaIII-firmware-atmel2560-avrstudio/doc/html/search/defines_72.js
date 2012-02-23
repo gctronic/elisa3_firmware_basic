@@ -3,7 +3,6 @@ var searchData=
   ['r_5fregister',['R_REGISTER',['../n_r_f24_l01_8h.html#afb0b251378d3b14c508e51fd2c3157d6',1,'nRF24L01.h']]],
   ['r_5frx_5fpayload',['R_RX_PAYLOAD',['../n_r_f24_l01_8h.html#a462d8c2314b823b724574c1ca73225a6',1,'nRF24L01.h']]],
   ['register_5fmask',['REGISTER_MASK',['../n_r_f24_l01_8h.html#a866fc0cef05f3c63ba55a555f63648a2',1,'nRF24L01.h']]],
-  ['remote',['REMOTE',['../e__remote__control_8h.html#a62ca51b78468397b2ef98ee55a5e6e2a',1,'e_remote_control.h']]],
   ['reuse_5ftx_5fpl',['REUSE_TX_PL',['../n_r_f24_l01_8h.html#a2f1d9bb858232e8b1494b60aa9a7d25a',1,'nRF24L01.h']]],
   ['rf_5fch',['RF_CH',['../n_r_f24_l01_8h.html#a5c4da84e4a01531aa9f5c3e617848d66',1,'nRF24L01.h']]],
   ['rf_5fdr',['RF_DR',['../n_r_f24_l01_8h.html#a1447bd35f38d6cc6d6841ca29c514675',1,'nRF24L01.h']]],

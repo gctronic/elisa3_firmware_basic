@@ -1,5 +1,5 @@
 var behaviors_8c =
 [
-    [ "cliffAvoidance", "behaviors_8c.html#aeed3324ede3df96ef70327385ba3bdcc", null ],
-    [ "obstacleAvoidance", "behaviors_8c.html#abe46c826df3be744548fb954242ae776", null ]
+    [ "cliffDetected", "behaviors_8c.html#a22f12e04faca8b86cad9383e5c5ea07b", null ],
+    [ "obstacleAvoidance", "behaviors_8c.html#ac1a169c077b398fbdc22bb9c2a55ecc1", null ]
 ];

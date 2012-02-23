@@ -27,7 +27,16 @@ ISR(ADC_vect) {
 
 	// ADIF is cleared by hardware when executing the corresponding interrupt handling vector
 
-//	LED_BLUE_ON;
+	// channel 0..6:  prox0..6
+	// channel 7:	  prox7/battery
+	// channel 8..11: cliff0..3
+	// channel 12:	  active phase when going backward: motor right current; passive phase when going forward: motor right velocity 
+	// channel 13.	  active phase when going forward: motor right current; passive phase when going backward: motor right velocity
+	// channel 14:    active phase when going backward: motor left current; passive phase when going forward: motor left velocity 
+	// channel 15:    active phase when going forward: motor left current; passive phase when going backward: motor left velocity
+
+
+	//LED_BLUE_ON;
 
 	delayCounter++;				// this variable is used as base time for timed processes/functions (e,g, delay); 
 								// resolution of 104 us based on adc interrupts
@@ -93,6 +102,9 @@ ISR(ADC_vect) {
 
 				}
 
+				// the cliff avoidance behavior is inserted within this interrupt service routine in order to react
+				// as fast as possible; the maximum speed usable with cliff avoidance is 30 in all kind of surface 
+				// (apart from black ones) after calibration.
 				if(cliffAvoidanceEnabled) {
 					if(proximityResult[8]<CLIFF_THR || proximityResult[9]<CLIFF_THR || proximityResult[10]<CLIFF_THR || proximityResult[11]<CLIFF_THR) {
 						cliffDetectedFlag = 1;
@@ -299,7 +311,7 @@ ISR(ADC_vect) {
 
 	}
 
-//	LED_BLUE_OFF;
+	//LED_BLUE_OFF;
 
 }
 

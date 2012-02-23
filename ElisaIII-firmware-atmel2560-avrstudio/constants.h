@@ -11,6 +11,14 @@
 #define CALIBRATION_CYCLES 16				// number of samples used for calibration
 #endif
 
+#ifndef PAUSES								// pauses based on adc base time counter "delayCounter"
+#define PAUSE_1_MSEC 9						// they are not perfectly precise
+#define PAUSE_10_MSEC 96
+#define PAUSE_100_MSEC 961
+#define PAUSE_1_SEC 9615
+#define PAUSE_2_SEC 19230
+#endif
+
 /***********/
 /*** NRF ***/
 /***********/
@@ -294,8 +302,7 @@
 /***************/
 /*** SENSORS ***/
 /***************/
-// array indices for the sensors
-#ifndef PROX0_AMBIENT
+#ifndef PROX0_AMBIENT						// array indices for the sensors for easier code comprehension
 #define PROX0_AMBIENT 0
 #define PROX0_REFLECTED 1
 #define PROX1_AMBIENT 2
@@ -328,38 +335,20 @@
 #ifndef CLIFF_THR
 #define CLIFF_THR 420						// ground sensors threshold for detecting a cliff independently of the surface
 #endif										// since the ground sensors are calibrated to 512
-#ifndef LEFT_ROT
-#define LEFT_ROT  1
-#endif
-#ifndef RIGHT_ROT
-#define RIGHT_ROT 2
-#endif
-#ifndef GROUND_RIGHT
-#define GROUND_RIGHT 0						// for easier code comprehension
-#endif
-#ifndef GROUND_CENTER_RIGHT
-#define GROUND_CENTER_RIGHT 1				// for easier code comprehension
-#endif
-#ifndef GROUND_CENTER_LEFT
-#define GROUND_CENTER_LEFT 2				// for easier code comprehension
-#endif
-#ifndef GROUND_LEFT
-#define GROUND_LEFT 3						// for easier code comprehension
-#endif
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/
 /**************************/
-#ifndef PHASE1
-#define PHASE1 60
-#endif
+#ifndef PHASE1								// range values used for linearization of the proximity; this values define 
+#define PHASE1 60							// the passage from one to the next linear function used to approximate and 
+#endif										// linearize the proximity values
 #ifndef PHASE2
 #define PHASE2 120
 #endif
 #ifndef PHASE3
 #define PHASE3 180
 #endif
-#ifndef NOISE_THR
+#ifndef NOISE_THR							// define the value under which the proximity is considered to be noise
 #define NOISE_THR 20
 #endif
 

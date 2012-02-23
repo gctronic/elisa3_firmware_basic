@@ -29,6 +29,10 @@
 
 #include <avr/io.h>
 #include "variables.h"
+#include "leds.h"
+#include "sensors.h"
+#include "utility.h"
+
 
 // Mirf settings
 #define mirf_CH         40
@@ -55,8 +59,10 @@ uint8_t mirf_data_ready();
 void mirf_get_data(uint8_t * data);
 uint8_t rx_fifo_is_empty();
 void flush_rx_fifo();
+
 void writeAckPayload(unsigned char *data, unsigned char size);
 void flushTxFifo();
+void handleRFCommands();
 
 
 // Public extended functions

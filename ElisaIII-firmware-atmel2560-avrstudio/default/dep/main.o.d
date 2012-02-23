@@ -21,8 +21,8 @@ main.o: ../main.c \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stdarg.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h \
- ../mirf.h ../usart.h ../accelerometer.h ../twimaster.h \
- ../ir_remote_control.h ../speed_control.h ../nRF24L01.h ../behaviors.h
+ ../mirf.h ../sensors.h ../twimaster.h ../usart.h ../ir_remote_control.h \
+ ../speed_control.h ../nRF24L01.h ../behaviors.h
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr\io.h:
 
@@ -82,11 +82,11 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 
 ../mirf.h:
 
-../usart.h:
-
-../accelerometer.h:
+../sensors.h:
 
 ../twimaster.h:
+
+../usart.h:
 
 ../ir_remote_control.h:
 

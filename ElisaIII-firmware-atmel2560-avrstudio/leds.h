@@ -1,6 +1,7 @@
 #ifndef LEDS_H
 #define LEDS_H
 
+
 /**
  * \file leds.h
  * \brief Leds module
@@ -20,7 +21,7 @@
 #include "variables.h"
 
 /**
- * \brief Configure the adc registers and start the sampling.
+ * \brief Configure the timer1/pwm registers to work at about 30 KHz.
  * \return none
  */
 void initRGBleds();
@@ -32,19 +33,25 @@ void initRGBleds();
 void toggleBlueLed();
 
 /**
- * \brief Update the value of the red led accordingly to the received commands.
+ * \brief Update the value of the red led accordingly to the received argument. The function is used 
+ * every time a radio/tv remote command is received.
+ * \param value led luminosity (duty cycle); from 0 (max power on) to 255 (off)
  * \return none
  */
 void updateRedLed(unsigned char value);
 
 /**
- * \brief Update the value of the green led accordingly to the received commands.
+ * \brief Update the value of the green led accordingly to the received argument. The function is used 
+ * every time a radio/tv remote command is received.
+ * \param value led luminosity (duty cycle); from 0 (max power on) to 255 (off)
  * \return none
  */
 void updateGreenLed(unsigned char value);
 
 /**
- * \brief Update the value of the blue led accordingly to the received commands.
+ * \brief Update the value of the blue led accordingly to the received argument. The function is used 
+ * every time a radio/tv remote command is received.
+ * \param value led luminosity (duty cycle); from 0 (max power on) to 255 (off)
  * \return none
  */
 void updateBlueLed(unsigned char value);
