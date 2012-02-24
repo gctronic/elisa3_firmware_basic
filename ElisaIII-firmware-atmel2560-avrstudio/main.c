@@ -19,23 +19,8 @@ int main(void) {
 
 	calibrateSensors();
 
-	srand(TCNT3);
+	srand(TCNT3);							// initialize random seed (used in obstacle avoidance)
 
-/*
-	// speaker timer5/pwm
-	// Timer3 clock input = Fosc = 8 MHz
-	// Period freq = Fosc/OCR5A in waveform generation mode 15
-	// This let us change the pwm frequency based on the OCR5A value; the OC5A pin 
-	// can be setup to toggle at every output compare matches.
-	// For instance setting OCR5A = 1000 we get a frequency of 4 KHz
-	// 1 / (8000000/1000) = 125 us for active and passive phase 
-	// (duty fix to 50%)
-	// enable OCC; toggle OC5A
-	TCCR5A |= (1 << COM5A0) | (1 << WGM51) | (1 << WGM50); 	
-	// mode 15 => fast-pwm and resolution based on OCR3A; no prescaler
-	TCCR5B |= (1 << WGM53) | (1 << WGM52) | (1 << CS50);										
-	OCR5A = 1000;	// 4 KHz
-*/
 
 	while(1) {
 
@@ -110,13 +95,6 @@ int main(void) {
 
 			//sleep(20);
 
-			pwm_red = rand() % 255;
-			pwm_green = rand() % 255;
-			pwm_blue = rand() % 255;
-			updateRedLed(pwm_red);
-			updateGreenLed(pwm_green);
-			updateBlueLed(pwm_blue);
-
 		}
 
 
@@ -124,10 +102,6 @@ int main(void) {
 
 
 		handleRFCommands();
-
-		pwm_left_desired = 100;
-		pwm_right_desired = 100;
-		obstacleAvoidanceEnabled = 1;
 
 
 		if(currentSelector == 0) {	// no control
