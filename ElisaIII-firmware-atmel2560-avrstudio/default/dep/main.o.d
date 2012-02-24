@@ -14,13 +14,13 @@ main.o: ../main.c \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr\interrupt.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/io.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/math.h \
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h \
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h \
  ../variables.h ../constants.h ../utility.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr\sleep.h \
  ../ports_io.h ../adc.h ../motors.h ../leds.h ../spi.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdio.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stdarg.h \
- c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h \
- c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h \
  ../mirf.h ../sensors.h ../twimaster.h ../usart.h ../ir_remote_control.h \
  ../speed_control.h ../nRF24L01.h ../behaviors.h
 
@@ -54,6 +54,10 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/math.h:
 
+c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h:
+
+c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h:
+
 ../variables.h:
 
 ../constants.h:
@@ -75,10 +79,6 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdio.h:
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stdarg.h:
-
-c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h:
-
-c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h:
 
 ../mirf.h:
 

@@ -10,7 +10,10 @@ behaviors.o: ../behaviors.c ../behaviors.h ../variables.h ../constants.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/common.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/version.h \
  c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/fuse.h \
- c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h \
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/math.h \
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h \
+ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h
 
 ../behaviors.h:
 
@@ -41,3 +44,9 @@ c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/fuse.h:
 
 c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/avr/lock.h:
+
+c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/math.h:
+
+c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/../../../../avr/include/stdlib.h:
+
+c:\program\ files\ (x86)\atmel\avr\ tools\avr\ toolchain\bin\../lib/gcc/avr/4.5.1/include/stddef.h:

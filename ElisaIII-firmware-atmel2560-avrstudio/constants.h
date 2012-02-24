@@ -23,7 +23,7 @@
 /*** NRF ***/
 /***********/
 #ifndef RF_ADDR
-#define RF_ADDR 3205						// this number define the robot ID, used also as the robot
+#define RF_ADDR 3200						// this number define the robot ID, used also as the robot
 #endif										// RF address; from this number is then obtained the hardware revision
 
 #ifndef PAYLOAD_SIZE
@@ -349,7 +349,7 @@
 #define PHASE3 180
 #endif
 #ifndef NOISE_THR							// define the value under which the proximity is considered to be noise
-#define NOISE_THR 20
+#define NOISE_THR 5
 #endif
 
 

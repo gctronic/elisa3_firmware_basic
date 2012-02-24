@@ -18,6 +18,8 @@ on the 4 ground sensors values.
 
 
 #include "variables.h"
+#include <math.h>
+#include <stdlib.h>
 
 
 /**
