@@ -20,6 +20,7 @@
 #include <avr\io.h>
 #include <avr\interrupt.h>
 #include <avr\sleep.h>
+#include <avr\eeprom.h>
 #include "ports_io.h"
 #include "adc.h"
 #include "motors.h"

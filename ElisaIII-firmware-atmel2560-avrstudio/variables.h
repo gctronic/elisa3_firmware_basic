@@ -69,6 +69,7 @@ extern signed int speedr;
 extern unsigned char rfData[PAYLOAD_SIZE];
 extern unsigned char ackPayload[16];
 extern unsigned char packetId;
+extern unsigned int rfAddress;
 
 /****************/
 /*** RGB LEDS ***/
@@ -122,6 +123,7 @@ extern unsigned int delayCounter;
 extern unsigned char currentSelector;
 extern signed int calibrationCycle;
 extern unsigned char startCalibration;
+extern unsigned char hardwareRevision;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/

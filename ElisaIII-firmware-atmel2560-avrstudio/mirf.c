@@ -65,8 +65,8 @@ void mirf_config()
 	mirf_config_register(SETUP_AW, 0x01);
 
 	// tx address
-	temp[0] = (RF_ADDR>>8)&0xFF;
-	temp[1] = RF_ADDR & 0xFF;
+	temp[0] = (rfAddress>>8)&0xFF;
+	temp[1] = rfAddress & 0xFF;
 	temp[2] = 0x00;
 	mirf_write_register(TX_ADDR, temp, 3);	
 

@@ -9,6 +9,21 @@ unsigned char getSelector() {
 void initPeripherals(void) {
 
 	cli();			// disable global interrupts (by default it should already be disabled)
+	
+	rfAddress = eeprom_read_word((uint16_t*)4094);
+
+	// some code parts change based on hardware revision
+	if(rfAddress >= 3201 && rfAddress <= 3203) {
+		hardwareRevision = HW_REV_3_0;
+	}
+
+	if(rfAddress == 3200) {
+		hardwareRevision = HW_REV_3_0_1;
+	}
+
+	if(rfAddress > 3203) {
+		hardwareRevision = HW_REV_3_1;
+	}
 
 	initPortsIO();
 	initAdc();

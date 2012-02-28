@@ -22,10 +22,6 @@
 /***********/
 /*** NRF ***/
 /***********/
-#ifndef RF_ADDR
-#define RF_ADDR 3200						// this number define the robot ID, used also as the robot
-#endif										// RF address; from this number is then obtained the hardware revision
-
 #ifndef PAYLOAD_SIZE
 #define PAYLOAD_SIZE 13						// payload of the packet received from the computer
 #endif
@@ -139,23 +135,10 @@
 /*********************/
 /*** HARDWARE DEFS ***/
 /*********************/
-#if RF_ADDR >= 3201 && RF_ADDR <= 3203		// some code parts change based on hardware revision
-	#ifndef HW_REV_3_0
-		#define HW_REV_3_0
-		//#warning "Hardware revision 3.0"
-	#endif
-#endif
-#if RF_ADDR == 3200
-	#ifndef HW_REV_3_0_1
-		#define HW_REV_3_0_1
-		//#warning "Hardware revision 3.0.1"
-	#endif
-#endif
-#if RF_ADDR > 3203
-	#ifndef HW_REV_3_1
-		#define HW_REV_3_1
-		//#warning "Hardware revision 3.1"
-	#endif
+#ifndef HW_REV
+	#define HW_REV_3_0 0
+	#define HW_REV_3_0_1 1
+	#define HW_REV_3_1 2
 #endif
 
 #ifndef REMOTE

@@ -83,6 +83,8 @@ signed int speedl=0, speedr=0;						// current speed for left and right motors r
 unsigned char rfData[PAYLOAD_SIZE];					// data received through the radio
 unsigned char ackPayload[16];						// data to send back to the base-station
 unsigned char packetId = 3;
+unsigned int rfAddress = 0;							// this number define the robot ID, used also as the robot
+													// RF address; from this number is then obtained the hardware revision
 
 /****************/
 /*** RGB LEDS ***/
@@ -133,6 +135,7 @@ unsigned int delayCounter = 0;						// this is the base time, each tick correspo
 unsigned char currentSelector = 0;					// current selector position
 signed int calibrationCycle = 0;					// indicate how many samples are currently taken for calibration
 unsigned char startCalibration;						// flag indicating when a calibration is in progress
+unsigned char hardwareRevision = HW_REV_3_0;		// hardware revision based on the address saved in eeprom
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/

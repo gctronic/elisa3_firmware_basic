@@ -260,17 +260,17 @@ ISR(ADC_vect) {
 										// PORTA for proximity sensors, PORTJ for ground sensors
 					PORTA = (1 << (currentProx>>1));	// pulse on
 				} else {
-					#ifdef HW_REV_3_0
-					PORTJ = (1 << ((currentProx-16)>>1));	// pulse on
-					#endif
+					if(hardwareRevision == HW_REV_3_0) {
+						PORTJ = (1 << ((currentProx-16)>>1));	// pulse on
+					}
 
-					#ifdef HW_REV_3_0_1
-					PORTJ &= ~(1 << ((currentProx-16)>>1));	// pulse on (inverse logic)
-					#endif
+					if(hardwareRevision == HW_REV_3_0_1) {
+						PORTJ &= ~(1 << ((currentProx-16)>>1));	// pulse on (inverse logic)
+					}
 
-					#ifdef HW_REV_3_1
-					PORTJ &= ~(1 << ((currentProx-16)>>1));	// pulse on (inverse logic)
-					#endif
+					if(hardwareRevision == HW_REV_3_1) {
+						PORTJ &= ~(1 << ((currentProx-16)>>1));	// pulse on (inverse logic)
+					}
 
 				}
 			}
@@ -291,23 +291,23 @@ ISR(ADC_vect) {
 	// turn off the proximity IR pulses in order to have 200 us of pulse
 	if(adcSamplingState == 2) {
 
-		#ifdef HW_REV_3_0
-		PORTJ &= 0xF0;
-		PORTA = 0x00;
-		//#warning "turn off pulse with 0 (hw rev 3.0)"
-		#endif
+		if(hardwareRevision == HW_REV_3_0) {
+			PORTJ &= 0xF0;
+			PORTA = 0x00;
+			//#warning "turn off pulse with 0 (hw rev 3.0)"
+		}
 
-		#ifdef HW_REV_3_0_1
-		PORTJ = 0xFF;
-		PORTA = 0x00;
-		//#warning "turn off pulse with 0 (hw rev 3.0.1)"
-		#endif
+		if(hardwareRevision == HW_REV_3_0_1) {
+			PORTJ = 0xFF;
+			PORTA = 0x00;
+			//#warning "turn off pulse with 0 (hw rev 3.0.1)"
+		}
 
-		#ifdef HW_REV_3_1
-		PORTJ = 0xFF;
-		PORTA = 0x00;
-		//#warning "turn off pulse with 1 (hw rev 3.1)"
-		#endif
+		if(hardwareRevision == HW_REV_3_1) {
+			PORTJ = 0xFF;
+			PORTA = 0x00;
+			//#warning "turn off pulse with 1 (hw rev 3.1)"
+		}
 
 	}
 

@@ -24,44 +24,44 @@ void initPortsIO(void) {
 	DDRF = 0x00;			// adc channel pins as input		
 
 	DDRG = 0xFF;			// unused pins as output
-	#ifdef HW_REV_3_0
+	if(hardwareRevision == HW_REV_3_0) {
 		PORTG = 0x00;		// default for unused pins is 0
-	#endif
-	#ifdef HW_REV_3_0_1
+	}
+	if(hardwareRevision == HW_REV_3_0_1) {
 		PORTG = 0x00;		// default for unused pins is 0
-	#endif
-	#ifdef HW_REV_3_1
+	}
+	if(hardwareRevision == HW_REV_3_1) {
 		PORTG = 0x08;		// default for unused pins is 0, led3 to 1
-	#endif	
+	}	
 
 	DDRH = 0xFF;			// all pins to output; when usart is activated it changes the pins direction accordingly
 	PORTH = 0x00;			// default for unused pins is 0; pwm for motors set to 0 when stopped
 
 	DDRJ = 0x0F;			// cliff pulses as output; charge-on, button0, remote, charge status as input
-	#ifdef HW_REV_3_0
+	if(hardwareRevision == HW_REV_3_0) {
 		PORTJ &= 0x00;		// cliff pulse turned off
 		//#warning "Normal logic for ground sensors (hw rev 3.0)"
-	#endif
-	#ifdef HW_REV_3_0_1
+	}
+	if(hardwareRevision == HW_REV_3_0_1) {
 		PORTJ = 0x0F;
 		//#warning "Inverse logic for ground sensors (hw rev 3.0.1)"
-	#endif
-	#ifdef HW_REV_3_1
+	}
+	if(hardwareRevision == HW_REV_3_1) {
 		PORTJ = 0x0F;
 		//#warning "Inverse logic for ground sensors (hw rev 3.1)"
-	#endif	
+	}	
 
 	DDRK = 0x00;			// adc channel pins as input
 
 	DDRL = 0xFF;			// all pins to output
-	#ifdef HW_REV_3_0
+	if(hardwareRevision == HW_REV_3_0) {
 		PORTL = 0x00;		// pwm (unused) and unused pins to 0
-	#endif
-	#ifdef HW_REV_3_0_1	
+	}
+	if(hardwareRevision == HW_REV_3_0_1) {	
 		PORTL = 0x00;		// pwm (unused) and unused pins to 0
-	#endif
-	#ifdef HW_REV_3_1
+	}
+	if(hardwareRevision == HW_REV_3_1) {
 		PORTL = 0xF7;		// pwm (unused) to 0, leds turned off on high state
-	#endif
+	}
 		
 }
