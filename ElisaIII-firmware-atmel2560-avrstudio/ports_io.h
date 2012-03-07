@@ -19,6 +19,9 @@
 #include "variables.h"
 #include <avr\io.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Set pins direction and their initial state based on hardware revision. 
@@ -26,5 +29,9 @@
  * \return none
  */
 void initPortsIO();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

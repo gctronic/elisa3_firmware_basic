@@ -3312,25 +3312,27 @@ void handleIRRemoteCommands() {
     13ae:	80 91 11 02 	lds	r24, 0x0211
     13b2:	88 23       	and	r24, r24
     13b4:	b1 f1       	breq	.+108    	; 0x1422 <handleIRRemoteCommands+0x74>
+
+		if(command_received) {
+    13b6:	80 91 08 04 	lds	r24, 0x0408
+    13ba:	88 23       	and	r24, r24
+    13bc:	91 f1       	breq	.+100    	; 0x1422 <handleIRRemoteCommands+0x74>
 unsigned char ir_remote_get_address(void) {
 	return address;
 }
 
 unsigned char ir_remote_get_data(void) {
 	return data_ir;
-    13b6:	e0 91 25 03 	lds	r30, 0x0325
-
-void handleIRRemoteCommands() {
+    13be:	e0 91 25 03 	lds	r30, 0x0325
 
 	if(irEnabled) {
 
-		irCommand = ir_remote_get_data();
-    13ba:	e0 93 07 04 	sts	0x0407, r30
-
 		if(command_received) {
-    13be:	80 91 08 04 	lds	r24, 0x0408
-    13c2:	88 23       	and	r24, r24
-    13c4:	71 f1       	breq	.+92     	; 0x1422 <handleIRRemoteCommands+0x74>
+
+            irCommand = ir_remote_get_data();
+    13c2:	e0 93 07 04 	sts	0x0407, r30
+
+		    //usartTransmit(irCommand);
 
 			command_received = 0;
     13c6:	10 92 08 04 	sts	0x0408, r1
@@ -3392,7 +3394,7 @@ void handleIRRemoteCommands() {
     141e:	80 93 ff 03 	sts	0x03FF, r24
     1422:	08 95       	ret
 
-		if(command_received) {
+		    //usartTransmit(irCommand);
 
 			command_received = 0;
 

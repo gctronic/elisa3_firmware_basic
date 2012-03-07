@@ -26,6 +26,10 @@
 #include "leds.h"
 #include "twimaster.h"
 
+#ifdef __cplusplus
+extern "C" {
+    #include <math.h>
+#endif
 
 /**
  * \brief Calibrate all the sensors (proximity, ground and accelerometer). Pay attention for the robot
@@ -79,6 +83,10 @@ void readAccelXYZ();
  * \return none
  */
 void computeAngle();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
 

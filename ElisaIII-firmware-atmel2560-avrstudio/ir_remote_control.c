@@ -166,9 +166,11 @@ void handleIRRemoteCommands() {
 
 	if(irEnabled) {
 
-		irCommand = ir_remote_get_data();
-
 		if(command_received) {
+
+            irCommand = ir_remote_get_data();
+
+		    //usartTransmit(irCommand);
 
 			command_received = 0;
 

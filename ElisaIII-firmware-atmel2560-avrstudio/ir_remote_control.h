@@ -24,6 +24,10 @@ it uses directly the Timer2 for timing the reading of the signal.
 #include "leds.h"
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief Initialize the IR receiver port pin in order to generate an interrupt (external interrupt pin PCINT15).
  * \return none
@@ -55,5 +59,8 @@ unsigned char ir_remote_get_data(void);
  */
 void handleIRRemoteCommands();
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

@@ -26,11 +26,19 @@
 #include <avr\io.h>
 #include <avr\interrupt.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief Configure the timer3 and timer4 registers to work at about 122 Hz.
  * \return none
  */
 void initMotors();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
 

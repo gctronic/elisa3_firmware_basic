@@ -24,6 +24,9 @@
 #include <avr\io.h>
 #include <avr\interrupt.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Configure the adc registers and start the sampling.
@@ -31,5 +34,8 @@
  */
 void initAdc();
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

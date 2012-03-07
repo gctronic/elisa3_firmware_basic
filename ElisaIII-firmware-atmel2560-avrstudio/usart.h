@@ -21,6 +21,9 @@
 #include <avr\io.h>
 #include <avr\interrupt.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Configure the usart registers to work at 57600 baud (8-bit data, no parity, 1 stop bit).
@@ -41,5 +44,9 @@ void usartTransmit(unsigned char data);
  * \return none
  */
 void closeUsart();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

@@ -20,6 +20,10 @@
 
 #include "variables.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * \brief Configure the timer1/pwm registers to work at about 30 KHz.
  * \return none
@@ -55,6 +59,10 @@ void updateGreenLed(unsigned char value);
  * \return none
  */
 void updateBlueLed(unsigned char value);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
 

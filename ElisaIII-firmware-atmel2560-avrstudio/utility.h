@@ -31,6 +31,9 @@
 #include "sensors.h"
 #include "ir_remote_control.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Return the current selector postion.
@@ -50,5 +53,9 @@ void initPeripherals();
  * \return none
  */
 void sleep(unsigned char seconds);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

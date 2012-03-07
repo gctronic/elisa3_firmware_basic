@@ -25,6 +25,9 @@
 
 #include "variables.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Initialize the speed controller parameters. Actually not used.
@@ -59,5 +62,9 @@ void start_horizontal_speed_control_left(signed int *pwm_left);
  * \return none
  */
 void start_horizontal_speed_control_right(signed int *pwm_right);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif

@@ -49,6 +49,10 @@
 #define mirf_CE_hi      PORTB |=  (1<<CE);
 #define mirf_CE_lo      PORTB &= ~(1<<CE);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Public standard functions
 void mirf_init();
 void mirf_config();
@@ -69,5 +73,9 @@ void handleRFCommands();
 void mirf_config_register(uint8_t reg, uint8_t value);
 void mirf_read_register(uint8_t reg, uint8_t * value, uint8_t len);
 void mirf_write_register(uint8_t reg, uint8_t * value, uint8_t len);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* _MIRF_H_ */
