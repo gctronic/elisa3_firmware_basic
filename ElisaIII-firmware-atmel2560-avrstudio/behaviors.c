@@ -90,4 +90,23 @@ char cliffDetected() {
 
 }
 
+void enableObstacleAvoidance() {
+	obstacleAvoidanceEnabled=1;
+}
+
+void disableObstacleAvoidance() {
+	obstacleAvoidanceEnabled=0;
+}
+
+void enableCliffAvoidance() {
+	cliffAvoidanceEnabled=1;
+}
+
+void disableCliffAvoidance() {
+	cliffAvoidanceEnabled=0;
+}
+
+
+
+
 

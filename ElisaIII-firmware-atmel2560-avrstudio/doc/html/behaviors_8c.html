@@ -108,6 +108,14 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Obstacle avoidance behavior based on a simplified force field method. It works for both forward and backward motion. The function need to be called before the speed controller and with a cadency of at least 122 Hz (motors pwm frequency).  <a href="#ac1a169c077b398fbdc22bb9c2a55ecc1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#a22f12e04faca8b86cad9383e5c5ea07b">cliffDetected</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cliff avoidance simple implementation in which the robot can be stopped when a cliff is detected with the ground sensors. The robot has to be calibrated in the surface in which it is moving in order for the behavior to work. The function need to be called before the speed controller and with a cadency of at least 122 Hz (motors pwm frequency). THE FUNCTION IS DEPRECATED: the behavior is directly inserted in the ADC interrupt service routine, thus this function is no more needed and should not be called anymore.  <a href="#a22f12e04faca8b86cad9383e5c5ea07b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#a2afba55c6bd92ab0db4cdac3c142f88b">enableObstacleAvoidance</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable obstacle avoidance behavior.  <a href="#a2afba55c6bd92ab0db4cdac3c142f88b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#a7988093c6402fbf4341ed941d60eaf32">disableObstacleAvoidance</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable obstacle avoidance behavior.  <a href="#a7988093c6402fbf4341ed941d60eaf32"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#a404c13426bfcfafade00b1be6a855397">enableCliffAvoidance</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable cliff avoidance behavior.  <a href="#a404c13426bfcfafade00b1be6a855397"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#af217436726ef03752c9438e0ea85ed79">disableCliffAvoidance</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable cliff avoidance behavior.  <a href="#af217436726ef03752c9438e0ea85ed79"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a22f12e04faca8b86cad9383e5c5ea07b"></a><!-- doxytag: member="behaviors.c::cliffDetected" ref="a22f12e04faca8b86cad9383e5c5ea07b" args="()" -->
@@ -132,6 +140,82 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="af217436726ef03752c9438e0ea85ed79"></a><!-- doxytag: member="behaviors.c::disableCliffAvoidance" ref="af217436726ef03752c9438e0ea85ed79" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#af217436726ef03752c9438e0ea85ed79">disableCliffAvoidance</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Disable cliff avoidance behavior. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a7988093c6402fbf4341ed941d60eaf32"></a><!-- doxytag: member="behaviors.c::disableObstacleAvoidance" ref="a7988093c6402fbf4341ed941d60eaf32" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#a7988093c6402fbf4341ed941d60eaf32">disableObstacleAvoidance</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Disable obstacle avoidance behavior. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a404c13426bfcfafade00b1be6a855397"></a><!-- doxytag: member="behaviors.c::enableCliffAvoidance" ref="a404c13426bfcfafade00b1be6a855397" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#a404c13426bfcfafade00b1be6a855397">enableCliffAvoidance</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Enable cliff avoidance behavior. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a2afba55c6bd92ab0db4cdac3c142f88b"></a><!-- doxytag: member="behaviors.c::enableObstacleAvoidance" ref="a2afba55c6bd92ab0db4cdac3c142f88b" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#a2afba55c6bd92ab0db4cdac3c142f88b">enableObstacleAvoidance</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Enable obstacle avoidance behavior. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -204,7 +288,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="behaviors_8c.html">behaviors.c</a>      </li>
 
-    <li class="footer">Generated on Fri Mar 9 2012 06:47:06 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 15:16:42 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

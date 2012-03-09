@@ -52,6 +52,31 @@ void obstacleAvoidance(signed int *pwmLeft, signed int *pwmRight);
  */
 char cliffDetected();
 
+/**
+ * \brief Enable obstacle avoidance behavior
+ * \return none
+ */
+void enableObstacleAvoidance();
+
+/**
+ * \brief Disable obstacle avoidance behavior
+ * \return none
+ */
+void disableObstacleAvoidance();
+
+/**
+ * \brief Enable cliff avoidance behavior
+ * \return none
+ */
+void enableCliffAvoidance();
+
+/**
+ * \brief Disable cliff avoidance behavior
+ * \return none
+ */
+void disableCliffAvoidance();
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
