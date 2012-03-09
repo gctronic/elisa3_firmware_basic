@@ -109,6 +109,10 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a7cfcbe42bd266750aeb6e5d71e5ea479">ISR</a> (TIMER2_OVF_vect)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9">sleep</a> (unsigned char seconds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Let the roboot go in extended standby mode.  <a href="#a56f15343edf0a13c026f52e527d3d3c9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a731c06d8c84d4a9f72f3b1238cfa9be0">getTime100MicroSec</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">A global variable "clockTick" is incremented at each adc interrupt; this variable is used as base time (104 us resolution). This function is useful for instance to create non-blocking delays, calling the function at start of delay and then re-calling it to check when the desired delay is passed.  <a href="#a731c06d8c84d4a9f72f3b1238cfa9be0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8c.html#a647ec4ab0d27b1b384f76298bb1205f5">readBatteryLevel</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Simply set the flag that indicates when the battery has to be read.  <a href="#a647ec4ab0d27b1b384f76298bb1205f5"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a0ffa7c8d7f4215d9e90121483d930880"></a><!-- doxytag: member="utility.c::getSelector" ref="a0ffa7c8d7f4215d9e90121483d930880" args="()" -->
@@ -127,6 +131,25 @@ Functions</h2></td></tr>
 
 <p>Return the current selector postion. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>byte representing the selector postion (0..15). </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a731c06d8c84d4a9f72f3b1238cfa9be0"></a><!-- doxytag: member="utility.c::getTime100MicroSec" ref="a731c06d8c84d4a9f72f3b1238cfa9be0" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long int <a class="el" href="utility_8h.html#a731c06d8c84d4a9f72f3b1238cfa9be0">getTime100MicroSec</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>A global variable "clockTick" is incremented at each adc interrupt; this variable is used as base time (104 us resolution). This function is useful for instance to create non-blocking delays, calling the function at start of delay and then re-calling it to check when the desired delay is passed. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the current clock ticks since the start </dd></dl>
 
 </div>
 </div>
@@ -163,6 +186,25 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a647ec4ab0d27b1b384f76298bb1205f5"></a><!-- doxytag: member="utility.c::readBatteryLevel" ref="a647ec4ab0d27b1b384f76298bb1205f5" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="utility_8h.html#a647ec4ab0d27b1b384f76298bb1205f5">readBatteryLevel</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Simply set the flag that indicates when the battery has to be read. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -212,7 +254,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="utility_8c.html">utility.c</a>      </li>
 
-    <li class="footer">Generated on Thu Feb 23 2012 08:51:54 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 06:47:12 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -1,6 +1,11 @@
 
 #include "behaviors.h"
 
+void initBehaviors() {
+
+	srand(TCNT3);	// initialize random seed (used in obstacle avoidance)
+
+}
 
 void obstacleAvoidance(signed int *pwmLeft, signed int *pwmRight) {
 

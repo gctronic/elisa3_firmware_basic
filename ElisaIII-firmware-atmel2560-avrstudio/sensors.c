@@ -332,7 +332,7 @@ void computeAngle() {
 	prevPosition = currPosition;
 
 	// compute the angle using the X and Y axis
-	currentAngle = (signed int)(atan2f((float)accX, (float)accY)*RAD_2_DEG);
+	currentAngle = (signed int)(atan2((float)accX, (float)accY)*RAD_2_DEG);
 
 	if(currentAngle < 0) {
 		currentAngle = currentAngle + (signed int)360;	// angles from 0 to 360

@@ -11,6 +11,12 @@ unsigned char check = 2;
 
 void init_ir_remote_control(void) { 	
 
+	PCICR = 0;
+	PCMSK1 = 0;
+	TCCR2A = 0;
+	TCCR2B = 0;
+	TIMSK2 = 0;
+
 	PCICR |= (1 << PCIE1);			// enable interrupt on change of PCINT15:8 pins
 	PCMSK1 |= (1 << PCINT15);		// enable PCINT15
 	TCCR2A |= (1 << WGM21); 		// mode 2 => CTC mode

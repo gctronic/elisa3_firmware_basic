@@ -102,7 +102,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#aa65acb00bef7a3d7180a2f9ac2896b21">initBehaviors</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize variables and functionalities (e.g. random generator) used in the behaviors.  <a href="#aa65acb00bef7a3d7180a2f9ac2896b21"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#ac1a169c077b398fbdc22bb9c2a55ecc1">obstacleAvoidance</a> (signed int *pwmLeft, signed int *pwmRight)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Obstacle avoidance behavior based on a simplified force field method. It works for both forward and backward motion. The function need to be called before the speed controller and with a cadency of at least 122 Hz (motors pwm frequency).  <a href="#ac1a169c077b398fbdc22bb9c2a55ecc1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviors_8c.html#a22f12e04faca8b86cad9383e5c5ea07b">cliffDetected</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cliff avoidance simple implementation in which the robot can be stopped when a cliff is detected with the ground sensors. The robot has to be calibrated in the surface in which it is moving in order for the behavior to work. The function need to be called before the speed controller and with a cadency of at least 122 Hz (motors pwm frequency). THE FUNCTION IS DEPRECATED: the behavior is directly inserted in the ADC interrupt service routine, thus this function is no more needed and should not be called anymore.  <a href="#a22f12e04faca8b86cad9383e5c5ea07b"></a><br/></td></tr>
 </table>
@@ -132,12 +135,31 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aa65acb00bef7a3d7180a2f9ac2896b21"></a><!-- doxytag: member="behaviors.c::initBehaviors" ref="aa65acb00bef7a3d7180a2f9ac2896b21" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#aa65acb00bef7a3d7180a2f9ac2896b21">initBehaviors</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Initialize variables and functionalities (e.g. random generator) used in the behaviors. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ac1a169c077b398fbdc22bb9c2a55ecc1"></a><!-- doxytag: member="behaviors.c::obstacleAvoidance" ref="ac1a169c077b398fbdc22bb9c2a55ecc1" args="(signed int *pwmLeft, signed int *pwmRight)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="behaviors_8h.html#abe46c826df3be744548fb954242ae776">obstacleAvoidance</a> </td>
+          <td class="memname">void <a class="el" href="behaviors_8h.html#ac1a169c077b398fbdc22bb9c2a55ecc1">obstacleAvoidance</a> </td>
           <td>(</td>
           <td class="paramtype">signed int *&#160;</td>
           <td class="paramname"><em>pwmLeft</em>, </td>
@@ -156,6 +178,9 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Obstacle avoidance behavior based on a simplified force field method. It works for both forward and backward motion. The function need to be called before the speed controller and with a cadency of at least 122 Hz (motors pwm frequency). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
@@ -179,7 +204,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="behaviors_8c.html">behaviors.c</a>      </li>
 
-    <li class="footer">Generated on Thu Feb 23 2012 08:51:49 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 06:47:06 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

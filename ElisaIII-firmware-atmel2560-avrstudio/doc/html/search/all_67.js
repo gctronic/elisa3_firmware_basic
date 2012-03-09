@@ -1,6 +1,7 @@
 var searchData=
 [
   ['getselector',['getSelector',['../utility_8c.html#a0ffa7c8d7f4215d9e90121483d930880',1,'getSelector():&#160;utility.c'],['../utility_8h.html#a0ffa7c8d7f4215d9e90121483d930880',1,'getSelector():&#160;utility.c']]],
+  ['gettime100microsec',['getTime100MicroSec',['../utility_8c.html#a731c06d8c84d4a9f72f3b1238cfa9be0',1,'getTime100MicroSec():&#160;utility.c'],['../utility_8h.html#a731c06d8c84d4a9f72f3b1238cfa9be0',1,'getTime100MicroSec():&#160;utility.c']]],
   ['grreen_5fled0_5foff',['GRREEN_LED0_OFF',['../constants_8h.html#a23553379308bfa9057af49e53e96ba2c',1,'constants.h']]],
   ['grreen_5fled0_5fon',['GRREEN_LED0_ON',['../constants_8h.html#abc2bf6a06889ef87baf09b82c5b44a2d',1,'constants.h']]],
   ['grreen_5fled1_5foff',['GRREEN_LED1_OFF',['../constants_8h.html#a2b7114bee4a247ad1481f622365fb44b',1,'constants.h']]],

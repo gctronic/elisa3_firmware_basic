@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['setleftspeed',['setLeftSpeed',['../motors_8c.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c']]],
+  ['setrightspeed',['setRightSpeed',['../motors_8c.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c']]],
   ['sleep',['sleep',['../utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c'],['../utility_8h.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c']]],
   ['spi_5freadwrite_5fblock',['SPI_ReadWrite_Block',['../spi_8c.html#a913e605a835df4675d23b4bc61172a44',1,'SPI_ReadWrite_Block(uint8_t *data, uint8_t *buffer, uint8_t len):&#160;spi.c'],['../spi_8h.html#a913e605a835df4675d23b4bc61172a44',1,'SPI_ReadWrite_Block(uint8_t *data, uint8_t *buffer, uint8_t len):&#160;spi.c']]],
   ['spi_5fwrite_5fblock',['SPI_Write_Block',['../spi_8c.html#aed83b4539902cac3b6636a901e840935',1,'SPI_Write_Block(uint8_t *data, uint8_t len):&#160;spi.c'],['../spi_8h.html#aed83b4539902cac3b6636a901e840935',1,'SPI_Write_Block(uint8_t *data, uint8_t len):&#160;spi.c']]],

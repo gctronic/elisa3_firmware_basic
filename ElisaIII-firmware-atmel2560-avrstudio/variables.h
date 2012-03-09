@@ -119,7 +119,7 @@ extern unsigned char robotPosition;
 /***************/
 /*** VARIOUS ***/
 /***************/
-extern unsigned int delayCounter;
+extern unsigned long int clockTick;
 extern unsigned char currentSelector;
 extern signed int calibrationCycle;
 extern unsigned char startCalibration;

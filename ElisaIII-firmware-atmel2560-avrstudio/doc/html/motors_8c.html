@@ -104,6 +104,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#a984b662dbcf5b55b90fc02e2f866a206">initMotors</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the timer3 and timer4 registers to work at about 122 Hz.  <a href="#a984b662dbcf5b55b90fc02e2f866a206"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#afca6b6bae07c747c6c7d4980ae19159f">handleMotorsWithNoController</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled) and speed controller. In this function both the motors velocities measurements are also updated.  <a href="#afca6b6bae07c747c6c7d4980ae19159f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#a03a15e1a0e7b850c435667674478c096">handleMotorsWithSpeedController</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled). In this function both the motors velocities measurements are also updated (even if not needed).  <a href="#a03a15e1a0e7b850c435667674478c096"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#ad5a48454a238e152a50a46054faef69e">setLeftSpeed</a> (signed char vel)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired speed for the left motor.  <a href="#ad5a48454a238e152a50a46054faef69e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#ac2e0fa600855023342f960b0960f894f">setRightSpeed</a> (signed char vel)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired speed for the right motor.  <a href="#ac2e0fa600855023342f960b0960f894f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#a33c40fdd48fd7bb540f034e5c489a38b">ISR</a> (TIMER4_OVF_vect)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#a8aa6a32130ab26be17555166513a23ba">ISR</a> (TIMER4_COMPA_vect)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#afb509f06569035c0093abd699b2eb45e">ISR</a> (TIMER4_COMPB_vect)</td></tr>
@@ -112,6 +120,44 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8c.html#a31e211eaf3d75b51ddc639533541f25e">ISR</a> (TIMER3_COMPB_vect)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="afca6b6bae07c747c6c7d4980ae19159f"></a><!-- doxytag: member="motors.c::handleMotorsWithNoController" ref="afca6b6bae07c747c6c7d4980ae19159f" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#afca6b6bae07c747c6c7d4980ae19159f">handleMotorsWithNoController</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled) and speed controller. In this function both the motors velocities measurements are also updated. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a03a15e1a0e7b850c435667674478c096"></a><!-- doxytag: member="motors.c::handleMotorsWithSpeedController" ref="a03a15e1a0e7b850c435667674478c096" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#a03a15e1a0e7b850c435667674478c096">handleMotorsWithSpeedController</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled). In this function both the motors velocities measurements are also updated (even if not needed). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a984b662dbcf5b55b90fc02e2f866a206"></a><!-- doxytag: member="motors.c::initMotors" ref="a984b662dbcf5b55b90fc02e2f866a206" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -233,6 +279,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ad5a48454a238e152a50a46054faef69e"></a><!-- doxytag: member="motors.c::setLeftSpeed" ref="ad5a48454a238e152a50a46054faef69e" args="(signed char vel)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#ad5a48454a238e152a50a46054faef69e">setLeftSpeed</a> </td>
+          <td>(</td>
+          <td class="paramtype">signed char&#160;</td>
+          <td class="paramname"><em>vel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the desired speed for the left motor. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vel</td><td>desired velocity to set (from -100 to 100) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac2e0fa600855023342f960b0960f894f"></a><!-- doxytag: member="motors.c::setRightSpeed" ref="ac2e0fa600855023342f960b0960f894f" args="(signed char vel)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#ac2e0fa600855023342f960b0960f894f">setRightSpeed</a> </td>
+          <td>(</td>
+          <td class="paramtype">signed char&#160;</td>
+          <td class="paramname"><em>vel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the desired speed for the right motor. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vel</td><td>desired velocity to set (from -100 to 100) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -253,7 +351,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="motors_8c.html">motors.c</a>      </li>
 
-    <li class="footer">Generated on Thu Feb 23 2012 08:51:51 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 06:47:09 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

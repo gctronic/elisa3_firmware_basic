@@ -5,6 +5,8 @@ var searchData=
   ['sendadcvalues',['sendAdcValues',['../variables_8c.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c'],['../variables_8h.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c']]],
   ['sensors_2ec',['sensors.c',['../sensors_8c.html',1,'']]],
   ['sensors_2eh',['sensors.h',['../sensors_8h.html',1,'']]],
+  ['setleftspeed',['setLeftSpeed',['../motors_8c.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c']]],
+  ['setrightspeed',['setRightSpeed',['../motors_8c.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c']]],
   ['setup_5faw',['SETUP_AW',['../n_r_f24_l01_8h.html#af5ef355ba3eca336db1285cab353ddc2',1,'nRF24L01.h']]],
   ['setup_5fretr',['SETUP_RETR',['../n_r_f24_l01_8h.html#a2188309b3eceeae158dd64109cd919aa',1,'nRF24L01.h']]],
   ['sleep',['sleep',['../utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c'],['../utility_8h.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c']]],

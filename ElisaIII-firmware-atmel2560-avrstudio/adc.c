@@ -11,6 +11,10 @@ void initAdc(void) {
 	// ADCSRB -----> -		ACME	 - 		- 		MUX5 	 ADTS2 	ADTS1 	ADTS0
 	// default		 0		0		 0		0		0		 0		0		0
 
+	ADCSRA = 0;
+	ADCSRB = 0;
+	ADMUX = 0;
+
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1);	// 1/64 prescaler => 8 MHz/64=125 KHz => Tad (adc clock)
 											// one sample need 13 Tad in free running mode, so interrupt 
 											// frequency is 125/13=9.6 KHz (104 us between adc interrupts)
@@ -38,7 +42,7 @@ ISR(ADC_vect) {
 
 	//LED_BLUE_ON;
 
-	delayCounter++;				// this variable is used as base time for timed processes/functions (e,g, delay); 
+	clockTick++;				// this variable is used as base time for timed processes/functions (e,g, delay); 
 								// resolution of 104 us based on adc interrupts
 
 	int value = ADCL;			// get the sample; low byte must be read first!!

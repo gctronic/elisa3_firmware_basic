@@ -10,6 +10,13 @@ void initPeripherals(void) {
 
 	cli();			// disable global interrupts (by default it should already be disabled)
 	
+	// reset all registers touched by arduino in the "init()" functions (wiring.c) not used by the robot
+	TCCR0A = 0;
+	TCCR0B = 0;
+	TIMSK0 = 0;
+	TCCR5A = 0;
+	TCCR5B = 0;
+
 	rfAddress = eeprom_read_word((uint16_t*)4094);
 
 	// some code parts change based on hardware revision
@@ -124,3 +131,12 @@ void sleep(unsigned char seconds) {
 	initPeripherals();
 
 }
+
+unsigned long int getTime100MicroSec() {
+	return clockTick;
+}
+
+void readBatteryLevel() {
+	measBattery = 1;
+}
+

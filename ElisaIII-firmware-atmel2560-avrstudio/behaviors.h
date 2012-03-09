@@ -26,6 +26,13 @@ extern "C" {
 #endif
 
 /**
+ * \brief Initialize variables and functionalities (e.g. random generator) used in
+ * the behaviors.
+ * \return none
+ */
+void initBehaviors();
+
+/**
  * \brief Obstacle avoidance behavior based on a simplified force field method.
  * It works for both forward and backward motion. The function need to be called before
  * the speed controller and with a cadency of at least 122 Hz (motors pwm frequency).

@@ -11,6 +11,9 @@ void initRGBleds() {
 	// The waveform generation mode let us chose the TOP value to be 256
 	// thus we get period freq = 8000000/256 = 31250 Hz
 
+	TCCR1A = 0;
+	TCCR1B = 0;
+
 	// enable OCA, OCB, OCC; clear on match, set at bottom
 	TCCR1A |= (1 << COM1A1) | (1 << COM1B1) | (1 << COM1C1) | (1 << WGM10); 	
 	// mode 5 => fast-pwm 8 bit; no prescaler

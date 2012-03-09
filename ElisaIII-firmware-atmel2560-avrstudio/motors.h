@@ -25,6 +25,9 @@
 #include "variables.h"
 #include <avr\io.h>
 #include <avr\interrupt.h>
+#include "behaviors.h"
+#include "speed_control.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +38,35 @@ extern "C" {
  * \return none
  */
 void initMotors();
+
+/**
+ * \brief Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled).
+ * In this function both the motors velocities measurements are also updated (even if not needed).
+ * \return none
+ */
+void handleMotorsWithSpeedController();
+
+/**
+ * \brief Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled) and speed controller.
+ * In this function both the motors velocities measurements are also updated.
+ * \return none
+ */
+void handleMotorsWithNoController();
+
+/**
+ * \brief Set the desired speed for the left motor.
+ * \param vel desired velocity to set (from -100 to 100)
+ * \return none
+ */
+void setLeftSpeed(signed char vel);
+
+/**
+ * \brief Set the desired speed for the right motor.
+ * \param vel desired velocity to set (from -100 to 100)
+ * \return none
+ */
+void setRightSpeed(signed char vel);
+
 
 #ifdef __cplusplus
 } // extern "C"

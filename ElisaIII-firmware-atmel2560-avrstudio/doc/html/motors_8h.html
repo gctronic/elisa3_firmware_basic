@@ -104,6 +104,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><code>#include &quot;<a class="el" href="variables_8h_source.html">variables.h</a>&quot;</code><br/>
 <code>#include &lt;avr\io.h&gt;</code><br/>
 <code>#include &lt;avr\interrupt.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="behaviors_8h_source.html">behaviors.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="speed__control_8h_source.html">speed_control.h</a>&quot;</code><br/>
 </div>
 <p><a href="motors_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -111,6 +113,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#a984b662dbcf5b55b90fc02e2f866a206">initMotors</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the timer3 and timer4 registers to work at about 122 Hz.  <a href="#a984b662dbcf5b55b90fc02e2f866a206"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#a03a15e1a0e7b850c435667674478c096">handleMotorsWithSpeedController</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled). In this function both the motors velocities measurements are also updated (even if not needed).  <a href="#a03a15e1a0e7b850c435667674478c096"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#afca6b6bae07c747c6c7d4980ae19159f">handleMotorsWithNoController</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled) and speed controller. In this function both the motors velocities measurements are also updated.  <a href="#afca6b6bae07c747c6c7d4980ae19159f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#ad5a48454a238e152a50a46054faef69e">setLeftSpeed</a> (signed char vel)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired speed for the left motor.  <a href="#ad5a48454a238e152a50a46054faef69e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motors_8h.html#ac2e0fa600855023342f960b0960f894f">setRightSpeed</a> (signed char vel)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired speed for the right motor.  <a href="#ac2e0fa600855023342f960b0960f894f"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Motors module. </p>
@@ -120,6 +130,44 @@ Functions</h2></td></tr>
 <dl class="copyright"><dt><b>Copyright:</b></dt><dd>GNU GPL v3</dd></dl>
 <p>The motors are handled with two timers: timer3 for right motor and timer4 for left motor. Two independent timers are needed because the timer will reset when the output compare register matches the timer value. The settings for the two timers are the same; the related pwm frequency is 122 Hz and the duty cycle define the motors speed. In order to measure the consumption and speed of the motors respectively in the active and passive phase of the pwm, two interrupts per timer are generated: one at the beginning of the cycle (timer overflow) and another one when when the output compare matches (beginning of passive phase). </p>
 </div><hr/><h2>Function Documentation</h2>
+<a class="anchor" id="afca6b6bae07c747c6c7d4980ae19159f"></a><!-- doxytag: member="motors.h::handleMotorsWithNoController" ref="afca6b6bae07c747c6c7d4980ae19159f" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#afca6b6bae07c747c6c7d4980ae19159f">handleMotorsWithNoController</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled) and speed controller. In this function both the motors velocities measurements are also updated. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a03a15e1a0e7b850c435667674478c096"></a><!-- doxytag: member="motors.h::handleMotorsWithSpeedController" ref="a03a15e1a0e7b850c435667674478c096" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#a03a15e1a0e7b850c435667674478c096">handleMotorsWithSpeedController</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Change the motors speed (pwm registers) accordingly to the obstacle avoidance (if enabled). In this function both the motors velocities measurements are also updated (even if not needed). </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a984b662dbcf5b55b90fc02e2f866a206"></a><!-- doxytag: member="motors.h::initMotors" ref="a984b662dbcf5b55b90fc02e2f866a206" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -135,6 +183,58 @@ Functions</h2></td></tr>
 <div class="memdoc">
 
 <p>Configure the timer3 and timer4 registers to work at about 122 Hz. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad5a48454a238e152a50a46054faef69e"></a><!-- doxytag: member="motors.h::setLeftSpeed" ref="ad5a48454a238e152a50a46054faef69e" args="(signed char vel)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#ad5a48454a238e152a50a46054faef69e">setLeftSpeed</a> </td>
+          <td>(</td>
+          <td class="paramtype">signed char&#160;</td>
+          <td class="paramname"><em>vel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the desired speed for the left motor. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vel</td><td>desired velocity to set (from -100 to 100) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac2e0fa600855023342f960b0960f894f"></a><!-- doxytag: member="motors.h::setRightSpeed" ref="ac2e0fa600855023342f960b0960f894f" args="(signed char vel)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="motors_8h.html#ac2e0fa600855023342f960b0960f894f">setRightSpeed</a> </td>
+          <td>(</td>
+          <td class="paramtype">signed char&#160;</td>
+          <td class="paramname"><em>vel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the desired speed for the right motor. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vel</td><td>desired velocity to set (from -100 to 100) </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
@@ -159,7 +259,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="motors_8h.html">motors.h</a>      </li>
 
-    <li class="footer">Generated on Thu Feb 23 2012 08:51:51 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 06:47:09 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

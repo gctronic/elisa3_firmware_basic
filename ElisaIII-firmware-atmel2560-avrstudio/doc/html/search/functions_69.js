@@ -15,6 +15,7 @@ var searchData=
   ['initaccelerometer',['initAccelerometer',['../sensors_8c.html#a3d961b25677384479fcd0d413da8ef83',1,'initAccelerometer():&#160;sensors.c'],['../sensors_8h.html#a3d961b25677384479fcd0d413da8ef83',1,'initAccelerometer():&#160;sensors.c']]],
   ['initadc',['initAdc',['../adc_8c.html#a99fb31efe14a1f6f9cf3e4a642ebbae3',1,'initAdc(void):&#160;adc.c'],['../adc_8h.html#ae2ff19320070024bf7bc2cccf779af74',1,'initAdc():&#160;adc.c']]],
   ['initadxl345',['initADXL345',['../sensors_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc',1,'initADXL345():&#160;sensors.c'],['../sensors_8h.html#afe99cfb7d3e16bf36cc5d29da66ce8bc',1,'initADXL345():&#160;sensors.c']]],
+  ['initbehaviors',['initBehaviors',['../behaviors_8c.html#aa65acb00bef7a3d7180a2f9ac2896b21',1,'initBehaviors():&#160;behaviors.c'],['../behaviors_8h.html#aa65acb00bef7a3d7180a2f9ac2896b21',1,'initBehaviors():&#160;behaviors.c']]],
   ['initmma7455l',['initMMA7455L',['../sensors_8c.html#a00ac3777f39d082d583911fcedd3a302',1,'initMMA7455L():&#160;sensors.c'],['../sensors_8h.html#a00ac3777f39d082d583911fcedd3a302',1,'initMMA7455L():&#160;sensors.c']]],
   ['initmotors',['initMotors',['../motors_8c.html#a984b662dbcf5b55b90fc02e2f866a206',1,'initMotors():&#160;motors.c'],['../motors_8h.html#a984b662dbcf5b55b90fc02e2f866a206',1,'initMotors():&#160;motors.c']]],
   ['initperipherals',['initPeripherals',['../utility_8c.html#ad52efe852713596ee88dd17a247b490d',1,'initPeripherals(void):&#160;utility.c'],['../utility_8h.html#a5f40c46f6d8dc290c485a55613b5a7cb',1,'initPeripherals():&#160;utility.c']]],

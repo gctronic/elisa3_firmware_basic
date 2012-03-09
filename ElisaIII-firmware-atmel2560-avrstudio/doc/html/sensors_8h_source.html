@@ -108,23 +108,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00026"></a>00026 <span class="preprocessor">#include &quot;<a class="code" href="leds_8h.html" title="Leds module.">leds.h</a>&quot;</span>
 <a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="twimaster_8h.html">twimaster.h</a>&quot;</span>
 <a name="l00028"></a>00028 
-<a name="l00029"></a>00029 
-<a name="l00036"></a>00036 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a11b381faabbecc0143d11cf09e955462" title="Calibrate all the sensors (proximity, ground and accelerometer). Pay attention for the robot to be po...">calibrateSensors</a>();
-<a name="l00037"></a>00037 
-<a name="l00042"></a>00042 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a3d961b25677384479fcd0d413da8ef83" title="Test which device is mounted on the robot and configure it.">initAccelerometer</a>();
-<a name="l00043"></a>00043 
-<a name="l00049"></a>00049 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc" title="Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution).">initADXL345</a>();
-<a name="l00050"></a>00050 
-<a name="l00056"></a>00056 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#a00ac3777f39d082d583911fcedd3a302" title="Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution).">initMMA7455L</a>();
-<a name="l00057"></a>00057 
-<a name="l00063"></a>00063 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a9c7a0d4e693d6dd1fef72e28353324a1" title="Request the X and Y values (10 bit data, 2&#39;s complement) and save them in their respective global var...">readAccelXY</a>();
-<a name="l00064"></a>00064 
-<a name="l00070"></a>00070 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#ab3ef74e35beb0d06aefb2830ff49862d" title="Request the X, Y and Z values (10 bit data, 2&#39;s complement) and save them in their respective global ...">readAccelXYZ</a>();
-<a name="l00071"></a>00071 
-<a name="l00081"></a>00081 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a12fc697a01e1d04b91df358a472b5b84" title="Compute the angle of the robot using the X and Y axes; the resulting angle is saved in the global var...">computeAngle</a>();
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083 <span class="preprocessor">#endif</span>
-<a name="l00084"></a>00084 <span class="preprocessor"></span>
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00031"></a>00031 <span class="preprocessor">    #include &lt;math.h&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#endif</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00040"></a>00040 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a11b381faabbecc0143d11cf09e955462" title="Calibrate all the sensors (proximity, ground and accelerometer). Pay attention for the robot to be po...">calibrateSensors</a>();
+<a name="l00041"></a>00041 
+<a name="l00046"></a>00046 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a3d961b25677384479fcd0d413da8ef83" title="Test which device is mounted on the robot and configure it.">initAccelerometer</a>();
+<a name="l00047"></a>00047 
+<a name="l00053"></a>00053 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#afe99cfb7d3e16bf36cc5d29da66ce8bc" title="Configure the ADXL345 accelerometer (2g sensitivity, 10 bits resolution).">initADXL345</a>();
+<a name="l00054"></a>00054 
+<a name="l00060"></a>00060 <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="sensors_8c.html#a00ac3777f39d082d583911fcedd3a302" title="Configure the MMA74565L accelerometer (2g sensitivity, 10 bits resolution).">initMMA7455L</a>();
+<a name="l00061"></a>00061 
+<a name="l00067"></a>00067 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a9c7a0d4e693d6dd1fef72e28353324a1" title="Request the X and Y values (10 bit data, 2&#39;s complement) and save them in their respective global var...">readAccelXY</a>();
+<a name="l00068"></a>00068 
+<a name="l00074"></a>00074 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#ab3ef74e35beb0d06aefb2830ff49862d" title="Request the X, Y and Z values (10 bit data, 2&#39;s complement) and save them in their respective global ...">readAccelXYZ</a>();
+<a name="l00075"></a>00075 
+<a name="l00085"></a>00085 <span class="keywordtype">void</span> <a class="code" href="sensors_8c.html#a12fc697a01e1d04b91df358a472b5b84" title="Compute the angle of the robot using the X and Y axes; the resulting angle is saved in the global var...">computeAngle</a>();
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span>} <span class="comment">// extern &quot;C&quot;</span>
+<a name="l00089"></a>00089 <span class="preprocessor">#endif</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span>
+<a name="l00091"></a>00091 <span class="preprocessor">#endif</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span>
 </pre></div></div><!-- contents -->
 </div>
 <!-- window showing the filter options -->
@@ -145,7 +153,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="sensors_8h.html">sensors.h</a>      </li>
 
-    <li class="footer">Generated on Thu Feb 23 2012 08:51:48 for Elisa3 by
+    <li class="footer">Generated on Fri Mar 9 2012 06:47:04 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -131,7 +131,8 @@ unsigned char robotPosition = 1;					// indicate whether the robot is in vertica
 /***************/
 /*** VARIOUS ***/
 /***************/
-unsigned int delayCounter = 0;						// this is the base time, each tick corresponds to 104 us (incremented inside adc isr 
+unsigned long int clockTick = 0;					// this is the base time, each tick corresponds to 104 us (incremented inside adc isr);
+													// beware that this variable is never reset (4294967295/10000/60/60/24 = about 5 days before overflow)
 unsigned char currentSelector = 0;					// current selector position
 signed int calibrationCycle = 0;					// indicate how many samples are currently taken for calibration
 unsigned char startCalibration;						// flag indicating when a calibration is in progress
