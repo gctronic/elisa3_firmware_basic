@@ -23,7 +23,6 @@ int main(void) {
 
 	startTime = getTime100MicroSec();
 
-	setRightSpeed(50);
 
 	while(1) {
 
@@ -37,7 +36,6 @@ int main(void) {
 		if((endTime-startTime) >= (PAUSE_2_SEC)) {
 			readBatteryLevel();				// the battery level is updated every two seconds
 			startTime = getTime100MicroSec();
-			setRightSpeed(-50);
 		}
 
 
