@@ -32,7 +32,7 @@
 #endif
 
 /* I2C clock in Hz */
-#define SCL_CLOCK  100000L
+#define SCL_CLOCK  440000L
 
 void i2c_close() {
 	TWBR = 0x00;

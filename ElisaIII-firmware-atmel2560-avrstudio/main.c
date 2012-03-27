@@ -53,7 +53,7 @@ int main(void) {
 		handleRFCommands();
 
 
-		usartTransmit(currentSelector);		// send the current selector position through uart as debug info
+		usart0Transmit(currentSelector,0);		// send the current selector position through uart as debug info
 
 
 		switch(currentSelector) {
@@ -79,14 +79,14 @@ int main(void) {
 					break;
             
 			case 4:	// random colors on RGB leds; small green leds turned on
-					GRREEN_LED0_ON;
-					GRREEN_LED1_ON;
-					GRREEN_LED2_ON;
-					GRREEN_LED3_ON;
-					GRREEN_LED4_ON;
-					GRREEN_LED5_ON;
-					GRREEN_LED6_ON;
-					GRREEN_LED7_ON;
+					GREEN_LED0_ON;
+					GREEN_LED1_ON;
+					GREEN_LED2_ON;
+					GREEN_LED3_ON;
+					GREEN_LED4_ON;
+					GREEN_LED5_ON;
+					GREEN_LED6_ON;
+					GREEN_LED7_ON;
 					updateRedLed(pwm_red);
 					updateGreenLed(pwm_green);
 					updateBlueLed(pwm_blue);
@@ -111,14 +111,14 @@ int main(void) {
 		if(prevSelector != currentSelector) {	// in case the selector is changed, reset the robot state
 			disableObstacleAvoidance();
 			disableCliffAvoidance();
-			GRREEN_LED0_OFF;
-			GRREEN_LED1_OFF;
-			GRREEN_LED2_OFF;
-			GRREEN_LED3_OFF;
-			GRREEN_LED4_OFF;
-			GRREEN_LED5_OFF;
-			GRREEN_LED6_OFF;
-			GRREEN_LED7_OFF;
+			GREEN_LED0_OFF;
+			GREEN_LED1_OFF;
+			GREEN_LED2_OFF;
+			GREEN_LED3_OFF;
+			GREEN_LED4_OFF;
+			GREEN_LED5_OFF;
+			GREEN_LED6_OFF;
+			GREEN_LED7_OFF;
 			pwm_red = 255;
 			pwm_green = 255;
 			pwm_blue = 255;

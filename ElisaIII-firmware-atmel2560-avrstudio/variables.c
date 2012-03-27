@@ -98,6 +98,11 @@ unsigned char blinkState = 0;									// used to toggle the blue led
 unsigned char peripheralChoice = 5;					// red led=0, green led=1, blue led=2, right motor=3, left motor=4, send adc values=5
 unsigned char choosePeripheral = 1;					// uart state: choose the peripheral (1) or act on choosen peripheral (0)
 unsigned char sendAdcValues = 0;
+unsigned char commError = 0;
+unsigned int byteCount = 0;
+unsigned char uartBuff[UART_BUFF_SIZE] = {0};
+unsigned char nextByteIndex = 0;
+unsigned char currByteIndex = 0;
 
 /*************************/
 /*** IR REMOTE CONTROL ***/
@@ -127,6 +132,7 @@ unsigned char currPosition=HORIZONTAL_POS;
 unsigned char timesInSamePos = 0;					// number of cycles in which the new robot position remain stable; after some stability it will 
 													// change the current "robotPosition"
 unsigned char robotPosition = 1;					// indicate whether the robot is in vertical (=0) or horizontal (=1) position
+signed char accBuff[6] = {0};
 
 /***************/
 /*** VARIOUS ***/

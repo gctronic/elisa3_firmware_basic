@@ -308,6 +308,108 @@ void readAccelXYZ() {
 
 }
 
+void readAccelXYZ_1() {
+
+	int i = 0;
+
+	if(useAccel == USE_MMAX7455L) {
+
+		// values returned from the accelerometer are signed byte data (2’s complement)
+		// reg 0x00: 10 bits output value X LSB
+		// reg 0x01: 10 bits output value X MSB 
+		// reg 0x02: 10 bits output value Y LSB
+		// reg 0x03: 10 bits output value Y MSB
+		// reg 0x04: 10 bits output value Z LSB
+		// reg 0x05: 10 bits output value Z MSB
+
+		i2c_start(accelAddress+I2C_WRITE);							// set device address and write mode
+		i2c_write(0x00);											// sends address to read from (X LSB)
+		i2c_rep_start(accelAddress+I2C_READ);						// set device address and read mode
+
+		for(i=0; i<2; i++) {
+			accBuff[i] = i2c_readAck();								// read one byte at a time
+		}
+		return;
+
+	} else if(useAccel == USE_ADXL345) {							
+
+		// values returned from the accelerometer are signed byte data (2’s complement)
+		// reg 0x32: 10 bits output value X LSB
+		// reg 0x33: 10 bits output value X MSB 
+		// reg 0x34: 10 bits output value Y LSB
+		// reg 0x35: 10 bits output value Y MSB
+		// reg 0x36: 10 bits output value Z LSB
+		// reg 0x37: 10 bits output value Z MSB
+
+		i2c_start(accelAddress+I2C_WRITE);							// set device address and write mode	
+		i2c_write(0x32);											// sends address to read from (X LSB)
+		i2c_rep_start(accelAddress+I2C_READ);						// set device address and read mode
+
+		for(i=0; i<3; i++) {
+			accBuff[i] = i2c_readAck();								// read one byte at a time
+		}
+		return;
+
+	} else {
+
+		accX = 0;
+		accY = 0;
+		accZ = 0;
+
+	}
+
+}
+
+void readAccelXYZ_2() {
+
+	int i = 2;
+
+	if(useAccel == USE_MMAX7455L) {
+
+		for(i=2; i<5; i++) {
+			accBuff[i] = i2c_readAck();								// read one byte at a time
+		}
+		accBuff[i] = i2c_readNak();									// read last byte sending NACK
+		i2c_stop();													// set stop conditon = release bus
+
+		if(startCalibration) {										// if performing the calibration, then return the raw values
+			accX = ((signed int)accBuff[1]<<8)|accBuff[0];    			// X axis
+			accY = ((signed int)accBuff[3]<<8)|accBuff[2];    			// Y axis
+			accZ = ((signed int)accBuff[5]<<8)|accBuff[4];    			// Z axis
+		} else {													// else return the calibrated values
+			accX = (((signed int)accBuff[1]<<8)|accBuff[0])-accOffsetX;	// X axis
+			accY = (((signed int)accBuff[3]<<8)|accBuff[2])-accOffsetY;	// Y axis
+			accZ = (((signed int)accBuff[5]<<8)|accBuff[4])-accOffsetZ;	// Z axis
+		}
+
+	} else if(useAccel == USE_ADXL345) {							
+
+		for(i=3; i<5; i++) {
+			accBuff[i] = i2c_readAck();								// read one byte at a time
+		}
+		accBuff[i] = i2c_readNak();									// read last byte sending NACK
+		i2c_stop();													// set stop conditon = release bus
+
+		if(startCalibration) {										// if performing the calibration, then return the raw values
+			accX = ((signed int)accBuff[1]<<8)|accBuff[0];    			// X axis
+			accY = ((signed int)accBuff[3]<<8)|accBuff[2];    			// Y axis
+			accZ = ((signed int)accBuff[5]<<8)|accBuff[4];    			// Z axis
+		} else {													// else return the calibrated values
+			accX = (((signed int)accBuff[1]<<8)|accBuff[0])-accOffsetX;	// X axis
+			accY = (((signed int)accBuff[3]<<8)|accBuff[2])-accOffsetY;	// Y axis
+			accZ = (((signed int)accBuff[5]<<8)|accBuff[4])-accOffsetZ;	// Z axis
+		}
+
+	} else {
+
+		accX = 0;
+		accY = 0;
+		accZ = 0;
+
+	}
+
+}
+
 void computeAngle() {
 
 	unsigned int abs_acc_z=abs(accZ);

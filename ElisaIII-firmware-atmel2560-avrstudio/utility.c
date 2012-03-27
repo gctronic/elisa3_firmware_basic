@@ -38,7 +38,7 @@ void initPeripherals(void) {
 	initRGBleds();
 	initSPI();
 	mirf_init();
-	initUsart();
+	initUsart0();
 	initAccelerometer();
 	init_ir_remote_control();
 

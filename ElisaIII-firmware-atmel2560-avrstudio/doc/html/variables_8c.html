@@ -164,6 +164,11 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a0734982b153659a889ee1ff851292584">peripheralChoice</a> = 5</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a1b9d4294c629fa08659f94b408a5d406">choosePeripheral</a> = 1</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c">sendAdcValues</a> = 0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a5e4a5f87a073607f6dc19c26fcf541a2">commError</a> = 0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a3167147af72b7588996b94602b0c1348">byteCount</a> = 0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a45d3e5089c9d28d0c0edcd43a869226c">uartBuff</a> [UART_BUFF_SIZE] = {0}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#ab4ff6f9dce673d3ad48512e5b1ea5c98">nextByteIndex</a> = 0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#aab278300880021140e975ac64e77d423">currByteIndex</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#acd9d8d98145fba8d89fa53595183f6f2">irCommand</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a848efaccfa3abf681a7583e2db972b49">command_received</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#acda8a999560be754013d18b84ab58ffb">colorState</a> = 0</td></tr>
@@ -186,6 +191,7 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a59ee96a5b3342309a959a1966f4c8ad7">currPosition</a> = <a class="el" href="constants_8h.html#aa8421bdeb80011df284ec8d41c2b322a">HORIZONTAL_POS</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a8beb179e52892494ff4051a07703ee21">timesInSamePos</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#af6b6fc5f42e41d9b2e1c7c19d68cf1ca">robotPosition</a> = 1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">signed char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a693872dffad437db5beb598bf28b658d">accBuff</a> [6] = {0}</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#ae5b29d64f8a1b67f8e86a9596a4ab2d8">clockTick</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#a28b51d82160ec9f6d8957c4da43a31bb">currentSelector</a> = 0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">signed int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#ac084b77bdafd27ce145006c472b27f42">calibrationCycle</a> = 0</td></tr>
@@ -196,6 +202,19 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="variables_8c.html#aae8bc9e932ab77b75d3ac9657589540b">cliffDetectedFlag</a> = 0</td></tr>
 </table>
 <hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a693872dffad437db5beb598bf28b658d"></a><!-- doxytag: member="variables.c::accBuff" ref="a693872dffad437db5beb598bf28b658d" args="[6]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">signed char <a class="el" href="variables_8h.html#a693872dffad437db5beb598bf28b658d">accBuff</a>[6] = {0}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="aeec7f45d961933d0721f9e1e0540a799"></a><!-- doxytag: member="variables.c::accelAddress" ref="aeec7f45d961933d0721f9e1e0540a799" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -404,6 +423,19 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3167147af72b7588996b94602b0c1348"></a><!-- doxytag: member="variables.c::byteCount" ref="a3167147af72b7588996b94602b0c1348" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="variables_8h.html#a3167147af72b7588996b94602b0c1348">byteCount</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ac084b77bdafd27ce145006c472b27f42"></a><!-- doxytag: member="variables.c::calibrationCycle" ref="ac084b77bdafd27ce145006c472b27f42" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -508,6 +540,19 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5e4a5f87a073607f6dc19c26fcf541a2"></a><!-- doxytag: member="variables.c::commError" ref="a5e4a5f87a073607f6dc19c26fcf541a2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="variables_8h.html#a5e4a5f87a073607f6dc19c26fcf541a2">commError</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="abe99fe40e406484cd5f1f56d5fa69c00"></a><!-- doxytag: member="variables.c::compute_left_vel" ref="abe99fe40e406484cd5f1f56d5fa69c00" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -527,6 +572,19 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">unsigned char <a class="el" href="variables_8h.html#afe4784af211451fa26d96622df44b4c6">compute_right_vel</a> = 1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aab278300880021140e975ac64e77d423"></a><!-- doxytag: member="variables.c::currByteIndex" ref="aab278300880021140e975ac64e77d423" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="variables_8h.html#aab278300880021140e975ac64e77d423">currByteIndex</a> = 0</td>
         </tr>
       </table>
 </div>
@@ -917,6 +975,19 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">unsigned char <a class="el" href="variables_8h.html#a5234176e50c96b22941062509b1063e5">measBattery</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab4ff6f9dce673d3ad48512e5b1ea5c98"></a><!-- doxytag: member="variables.c::nextByteIndex" ref="ab4ff6f9dce673d3ad48512e5b1ea5c98" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="variables_8h.html#ab4ff6f9dce673d3ad48512e5b1ea5c98">nextByteIndex</a> = 0</td>
         </tr>
       </table>
 </div>
@@ -1379,6 +1450,19 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a45d3e5089c9d28d0c0edcd43a869226c"></a><!-- doxytag: member="variables.c::uartBuff" ref="a45d3e5089c9d28d0c0edcd43a869226c" args="[UART_BUFF_SIZE]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="variables_8h.html#a45d3e5089c9d28d0c0edcd43a869226c">uartBuff</a>[UART_BUFF_SIZE] = {0}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a0c65e0c665b92f0ac4bf8e671f2ecc61"></a><!-- doxytag: member="variables.c::useAccel" ref="a0c65e0c665b92f0ac4bf8e671f2ecc61" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1412,7 +1496,7 @@ Variables</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="variables_8c.html">variables.c</a>      </li>
 
-    <li class="footer">Generated on Fri Mar 9 2012 15:16:51 for Elisa3 by
+    <li class="footer">Generated on Tue Mar 27 2012 16:12:07 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

@@ -4,5 +4,6 @@ var searchData=
   ['behaviors_2ec',['behaviors.c',['../behaviors_8c.html',1,'']]],
   ['behaviors_2eh',['behaviors.h',['../behaviors_8h.html',1,'']]],
   ['behaviorstate',['behaviorState',['../variables_8c.html#a50380767e92c6b0b29e60eb116b285db',1,'behaviorState():&#160;variables.c'],['../variables_8h.html#a50380767e92c6b0b29e60eb116b285db',1,'behaviorState():&#160;variables.c']]],
-  ['blinkstate',['blinkState',['../variables_8c.html#af375973932b849b7fe6c1f546f3e8adc',1,'blinkState():&#160;variables.c'],['../variables_8h.html#af375973932b849b7fe6c1f546f3e8adc',1,'blinkState():&#160;variables.c']]]
+  ['blinkstate',['blinkState',['../variables_8c.html#af375973932b849b7fe6c1f546f3e8adc',1,'blinkState():&#160;variables.c'],['../variables_8h.html#af375973932b849b7fe6c1f546f3e8adc',1,'blinkState():&#160;variables.c']]],
+  ['bytecount',['byteCount',['../variables_8c.html#a3167147af72b7588996b94602b0c1348',1,'byteCount():&#160;variables.c'],['../variables_8h.html#a3167147af72b7588996b94602b0c1348',1,'byteCount():&#160;variables.c']]]
 ];

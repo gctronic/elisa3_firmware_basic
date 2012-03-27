@@ -109,12 +109,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a3be0a3ae0a030251bf3707978f1295aa">initUsart</a> ()</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the usart registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled.  <a href="#a3be0a3ae0a030251bf3707978f1295aa"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a496efa5d85d2baac3c67092a33e2af35">usartTransmit</a> (unsigned char data)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer one byte of data; it's blocking (wait until the buffer is empty).  <a href="#a496efa5d85d2baac3c67092a33e2af35"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a17d7ccaac0225381a73c6b6056273ee7">initUsart0</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the usart0 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled.  <a href="#a17d7ccaac0225381a73c6b6056273ee7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a734dfb76bf7dd65fc249ddc7aab7e6f9">initUsart1</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the usart1 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled.  <a href="#a734dfb76bf7dd65fc249ddc7aab7e6f9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a332793b2239f4124b2f95f3107bcbcef">usart0Transmit</a> (unsigned char data, unsigned char isBlocking)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer one byte of data; it's blocking (wait until the buffer is empty).  <a href="#a332793b2239f4124b2f95f3107bcbcef"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#aa8fd2faa9959089598765d2a574bcede">usart1Transmit</a> (unsigned char data, unsigned char isBlocking)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer one byte of data; it's blocking (wait until the buffer is empty).  <a href="#aa8fd2faa9959089598765d2a574bcede"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a8a5f07a72467236ce8d7aeeedbf0657d">closeUsart</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the usart peripheral and disable all interrupts.  <a href="#a8a5f07a72467236ce8d7aeeedbf0657d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#aa3ab08a0a9c26cf866ac19225033c3d5">usart0InputBufferEmpty</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether there is something to read from usart0.  <a href="#aa3ab08a0a9c26cf866ac19225033c3d5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="usart_8h.html#a0d3c76e7c346f2905246c9091d676679">usart0Receive</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until a byte has been received or the timeout is expired.  <a href="#a0d3c76e7c346f2905246c9091d676679"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Usart module. </p>
@@ -143,12 +151,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3be0a3ae0a030251bf3707978f1295aa"></a><!-- doxytag: member="usart.h::initUsart" ref="a3be0a3ae0a030251bf3707978f1295aa" args="()" -->
+<a class="anchor" id="a17d7ccaac0225381a73c6b6056273ee7"></a><!-- doxytag: member="usart.h::initUsart0" ref="a17d7ccaac0225381a73c6b6056273ee7" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="usart_8h.html#a3be0a3ae0a030251bf3707978f1295aa">initUsart</a> </td>
+          <td class="memname">void <a class="el" href="usart_8h.html#a17d7ccaac0225381a73c6b6056273ee7">initUsart0</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -157,21 +165,94 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Configure the usart registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled. </p>
+<p>Configure the usart0 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a496efa5d85d2baac3c67092a33e2af35"></a><!-- doxytag: member="usart.h::usartTransmit" ref="a496efa5d85d2baac3c67092a33e2af35" args="(unsigned char data)" -->
+<a class="anchor" id="a734dfb76bf7dd65fc249ddc7aab7e6f9"></a><!-- doxytag: member="usart.h::initUsart1" ref="a734dfb76bf7dd65fc249ddc7aab7e6f9" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="usart_8h.html#a496efa5d85d2baac3c67092a33e2af35">usartTransmit</a> </td>
+          <td class="memname">void <a class="el" href="usart_8h.html#a734dfb76bf7dd65fc249ddc7aab7e6f9">initUsart1</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Configure the usart1 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit). Moreover the interrupt for reception is enabled. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa3ab08a0a9c26cf866ac19225033c3d5"></a><!-- doxytag: member="usart.h::usart0InputBufferEmpty" ref="aa3ab08a0a9c26cf866ac19225033c3d5" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char <a class="el" href="usart_8h.html#aa3ab08a0a9c26cf866ac19225033c3d5">usart0InputBufferEmpty</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Check whether there is something to read from usart0. </p>
+<dl class="retval"><dt><b>Return values:</b></dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">0</td><td>input buffer not empty </td></tr>
+    <tr><td class="paramname">1</td><td>input buffer empty </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0d3c76e7c346f2905246c9091d676679"></a><!-- doxytag: member="usart.h::usart0Receive" ref="a0d3c76e7c346f2905246c9091d676679" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="usart_8h.html#a0d3c76e7c346f2905246c9091d676679">usart0Receive</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Wait until a byte has been received or the timeout is expired. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>byte received </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a332793b2239f4124b2f95f3107bcbcef"></a><!-- doxytag: member="usart.h::usart0Transmit" ref="a332793b2239f4124b2f95f3107bcbcef" args="(unsigned char data, unsigned char isBlocking)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="usart_8h.html#a332793b2239f4124b2f95f3107bcbcef">usart0Transmit</a> </td>
           <td>(</td>
           <td class="paramtype">unsigned char&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramname"><em>isBlocking</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -180,7 +261,43 @@ Functions</h2></td></tr>
 <p>Transfer one byte of data; it's blocking (wait until the buffer is empty). </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramname">data</td><td>data to be sent through usart </td></tr>
+    <tr><td class="paramname">data</td><td>data to be sent through usart0 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>none </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa8fd2faa9959089598765d2a574bcede"></a><!-- doxytag: member="usart.h::usart1Transmit" ref="aa8fd2faa9959089598765d2a574bcede" args="(unsigned char data, unsigned char isBlocking)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="usart_8h.html#aa8fd2faa9959089598765d2a574bcede">usart1Transmit</a> </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramname"><em>isBlocking</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Transfer one byte of data; it's blocking (wait until the buffer is empty). </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>data to be sent through usart1 </td></tr>
   </table>
   </dd>
 </dl>
@@ -208,7 +325,7 @@ Functions</h2></td></tr>
     <ul>
       <li class="navelem"><a class="el" href="usart_8h.html">usart.h</a>      </li>
 
-    <li class="footer">Generated on Fri Mar 9 2012 15:16:50 for Elisa3 by
+    <li class="footer">Generated on Tue Mar 27 2012 16:12:06 for Elisa3 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

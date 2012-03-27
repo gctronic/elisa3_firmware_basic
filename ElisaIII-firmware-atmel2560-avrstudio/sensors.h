@@ -73,6 +73,10 @@ void readAccelXY();
  */
 void readAccelXYZ();
 
+// the following two functions split "readAccelXYZ", used with aseba.
+void readAccelXYZ_1();
+void readAccelXYZ_2();
+
 /**
  * \brief Compute the angle of the robot using the X and Y axes; the resulting angle is saved in the 
  * global variable "currentAngle". The angle refers to a classical reference system where the 0 points 

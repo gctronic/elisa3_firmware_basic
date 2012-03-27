@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['setgreenled',['setGreenLed',['../leds_8c.html#aaedac079611182ad29838d69eede4004',1,'setGreenLed(unsigned char ledNum, unsigned char isOn):&#160;leds.c'],['../leds_8h.html#aaedac079611182ad29838d69eede4004',1,'setGreenLed(unsigned char ledNum, unsigned char isOn):&#160;leds.c']]],
   ['setleftspeed',['setLeftSpeed',['../motors_8c.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c']]],
   ['setrightspeed',['setRightSpeed',['../motors_8c.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c']]],
   ['sleep',['sleep',['../utility_8c.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c'],['../utility_8h.html#a56f15343edf0a13c026f52e527d3d3c9',1,'sleep(unsigned char seconds):&#160;utility.c']]],

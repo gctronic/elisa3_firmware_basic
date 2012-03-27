@@ -1,8 +1,8 @@
 
 #include "usart.h"
+#include "leds.h"
 
-
-void initUsart() {
+void initUsart0() {
 
 	// clock is 8 MHz, thus:
 	// Normal mode:
@@ -16,8 +16,22 @@ void initUsart() {
 	UBRR0H = 0;												// set baudrate
 	UBRR0L = 16;
 	UCSR0A  |= (1 << U2X0);									// enable double speed
-	UCSR0B |= (1 << TXEN0) | (1 << RXEN0) | (1 << RXCIE0);	// enable uart0 transmitter and receiver; enable rx interrupt
+	//UCSR0A &= ~(1 << U2X0);
+	UCSR0B |= (1 << TXEN0) | (1 << RXEN0) | (1 << RXCIE0);	// enable uart0 transmitter and receiver; enable rx interrupt for use with aseba
 	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);					// set frame format: 8-bit data, no parity, 1 stop bit
+
+
+
+}
+
+void initUsart1() {
+
+	UBRR1H = 0;												// set baudrate
+	UBRR1L = 16;
+	UCSR1A  |= (1 << U2X1);									// enable double speed
+	//UCSR0A &= ~(1 << U2X1);
+	UCSR1B |= (1 << TXEN1) | (1 << RXEN1);					// enable uart0 transmitter and receiver
+	UCSR1C |= (1<<UCSZ11) | (1<<UCSZ10);					// set frame format: 8-bit data, no parity, 1 stop bit
 
 }
 
@@ -29,14 +43,69 @@ void closeUsart() {
 
 }
 
-void usartTransmit(unsigned char data) {
+void usart0Transmit(unsigned char data, unsigned char isBlocking) {
 
 	while (!(UCSR0A & (1<<UDRE0)));		// wait for empty transmit buffer
 	UDR0 = data;						// put data into buffer, sends the data
+	if(isBlocking) {
+		while (!(UCSR0A & (1<<TXC0)));	// wait transmission complete
+	}
+}
+
+void usart1Transmit(unsigned char data, unsigned char isBlocking) {
+
+	while (!(UCSR1A & (1<<UDRE1)));		// wait for empty transmit buffer
+	UDR1 = data;						// put data into buffer, sends the data
+	if(isBlocking) {
+		while (!(UCSR1A & (1<<TXC1)));	// wait transmission complete
+	}
 
 }
 
-// The usart rx isr was used to control the robo during prototyping; now the radio 
+char usart0InputBufferEmpty() {
+
+	if(UCSR0A & (1<<RXC0)) {	// something received
+		return 0;
+	} else {
+		return 1;
+	}
+
+}
+
+unsigned char usart0Receive() {
+
+	unsigned int i=0;
+
+	while(usart0InputBufferEmpty()) {
+		i++;
+		if(i>150) {
+			/*
+			if(UCSR0A & (1<<3)) {	// overflow flag
+			}
+			*/
+			commError = 1;
+			return 0;				// timeout
+		}
+	}								// wait for data to be received
+
+	return UDR0;					// get and return received data from buffer
+
+}
+
+// The following usart0 rx isr has to be used with aseba.
+ISR(USART0_RX_vect) {
+	byteCount++;
+	if(byteCount <= UART_BUFF_SIZE) {
+		uartBuff[nextByteIndex] = UDR0;
+		nextByteIndex++;
+		if(nextByteIndex==UART_BUFF_SIZE) {
+			nextByteIndex=0;
+		}
+	}
+}
+
+
+// The following usart0 rx isr was used to control the robo during prototyping; now the radio 
 // substitutes completely the usart for this purpose.
 // Commands available at the moment through usart:
 //
@@ -53,7 +122,7 @@ void usartTransmit(unsigned char data) {
 // for options 3,4 there are the commmands "+", "-" and "s" to increase, decrease and reset to zero the speed respectively
 // for options 5 there is the command "s" that stop the sending of the adc values
 // if a key is pressed that do not correspond to any commands for that option, then the initial menu is entered.
-
+/*
 ISR(USART0_RX_vect) {
 
 	char receivedByte = UDR0;
@@ -241,3 +310,4 @@ ISR(USART0_RX_vect) {
 
 
 }
+*/

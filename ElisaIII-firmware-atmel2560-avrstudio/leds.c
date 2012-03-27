@@ -76,3 +76,66 @@ void updateBlueLed(unsigned char value) {
 	}
 
 }
+
+void setGreenLed(unsigned char ledNum, unsigned char isOn) {
+
+	switch(ledNum) {
+
+		case 0:	isOn?GREEN_LED0_ON:GREEN_LED0_OFF;
+				break;
+
+		case 1:	isOn?GREEN_LED1_ON:GREEN_LED1_OFF;
+				break;
+
+		case 2:	isOn?GREEN_LED2_ON:GREEN_LED2_OFF;
+				break;
+
+		case 3:	isOn?GREEN_LED3_ON:GREEN_LED3_OFF;
+				break;
+
+		case 4:	isOn?GREEN_LED4_ON:GREEN_LED4_OFF;
+				break;
+
+		case 5:	isOn?GREEN_LED5_ON:GREEN_LED5_OFF;
+				break;
+
+		case 6:	isOn?GREEN_LED6_ON:GREEN_LED6_OFF;
+				break;
+
+		case 7:	isOn?GREEN_LED7_ON:GREEN_LED7_OFF;
+				break;
+
+		default: break;
+
+	}
+
+}
+
+void turnOffGreenLeds() {
+
+	GREEN_LED0_OFF;
+	GREEN_LED1_OFF;
+	GREEN_LED2_OFF;
+	GREEN_LED3_OFF;
+	GREEN_LED4_OFF;
+	GREEN_LED5_OFF;
+	GREEN_LED6_OFF;
+	GREEN_LED7_OFF;
+
+}
+
+
+void turnOnGreenLeds() {
+
+	GREEN_LED0_ON;
+	GREEN_LED1_ON;
+	GREEN_LED2_ON;
+	GREEN_LED3_ON;
+	GREEN_LED4_ON;
+	GREEN_LED5_ON;
+	GREEN_LED6_ON;
+	GREEN_LED7_ON;
+
+}
+
+

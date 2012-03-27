@@ -1,5 +1,6 @@
 var variables_8c =
 [
+    [ "accBuff", "variables_8c.html#a693872dffad437db5beb598bf28b658d", null ],
     [ "accelAddress", "variables_8c.html#aeec7f45d961933d0721f9e1e0540a799", null ],
     [ "accOffsetX", "variables_8c.html#acdf0c29faf6a88b3a5b06643b94e0b6c", null ],
     [ "accOffsetXSum", "variables_8c.html#a24336f6a78b7d41a3648debe6c3b7c02", null ],
@@ -16,6 +17,7 @@ var variables_8c =
     [ "batteryLevel", "variables_8c.html#ab1714a9b4417a70d524f7d60a96a815c", null ],
     [ "behaviorState", "variables_8c.html#a50380767e92c6b0b29e60eb116b285db", null ],
     [ "blinkState", "variables_8c.html#af375973932b849b7fe6c1f546f3e8adc", null ],
+    [ "byteCount", "variables_8c.html#a3167147af72b7588996b94602b0c1348", null ],
     [ "calibrationCycle", "variables_8c.html#ac084b77bdafd27ce145006c472b27f42", null ],
     [ "checkGlitch", "variables_8c.html#aaa8bfff0cb9fc452509ba740424df94f", null ],
     [ "choosePeripheral", "variables_8c.html#a1b9d4294c629fa08659f94b408a5d406", null ],
@@ -24,8 +26,10 @@ var variables_8c =
     [ "clockTick", "variables_8c.html#ae5b29d64f8a1b67f8e86a9596a4ab2d8", null ],
     [ "colorState", "variables_8c.html#acda8a999560be754013d18b84ab58ffb", null ],
     [ "command_received", "variables_8c.html#a848efaccfa3abf681a7583e2db972b49", null ],
+    [ "commError", "variables_8c.html#a5e4a5f87a073607f6dc19c26fcf541a2", null ],
     [ "compute_left_vel", "variables_8c.html#abe99fe40e406484cd5f1f56d5fa69c00", null ],
     [ "compute_right_vel", "variables_8c.html#afe4784af211451fa26d96622df44b4c6", null ],
+    [ "currByteIndex", "variables_8c.html#aab278300880021140e975ac64e77d423", null ],
     [ "currentAdChannel", "variables_8c.html#a9c8b5a045fd0286bd5fef2dc11a90dba", null ],
     [ "currentAngle", "variables_8c.html#ac4c2e6d13443211b5646e5bee53de1d4", null ],
     [ "currentMotLeftChannel", "variables_8c.html#aaa21a0ff3fa05d60554fd3084e86d635", null ],
@@ -56,6 +60,7 @@ var variables_8c =
     [ "leftChannelPhase", "variables_8c.html#af90ee1b18e07a485f9d201a1474fed81", null ],
     [ "leftMotorPhase", "variables_8c.html#a42e7c42723cd98b7768b3c56039f26cf", null ],
     [ "measBattery", "variables_8c.html#a5234176e50c96b22941062509b1063e5", null ],
+    [ "nextByteIndex", "variables_8c.html#ab4ff6f9dce673d3ad48512e5b1ea5c98", null ],
     [ "obstacleAvoidanceEnabled", "variables_8c.html#a5b780d6413adf73534ba19a6b04d146f", null ],
     [ "packetId", "variables_8c.html#ab2e0dac927f92b95c5f96155593ce05f", null ],
     [ "peripheralChoice", "variables_8c.html#a0734982b153659a889ee1ff851292584", null ],
@@ -91,5 +96,6 @@ var variables_8c =
     [ "speedr", "variables_8c.html#af9ad15905e2651620f5a5094fd7f017d", null ],
     [ "startCalibration", "variables_8c.html#aac69bb11d34873c2410860817f4e1729", null ],
     [ "timesInSamePos", "variables_8c.html#a8beb179e52892494ff4051a07703ee21", null ],
+    [ "uartBuff", "variables_8c.html#a45d3e5089c9d28d0c0edcd43a869226c", null ],
     [ "useAccel", "variables_8c.html#a0c65e0c665b92f0ac4bf8e671f2ecc61", null ]
 ];

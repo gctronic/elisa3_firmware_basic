@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['accbuff',['accBuff',['../variables_8c.html#a693872dffad437db5beb598bf28b658d',1,'accBuff():&#160;variables.c'],['../variables_8h.html#a693872dffad437db5beb598bf28b658d',1,'accBuff():&#160;variables.c']]],
   ['acceladdress',['accelAddress',['../variables_8c.html#aeec7f45d961933d0721f9e1e0540a799',1,'accelAddress():&#160;variables.c'],['../variables_8h.html#a061f0e1599de478076500973bd383111',1,'accelAddress():&#160;variables.c']]],
   ['accoffsetx',['accOffsetX',['../variables_8c.html#acdf0c29faf6a88b3a5b06643b94e0b6c',1,'accOffsetX():&#160;variables.c'],['../variables_8h.html#acdf0c29faf6a88b3a5b06643b94e0b6c',1,'accOffsetX():&#160;variables.c']]],
   ['accoffsetxsum',['accOffsetXSum',['../variables_8c.html#a24336f6a78b7d41a3648debe6c3b7c02',1,'accOffsetXSum():&#160;variables.c'],['../variables_8h.html#a24336f6a78b7d41a3648debe6c3b7c02',1,'accOffsetXSum():&#160;variables.c']]],

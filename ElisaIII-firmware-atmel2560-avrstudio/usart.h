@@ -26,24 +26,51 @@ extern "C" {
 #endif
 
 /**
- * \brief Configure the usart registers to work at 57600 baud (8-bit data, no parity, 1 stop bit).
+ * \brief Configure the usart0 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit).
  * Moreover the interrupt for reception is enabled.
  * \return none
  */
-void initUsart();
+void initUsart0();
+
+/**
+ * \brief Configure the usart1 registers to work at 57600 baud (8-bit data, no parity, 1 stop bit).
+ * Moreover the interrupt for reception is enabled.
+ * \return none
+ */
+void initUsart1();
 
 /**
  * \brief Transfer one byte of data; it's blocking (wait until the buffer is empty).
- * \param data data to be sent through usart
+ * \param data data to be sent through usart0
  * \return none
  */
-void usartTransmit(unsigned char data);
+void usart0Transmit(unsigned char data, unsigned char isBlocking);
+
+/**
+ * \brief Transfer one byte of data; it's blocking (wait until the buffer is empty).
+ * \param data data to be sent through usart1
+ * \return none
+ */
+void usart1Transmit(unsigned char data, unsigned char isBlocking);
 
 /**
  * \brief Close the usart peripheral and disable all interrupts.
  * \return none
  */
 void closeUsart();
+
+/**
+ * \brief Check whether there is something to read from usart0.
+ * \retval 0 input buffer not empty
+ * \retval 1 input buffer empty
+ */
+char usart0InputBufferEmpty();
+
+/**
+ * \brief Wait until a byte has been received or the timeout is expired.
+ * \return byte received
+ */
+unsigned char usart0Receive();
 
 #ifdef __cplusplus
 } // extern "C"

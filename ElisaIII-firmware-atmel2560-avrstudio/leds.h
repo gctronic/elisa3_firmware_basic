@@ -60,6 +60,24 @@ void updateGreenLed(unsigned char value);
  */
 void updateBlueLed(unsigned char value);
 
+/**
+ * \brief Set small green led state (on, off).
+ * \return none
+ */
+void setGreenLed(unsigned char ledNum, unsigned char isOn);
+
+/**
+ * \brief Turn off all small green leds around the robot.
+ * \return none
+ */
+void turnOffGreenLeds();
+
+/**
+ * \brief Turn on all small green leds around the robot.
+ * \return none
+ */
+void turnOnGreenLeds();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

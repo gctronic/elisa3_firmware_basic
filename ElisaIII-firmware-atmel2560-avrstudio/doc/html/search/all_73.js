@@ -5,6 +5,7 @@ var searchData=
   ['sendadcvalues',['sendAdcValues',['../variables_8c.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c'],['../variables_8h.html#ad7b7c1bbc5eb9af3cab8aa0a1c6cdf7c',1,'sendAdcValues():&#160;variables.c']]],
   ['sensors_2ec',['sensors.c',['../sensors_8c.html',1,'']]],
   ['sensors_2eh',['sensors.h',['../sensors_8h.html',1,'']]],
+  ['setgreenled',['setGreenLed',['../leds_8c.html#aaedac079611182ad29838d69eede4004',1,'setGreenLed(unsigned char ledNum, unsigned char isOn):&#160;leds.c'],['../leds_8h.html#aaedac079611182ad29838d69eede4004',1,'setGreenLed(unsigned char ledNum, unsigned char isOn):&#160;leds.c']]],
   ['setleftspeed',['setLeftSpeed',['../motors_8c.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ad5a48454a238e152a50a46054faef69e',1,'setLeftSpeed(signed char vel):&#160;motors.c']]],
   ['setrightspeed',['setRightSpeed',['../motors_8c.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c'],['../motors_8h.html#ac2e0fa600855023342f960b0960f894f',1,'setRightSpeed(signed char vel):&#160;motors.c']]],
   ['setup_5faw',['SETUP_AW',['../n_r_f24_l01_8h.html#af5ef355ba3eca336db1285cab353ddc2',1,'nRF24L01.h']]],

@@ -19,6 +19,10 @@
 #define PAUSE_2_SEC 19230
 #endif
 
+#ifndef UART_BUFF_SIZE
+#define UART_BUFF_SIZE 256
+#endif
+
 /***********/
 /*** NRF ***/
 /***********/
@@ -225,22 +229,22 @@
 
 // small green leds handling macros
 #ifndef GREEN_LEDS
-#define GRREEN_LED0_ON (PORTL &= ~(1 << 0))
-#define GRREEN_LED1_ON (PORTL &= ~(1 << 1))
-#define GRREEN_LED2_ON (PORTL &= ~(1 << 2))
-#define GRREEN_LED3_ON (PORTG &= ~(1 << 3))
-#define GRREEN_LED4_ON (PORTL &= ~(1 << 4))
-#define GRREEN_LED5_ON (PORTL &= ~(1 << 5))
-#define GRREEN_LED6_ON (PORTL &= ~(1 << 6))
-#define GRREEN_LED7_ON (PORTL &= ~(1 << 7))
-#define GRREEN_LED0_OFF (PORTL |= (1 << 0))	
-#define GRREEN_LED1_OFF (PORTL |= (1 << 1))
-#define GRREEN_LED2_OFF (PORTL |= (1 << 2))
-#define GRREEN_LED3_OFF (PORTG |= (1 << 3))
-#define GRREEN_LED4_OFF (PORTL |= (1 << 4))
-#define GRREEN_LED5_OFF (PORTL |= (1 << 5))
-#define GRREEN_LED6_OFF (PORTL |= (1 << 6))
-#define GRREEN_LED7_OFF (PORTL |= (1 << 7))
+#define GREEN_LED0_ON (PORTL &= ~(1 << 0))
+#define GREEN_LED1_ON (PORTL &= ~(1 << 1))
+#define GREEN_LED2_ON (PORTL &= ~(1 << 2))
+#define GREEN_LED3_ON (PORTG &= ~(1 << 3))
+#define GREEN_LED4_ON (PORTL &= ~(1 << 4))
+#define GREEN_LED5_ON (PORTL &= ~(1 << 5))
+#define GREEN_LED6_ON (PORTL &= ~(1 << 6))
+#define GREEN_LED7_ON (PORTL &= ~(1 << 7))
+#define GREEN_LED0_OFF (PORTL |= (1 << 0))
+#define GREEN_LED1_OFF (PORTL |= (1 << 1))
+#define GREEN_LED2_OFF (PORTL |= (1 << 2))
+#define GREEN_LED3_OFF (PORTG |= (1 << 3))
+#define GREEN_LED4_OFF (PORTL |= (1 << 4))
+#define GREEN_LED5_OFF (PORTL |= (1 << 5))
+#define GREEN_LED6_OFF (PORTL |= (1 << 6))
+#define GREEN_LED7_OFF (PORTL |= (1 << 7))
 #endif
 
 /***********/

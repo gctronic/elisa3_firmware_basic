@@ -85,6 +85,11 @@ extern unsigned char blinkState;
 extern unsigned char peripheralChoice;
 extern unsigned char choosePeripheral;
 extern unsigned char sendAdcValues;
+extern unsigned char commError;
+extern unsigned int byteCount;
+extern unsigned char uartBuff[UART_BUFF_SIZE];
+extern unsigned char nextByteIndex;
+extern unsigned char currByteIndex;
 
 /*************************/
 /*** IR REMOTE CONTROL ***/
@@ -115,6 +120,7 @@ extern unsigned char prevPosition;
 extern unsigned char currPosition;
 extern unsigned char timesInSamePos;
 extern unsigned char robotPosition;
+extern signed char accBuff[6];
 
 /***************/
 /*** VARIOUS ***/

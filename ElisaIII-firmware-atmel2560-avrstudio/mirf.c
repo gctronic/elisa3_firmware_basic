@@ -369,51 +369,51 @@ void handleRFCommands() {
 		#ifdef HW_REV_3_1			
 
 			if(bit_is_set(rfData[6], 0) ) {
-				GRREEN_LED0_ON;
+				GREEN_LED0_ON;
 			} else {
-				GRREEN_LED0_OFF;
+				GREEN_LED0_OFF;
 			}
 				
 			if(bit_is_set(rfData[6], 1) ) {
-				GRREEN_LED1_ON;
+				GREEN_LED1_ON;
 			} else {
-				GRREEN_LED1_OFF;
+				GREEN_LED1_OFF;
 			}
 				
 			if(bit_is_set(rfData[6], 2) ) {
-				GRREEN_LED2_ON;
+				GREEN_LED2_ON;
 			} else {
-				GRREEN_LED2_OFF;
+				GREEN_LED2_OFF;
 			}												
 
 			if(bit_is_set(rfData[6], 3) ) {
-				GRREEN_LED3_ON;
+				GREEN_LED3_ON;
 			} else {
-				GRREEN_LED3_OFF;
+				GREEN_LED3_OFF;
 			}
 
 			if(bit_is_set(rfData[6], 4) ) {
-				GRREEN_LED4_ON;
+				GREEN_LED4_ON;
 			} else {
-				GRREEN_LED4_OFF;
+				GREEN_LED4_OFF;
 			}
 
 			if(bit_is_set(rfData[6], 5) ) {
-				GRREEN_LED5_ON;
+				GREEN_LED5_ON;
 			} else {
-				GRREEN_LED5_OFF;
+				GREEN_LED5_OFF;
 			}
 
 			if(bit_is_set(rfData[6], 6) ) {
-				GRREEN_LED6_ON;
+				GREEN_LED6_ON;
 			} else {
-				GRREEN_LED6_OFF;
+				GREEN_LED6_OFF;
 			}
 
 			if(bit_is_set(rfData[6], 7) ) {
-				GRREEN_LED7_ON;
+				GREEN_LED7_ON;
 			} else {
-				GRREEN_LED7_OFF;
+				GREEN_LED7_OFF;
 			}
 
 		#endif
