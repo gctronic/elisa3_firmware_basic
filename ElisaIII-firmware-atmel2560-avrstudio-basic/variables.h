@@ -21,6 +21,8 @@ extern unsigned int batteryLevel;
 extern unsigned char measBattery;
 extern unsigned char proxUpdated;
 extern int proximityResultLinear[8];
+extern signed long int rightMotSteps;
+extern signed long int leftMotSteps;
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -70,6 +72,8 @@ extern unsigned char rfData[PAYLOAD_SIZE];
 extern unsigned char ackPayload[16];
 extern unsigned char packetId;
 extern unsigned int rfAddress;
+extern unsigned char rfFlags;
+extern unsigned char spiCommError;
 
 /****************/
 /*** RGB LEDS ***/
@@ -130,6 +134,7 @@ extern unsigned char currentSelector;
 extern signed int calibrationCycle;
 extern unsigned char startCalibration;
 extern unsigned char hardwareRevision;
+extern unsigned char currentOsccal;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/

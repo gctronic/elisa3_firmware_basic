@@ -31,6 +31,8 @@ unsigned int batteryLevel = 0;						// level of the battery sampled
 unsigned char measBattery = 0;						// flag indicating when the battery is sampled (once every 2 second at the moment)
 unsigned char proxUpdated = 0;						// flag indicating that all the sensors (proximity and ground) got a new value
 int proximityResultLinear[8] = {0};					// array containing the linearized values for the proximity senosrs (used in obstacle avoidance)
+signed long int rightMotSteps = 0;
+signed long int leftMotSteps = 0;
 
 /******************************/
 /*** CONSUMPTION CONTROLLER ***/
@@ -85,6 +87,9 @@ unsigned char ackPayload[16];						// data to send back to the base-station
 unsigned char packetId = 3;
 unsigned int rfAddress = 0;							// this number define the robot ID, used also as the robot
 													// RF address; from this number is then obtained the hardware revision
+unsigned char rfFlags = 0;							// bit0: 1 = spi comm. ok, 0 = spi comm. not ok
+													// bit1: 1 = rf comm. ok, 0 = rf comm. not ok
+unsigned char spiCommError=0;
 
 /****************/
 /*** RGB LEDS ***/
@@ -143,6 +148,7 @@ unsigned char currentSelector = 0;					// current selector position
 signed int calibrationCycle = 0;					// indicate how many samples are currently taken for calibration
 unsigned char startCalibration;						// flag indicating when a calibration is in progress
 unsigned char hardwareRevision = HW_REV_3_0;		// hardware revision based on the address saved in eeprom
+unsigned char currentOsccal;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/

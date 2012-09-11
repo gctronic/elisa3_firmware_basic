@@ -21,6 +21,8 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+#include "variables.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

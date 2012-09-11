@@ -18,7 +18,14 @@ void initPeripherals(void) {
 	TCCR5B = 0;
 
 	rfAddress = eeprom_read_word((uint16_t*)4094);
-
+	currentOsccal = eeprom_read_byte((uint8_t*)4093);
+	if(currentOsccal!=0 && currentOsccal!=255) { // clear memory
+		OSCCAL = currentOsccal;
+	} else {
+		currentOsccal = OSCCAL;
+		eeprom_write_byte((uint8_t*) 4093, currentOsccal);
+	}
+	
 	// some code parts change based on hardware revision
 	if(rfAddress >= 3201 && rfAddress <= 3203) {
 		hardwareRevision = HW_REV_3_0;
@@ -38,6 +45,9 @@ void initPeripherals(void) {
 	initRGBleds();
 	initSPI();
 	mirf_init();
+	if(spiCommError==0) {
+		rfFlags |= 1;
+	}
 	initUsart0();
 	initAccelerometer();
 	init_ir_remote_control();

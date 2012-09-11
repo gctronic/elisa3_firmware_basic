@@ -53,12 +53,24 @@ void handleMotorsWithNoController() {
 		last_left_vel = left_vel_sum>>2;
 		compute_left_vel = 0;
 		left_vel_sum = 0;
+
+		if(pwm_left_desired >= 0) {
+			leftMotSteps += (last_left_vel>>3);
+		} else {
+			leftMotSteps -= (last_left_vel>>3);
+		}
 	}
 
 	if(compute_right_vel) {
 		last_right_vel = right_vel_sum>>2;
 		compute_right_vel = 0;
 		right_vel_sum = 0;
+
+		if(pwm_right_desired >= 0) {
+			rightMotSteps += (last_right_vel>>3);
+		} else {
+			rightMotSteps -= (last_right_vel>>3);
+		}
 	}
 
 
@@ -108,6 +120,12 @@ void handleMotorsWithSpeedController() {
 		compute_left_vel = 0;
 		left_vel_sum = 0;
 
+		if(pwm_left_desired_to_control >= 0) {
+			leftMotSteps += (last_left_vel>>3);
+		} else {
+			leftMotSteps -= (last_left_vel>>3);
+		}
+
 		if(robotPosition == HORIZONTAL_POS) {
 			//PORTB &= ~(1 << 5);
 			start_horizontal_speed_control_left(&pwm_left_working);
@@ -136,6 +154,12 @@ void handleMotorsWithSpeedController() {
 		last_right_vel = right_vel_sum>>2;
 		compute_right_vel = 0;
 		right_vel_sum = 0;
+
+		if(pwm_right_desired_to_control >= 0) {
+			rightMotSteps += (last_right_vel>>3);
+		} else {
+			rightMotSteps -= (last_right_vel>>3);
+		}
 
 		if(robotPosition == HORIZONTAL_POS) {
 			//PORTB &= ~(1 << 5);

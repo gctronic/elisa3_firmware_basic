@@ -20,7 +20,20 @@
 #define SPI_SS PORTB0	// SS pin (Slave Select)
 
 // wait for an SPI read/write operation to complete
-#define SPI_WAIT()              while ((SPSR & _BV(SPIF)) == 0);
+//#define SPI_WAIT()              while ((SPSR & _BV(SPIF)) == 0);
+void SPI_WAIT() {
+	unsigned int timeout=0;
+	while (1) {
+		timeout++;
+		if(timeout>=10000) {
+			spiCommError = 1;
+		}
+	
+		if(SPSR & _BV(SPIF)) {
+			return;
+		}
+	}
+}
 
 void initSPI() {
 
@@ -52,6 +65,9 @@ void SPI_ReadWrite_Block(uint8_t* data, uint8_t* buffer, uint8_t len) {
     for (i = 0; i < len; i++) {
           SPDR = data[i];
           SPI_WAIT();
+		  if(spiCommError) {
+			return;
+		  }
           buffer[i] = SPDR;
     }
 }
@@ -61,7 +77,11 @@ void SPI_Write_Block(uint8_t* data, uint8_t len) {
     for (i = 0; i < len; i++) {
           SPDR = data[i];
           SPI_WAIT();
+		  if(spiCommError) {
+			return;
+		  }
     }
+
 }
 
 uint8_t SPI_Write_Byte(uint8_t byte) {

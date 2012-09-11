@@ -120,7 +120,7 @@ void mirf_set_RADDR(uint8_t * adr)
 void mirf_set_TADDR(uint8_t * adr)
 // Sets the transmitting address
 {
-    mirf_write_register(TX_ADDR, adr,5);
+	mirf_write_register(TX_ADDR, adr,5);
 }
 
 /*
@@ -162,6 +162,7 @@ uint8_t mirf_data_ready()
     status = SPI_Write_Byte(NOP);               // Read status register
     mirf_CSN_hi;                                // Pull up chip select
     return status & (1<<RX_DR);
+
 }
 
 uint8_t rx_fifo_is_empty() {
@@ -275,6 +276,8 @@ void handleRFCommands() {
 	unsigned int i=0;
 
 	if(mirf_data_ready()) {
+
+		rfFlags |= 0x02;
 
 		// clear irq status
 		mirf_config_register(STATUS, 0x70);
@@ -500,6 +503,26 @@ void handleRFCommands() {
 				ackPayload[12] = accZ>>8;
 				ackPayload[13] = batteryLevel&0xFF;
 				ackPayload[14] = batteryLevel>>8;
+				ackPayload[15] = 0;
+				packetId = 7;
+				break;
+
+
+			case 7:
+				ackPayload[1] = leftMotSteps&0xFF;
+				ackPayload[2] = leftMotSteps>>8;
+				ackPayload[3] = leftMotSteps>>16;
+				ackPayload[4] = leftMotSteps>>24;
+				ackPayload[5] = rightMotSteps&0xFF;
+				ackPayload[6] = rightMotSteps>>8;
+				ackPayload[7] = rightMotSteps>>16;
+				ackPayload[8] = rightMotSteps>>24;
+				ackPayload[9] = 0;
+				ackPayload[10] = 0;
+				ackPayload[11] = 0;
+				ackPayload[12] = 0;
+				ackPayload[13] = 0;
+				ackPayload[14] = 0;
 				ackPayload[15] = 0;
 				packetId = 3;
 				break;
