@@ -127,28 +127,29 @@ unsigned char useAccel = USE_MMAX7455L;				// flag indicatin which accelerometer
 signed int accX=0, accY=0, accZ=0;					// accelerometer calibrated values
 signed int accOffsetX = 0;							// values obtained during the calibration process; acc = raw_acc - offset
 signed int accOffsetY = 0;							// before calibration: values between -3g and +3g corresponds to values between 0 and 1024
-signed int accOffsetZ = 0;							// after calibration: values between -3g and +3g corresponds to values between -512 and 512
+													// after calibration: values between -3g and +3g corresponds to values between -512 and 512
 signed int accOffsetXSum = 0;						// contains the sum of the accelerometer values during calibration (these values will then be 
 signed int accOffsetYSum = 0;						// divided by the number of samples taken to get the calibration offsets)
-signed int accOffsetZSum = 0;
+signed int accXMax=0, accXMin=0, accYMax=0, accYMin=0;
 signed int currentAngle = 0;						// current orientation of the robot (in a vertical wall) extracted from both the x and y axes
-unsigned char prevPosition=HORIZONTAL_POS;			// "prevPosition" and "currPosition" are used to change the "robotPosition" in a smoother way
-unsigned char currPosition=HORIZONTAL_POS;			
-unsigned char timesInSamePos = 0;					// number of cycles in which the new robot position remain stable; after some stability it will 
+unsigned char currPosition=HORIZONTAL_POS;			//  "currPosition" is used to change the "robotPosition" in a smoother way
+unsigned int timesInSamePos = 0;					// number of cycles in which the new robot position remain stable; after some stability it will 
 													// change the current "robotPosition"
 unsigned char robotPosition = 1;					// indicate whether the robot is in vertical (=0) or horizontal (=1) position
 signed char accBuff[6] = {0};
+unsigned temperature = 0;
 
 /***************/
 /*** VARIOUS ***/
 /***************/
-unsigned long int clockTick = 0;					// this is the base time, each tick corresponds to 104 us (incremented inside adc isr);
+uint32_t clockTick = 0;					// this is the base time, each tick corresponds to 104 us (incremented inside adc isr);
 													// beware that this variable is never reset (4294967295/10000/60/60/24 = about 5 days before overflow)
 unsigned char currentSelector = 0;					// current selector position
 signed int calibrationCycle = 0;					// indicate how many samples are currently taken for calibration
 unsigned char startCalibration;						// flag indicating when a calibration is in progress
 unsigned char hardwareRevision = HW_REV_3_0;		// hardware revision based on the address saved in eeprom
 unsigned char currentOsccal;
+uint32_t lastTick = 0;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/
@@ -160,5 +161,10 @@ unsigned char obstacleAvoidanceEnabled = 0;			// flag indicating that obstacle a
 /***********************/
 unsigned char cliffAvoidanceEnabled = 0;			// flag indicating that cliff avoidance is enabled
 unsigned char cliffDetectedFlag = 0;				// flag indicating a cliff is detected => stop the motors
+
+/****************/
+/*** ODOMETRY ***/
+/****************/
+float thetaAcc = 0.0;
 
 

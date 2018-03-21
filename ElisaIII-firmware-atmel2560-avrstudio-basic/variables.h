@@ -115,26 +115,26 @@ extern signed int accY;
 extern signed int accZ;
 extern signed int accOffsetX;
 extern signed int accOffsetY;
-extern signed int accOffsetZ;
 extern signed int accOffsetXSum;
 extern signed int accOffsetYSum;
-extern signed int accOffsetZSum;
+extern signed int accXMax, accXMin, accYMax, accYMin;
 extern signed int currentAngle;
-extern unsigned char prevPosition; 
 extern unsigned char currPosition;
-extern unsigned char timesInSamePos;
+extern unsigned int timesInSamePos;
 extern unsigned char robotPosition;
 extern signed char accBuff[6];
+extern unsigned temperature;
 
 /***************/
 /*** VARIOUS ***/
 /***************/
-extern unsigned long int clockTick;
+extern uint32_t clockTick;
 extern unsigned char currentSelector;
 extern signed int calibrationCycle;
 extern unsigned char startCalibration;
 extern unsigned char hardwareRevision;
 extern unsigned char currentOsccal;
+extern uint32_t lastTick;
 
 /**************************/
 /*** OBSTACLE AVOIDANCE ***/
@@ -146,4 +146,9 @@ extern unsigned char obstacleAvoidanceEnabled;
 /***********************/
 extern unsigned char cliffAvoidanceEnabled;
 extern unsigned char cliffDetectedFlag;
+
+/****************/
+/*** ODOMETRY ***/
+/****************/
+extern float thetaAcc;
 

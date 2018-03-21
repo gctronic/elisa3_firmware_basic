@@ -17,6 +17,7 @@
 #define PAUSE_100_MSEC 961
 #define PAUSE_1_SEC 9615
 #define PAUSE_2_SEC 19230
+#define PAUSE_4_SEC 38462
 #endif
 
 #ifndef UART_BUFF_SIZE
